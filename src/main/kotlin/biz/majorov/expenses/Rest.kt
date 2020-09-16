@@ -1,39 +1,45 @@
 package biz.majorov.expenses
 
+import io.agroal.api.AgroalDataSource
+import io.quarkus.agroal.DataSource
 import org.apache.camel.CamelContext
+import org.apache.camel.ProducerTemplate
 import org.apache.camel.component.sql.SqlConstants
 import org.apache.commons.logging.LogFactory
-import java.sql.Date
-import javax.ws.rs.*
-import javax.ws.rs.core.MediaType
-import javax.ws.rs.core.Response
-import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.OpenAPIDefinition
+import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType
 import org.eclipse.microprofile.openapi.annotations.info.Contact
 import org.eclipse.microprofile.openapi.annotations.info.Info
 import org.eclipse.microprofile.openapi.annotations.info.License
+import org.eclipse.microprofile.openapi.annotations.media.Content
+import org.eclipse.microprofile.openapi.annotations.media.Schema
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses
-import org.eclipse.microprofile.openapi.annotations.media.Schema
-import org.eclipse.microprofile.openapi.annotations.media.Content;
-import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
+import java.sql.Date
+import javax.enterprise.context.ApplicationScoped
+import javax.inject.Inject
+import javax.ws.rs.*
+import javax.ws.rs.core.MediaType
+import javax.ws.rs.core.Response
+
 
 /**
  * expenses RESTful services
  */
 @Path("/expenses")
 @OpenAPIDefinition(
-    info = Info(
-            title = "Expenses API demo app",
-            version = "1.0.0",
-            contact = Contact(
-                    name = "Expenses API demo app",
-                    url = "https://quarkus.io/guides/openapi-swaggerui#providing-application-level-openapi-annotations",
-                    email = "nmajorov@redhat.com"),
-            license = License(
-                    name = "Apache 2.0",
-                    url = "http://www.apache.org/licenses/LICENSE-2.0.html"))
+        info = Info(
+                title = "Expenses API demo app",
+                version = "1.0.0",
+                contact = Contact(
+                        name = "Expenses API demo app",
+                        url = "https://quarkus.io/guides/openapi-swaggerui#providing-application-level-openapi-annotations",
+                        email = "nmajorov@redhat.com"),
+                license = License(
+                        name = "Apache 2.0",
+                        url = "http://www.apache.org/licenses/LICENSE-2.0.html"))
 )
 interface ExpensesService {
 
@@ -41,7 +47,7 @@ interface ExpensesService {
     @Path("")
     @Operation(description = "Get all expenses in system")
     @Produces(MediaType.APPLICATION_JSON)
-    @APIResponses( value = [
+    @APIResponses(value = [
         APIResponse(responseCode = "200", description = "successful operation",
                 content = [Content(mediaType = "application/json",
                         schema = Schema(implementation = Expense::class))]
@@ -52,26 +58,26 @@ interface ExpensesService {
     @DELETE
     @Path("/{id}")
     @Operation(summary = "Delete an expense")
-    @APIResponses( value=[
+    @APIResponses(value = [
 
         APIResponse(responseCode = "200", description = "successful operation",
                 content = [Content(mediaType = "application/json",
-                schema = Schema(implementation = Response::class))]),
+                        schema = Schema(implementation = Response::class))]),
         APIResponse(responseCode = "400", description = "invalid input"),
-        APIResponse(responseCode = "404" , description = "expense not found")
-        ])
-    fun delete(@PathParam("id") @Parameter(description = "Expense id to delete" ,required = true,
-            schema = Schema(type = SchemaType.NUMBER))  id:Long) :Response
+        APIResponse(responseCode = "404", description = "expense not found")
+    ])
+    fun delete(@PathParam("id") @Parameter(description = "Expense id to delete", required = true,
+            schema = Schema(type = SchemaType.NUMBER)) id: Long) :Response
 
     @POST
     @Path("/")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Add a new expense")
-    @APIResponses(value=[
+    @APIResponses(value = [
         APIResponse(responseCode = "200", description = "successful operation",
                 content = [Content(mediaType = "application/json",
-                schema = Schema(implementation = Response::class))]),
+                        schema = Schema(implementation = Response::class))]),
         APIResponse(responseCode = "405", description = "invalid input")
     ])
     fun create(expense: Expense) :Response
@@ -81,9 +87,9 @@ interface ExpensesService {
     @Path("/")
     @Operation(summary = "update an existing expense")
     @Consumes(MediaType.APPLICATION_JSON)
-    @APIResponses(value=[
-            APIResponse(responseCode = "200", description = "successful operation")
-        ]
+    @APIResponses(value = [
+        APIResponse(responseCode = "200", description = "successful operation")
+    ]
     )
     fun update(expense: Expense):Response
 
@@ -99,7 +105,7 @@ interface ExpensesService {
                         schema = Schema(implementation = Response::class))])
     ])
     @Produces("application/json")
-    fun find(@PathParam("id")  @Parameter(description = "Expense id used to find one" ,required = true,
+    fun find(@PathParam("id") @Parameter(description = "Expense id used to find one", required = true,
             schema = Schema(type = SchemaType.NUMBER)) id: Long): Response
 }
 
@@ -108,17 +114,19 @@ interface ExpensesService {
  * Implementation of expenses service.
  *  
  */
+@ApplicationScoped
 class ExpensesServiceImpl : ExpensesService {
+//    @Inject
+  //  @DataSource("camel-sql")
+   // var dataSource: AgroalDataSource? = null
+
+    //@Inject
+    //var producerTemplate: ProducerTemplate? = null
 
     private val logger = LogFactory.getLog(ExpensesServiceImpl::class.java)
 
-    private var camelContext:CamelContext
-
-    constructor(camelContext:CamelContext){
-        this.camelContext = camelContext
-
-    }
-
+    @Inject
+    private lateinit var camelContext:CamelContext
 
 
     override fun create(expense: Expense): Response {
@@ -130,7 +138,7 @@ class ExpensesServiceImpl : ExpensesService {
         exchange.getIn().body = (expense)
 
 
-        val out = camelContext.createProducerTemplate().send(endpoint,exchange).out
+        val out = camelContext.createProducerTemplate().send(endpoint, exchange).out
 
         val generatedKeys = out.getHeader(SqlConstants.SQL_GENERATED_KEYS_DATA, List::class.java)
                 as List<Map<String, Int>>
@@ -165,13 +173,13 @@ class ExpensesServiceImpl : ExpensesService {
         logger.info("call find by id: $id")
         val exchange = this.camelContext.createFluentProducerTemplate().to("direct:select-one")
                 .withBody(id).send()
-        val camelResult= exchange.getIn().body as List<Map<String,Any>>
+        val camelResult= exchange.getIn().body as List<Map<String, Any>>
 
         if (camelResult.isNotEmpty()){
             logger.info("result is not empty")
             //convert sql result to the entities
             camelResult.get(0).let{
-                val entity =Expense(id= (it.get("id".toUpperCase()) as Long),
+                val entity =Expense(id = (it.get("id".toUpperCase()) as Long),
                         description = (it.get("description".toUpperCase()) as String),
                         amount = (it.get("amount".toUpperCase()) as Double),
                         createdAT = (it.get("created".toUpperCase()) as Date).toLocalDate(),
@@ -191,11 +199,11 @@ class ExpensesServiceImpl : ExpensesService {
 
     override fun findAll(): Response {
         val exchange = this.camelContext.createFluentProducerTemplate().to("direct:select").send()
-        val camelResult= exchange.getIn().body as List<Map<String,Any>>
+        val camelResult= exchange.getIn().body as List<Map<String, Any>>
         val entities = mutableListOf<Expense>()
         //convert sql result to the entities
         camelResult.forEach {
-            entities.add(Expense(id= (it.get("id".toUpperCase()) as Long),
+            entities.add(Expense(id = (it.get("id".toUpperCase()) as Long),
                     description = (it.get("description".toUpperCase()) as String),
                     amount = (it.get("amount".toUpperCase()) as Double),
                     createdAT = (it.get("created".toUpperCase()) as Date).toLocalDate(),

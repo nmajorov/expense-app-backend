@@ -15,4 +15,4 @@ export POSTGRESQL_DATABASE=fuse
 
 echo $(env | grep POSTGRESQL)
 
-$SCRIPT_DIR/mvnw  quarkus:dev
+$SCRIPT_DIR/mvnw  clean compile quarkus:dev
