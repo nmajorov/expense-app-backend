@@ -1,83 +1,106 @@
 package biz.majorov.expenses
 
-import io.swagger.annotations.*
 import org.apache.camel.CamelContext
 import org.apache.camel.component.sql.SqlConstants
 import org.apache.commons.logging.LogFactory
-import org.springframework.stereotype.Service
 import java.sql.Date
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
-
-
-//check swagger old annotation style
-// /https://github.com/swagger-api/swagger-core/wiki/Annotations
-
-
-
-
+import org.eclipse.microprofile.openapi.annotations.Operation
+import org.eclipse.microprofile.openapi.annotations.OpenAPIDefinition
+import org.eclipse.microprofile.openapi.annotations.enums.SchemaType
+import org.eclipse.microprofile.openapi.annotations.info.Contact
+import org.eclipse.microprofile.openapi.annotations.info.Info
+import org.eclipse.microprofile.openapi.annotations.info.License
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponses
+import org.eclipse.microprofile.openapi.annotations.media.Schema
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 
 /**
- * expenses rest services
+ * expenses RESTful services
  */
 @Path("/expenses")
-@Api(value="the expenses api")
-@Service
+@OpenAPIDefinition(
+    info = Info(
+            title = "Expenses API demo app",
+            version = "1.0.0",
+            contact = Contact(
+                    name = "Expenses API demo app",
+                    url = "https://quarkus.io/guides/openapi-swaggerui#providing-application-level-openapi-annotations",
+                    email = "nmajorov@redhat.com"),
+            license = License(
+                    name = "Apache 2.0",
+                    url = "http://www.apache.org/licenses/LICENSE-2.0.html"))
+)
 interface ExpensesService {
 
     @GET
     @Path("")
-    @ApiOperation(value = "Get all expenses in system")
+    @Operation(description = "Get all expenses in system")
     @Produces(MediaType.APPLICATION_JSON)
-    @ApiResponses(ApiResponse(code = 200, message = "successful operation",response = Expense::class ,
-            responseContainer = "Array"))
+    @APIResponses( value = [
+        APIResponse(responseCode = "200", description = "successful operation",
+                content = [Content(mediaType = "application/json",
+                        schema = Schema(implementation = Expense::class))]
+        )
+    ])
     fun findAll(): Response
 
     @DELETE
     @Path("/{id}")
-    @ApiOperation("Delete an expense")
-    @ApiResponses(
-            ApiResponse(code = 200, message = "successful operation",response = Response::class),
-            ApiResponse(code = 400, message = "invalid input"),
-            ApiResponse(code = 404 , message = "expense not found")
-    )
-    fun delete(@PathParam("id") @ApiParam("Expense id to delete")  id:Long) :Response
+    @Operation(summary = "Delete an expense")
+    @APIResponses( value=[
+
+        APIResponse(responseCode = "200", description = "successful operation",
+                content = [Content(mediaType = "application/json",
+                schema = Schema(implementation = Response::class))]),
+        APIResponse(responseCode = "400", description = "invalid input"),
+        APIResponse(responseCode = "404" , description = "expense not found")
+        ])
+    fun delete(@PathParam("id") @Parameter(description = "Expense id to delete" ,required = true,
+            schema = Schema(type = SchemaType.NUMBER))  id:Long) :Response
 
     @POST
     @Path("/")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Add a new expense")
-    @ApiResponses(
-            ApiResponse(code = 200, message = "successful operation",response = Response::class),
-            ApiResponse(code = 405, message = "invalid input")
-    )
+    @Operation(summary = "Add a new expense")
+    @APIResponses(value=[
+        APIResponse(responseCode = "200", description = "successful operation",
+                content = [Content(mediaType = "application/json",
+                schema = Schema(implementation = Response::class))]),
+        APIResponse(responseCode = "405", description = "invalid input")
+    ])
     fun create(expense: Expense) :Response
 
 
     @PUT
     @Path("/")
-    @ApiOperation(value = "update an existing expense",
-            notes = "")
+    @Operation(summary = "update an existing expense")
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiResponses(
-            ApiResponse(code = 200, message = "successful operation")
+    @APIResponses(value=[
+            APIResponse(responseCode = "200", description = "successful operation")
+        ]
     )
     fun update(expense: Expense):Response
 
 
     @GET
     @Path("/{id}")
-    @ApiOperation(value = "fetch an expense by id",
-            notes = "", response = Response::class)
-    @ApiResponses(
-            ApiResponse(code = 400, message = "invalid id supplied"),
-            ApiResponse(code = 404, message = "expense not found"),
-            ApiResponse(code = 200, message = "successful operation")
-    )
+    @Operation(summary = "fetch an expense by id")
+    @APIResponses(value = [
+        APIResponse(responseCode = "400", description = "invalid id supplied"),
+        APIResponse(responseCode = "404", description = "expense not found"),
+        APIResponse(responseCode = "200", description = "successful operation",
+                content = [Content(mediaType = "application/json",
+                        schema = Schema(implementation = Response::class))])
+    ])
     @Produces("application/json")
-    fun find(@PathParam("id") id:Long): Response
+    fun find(@PathParam("id")  @Parameter(description = "Expense id used to find one" ,required = true,
+            schema = Schema(type = SchemaType.NUMBER)) id: Long): Response
 }
 
 
@@ -85,7 +108,6 @@ interface ExpensesService {
  * Implementation of expenses service.
  *  
  */
-@Api("/expenses")
 class ExpensesServiceImpl : ExpensesService {
 
     private val logger = LogFactory.getLog(ExpensesServiceImpl::class.java)
@@ -98,8 +120,7 @@ class ExpensesServiceImpl : ExpensesService {
     }
 
 
-    @ApiOperation(value = "Create expense in system",
-            notes = "")
+
     override fun create(expense: Expense): Response {
         logger.info("got expense to insert: $expense")
         val endpoint = camelContext.getEndpoint("direct:insert")
