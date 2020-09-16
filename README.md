@@ -1,4 +1,13 @@
-# code-with-quarkus project
+# DEMO expenses backend app with quarkus 
+
+```mermaid
+graph LR
+    A[React web UI] -->|REST| B(Backend)
+    B --> C[Postgresql database]
+```
+
+
+
 
 This project uses Quarkus, the Supersonic Subatomic Java Framework.
 

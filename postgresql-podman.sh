@@ -60,8 +60,3 @@ if [ -z "$1" ]
      -p 127.0.0.1:5432:5432 \
      centos/postgresql-96-centos7
 fi
-
-
-
-
-#
