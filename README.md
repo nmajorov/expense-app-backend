@@ -1,13 +1,10 @@
 # DEMO expenses backend app with quarkus 
 
-```mermaid
-graph LR
-    A[React web UI] -->|REST| B(Backend)
-    B --> C[Postgresql database]
-```
+Simple applicaiton workflow:
 
+![diagramm](./mermaid-diagram-20200916145609.png)
 
-
+you can find front-end gui here: https://github.com/nmajorov/expenses-web-ui
 
 This project uses Quarkus, the Supersonic Subatomic Java Framework.
 
