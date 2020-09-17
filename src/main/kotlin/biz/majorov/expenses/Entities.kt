@@ -21,7 +21,7 @@ import java.time.format.DateTimeFormatter
 @JsonIgnoreProperties(ignoreUnknown = true)
 class Expense(
 		@JsonProperty(value = "id")
-		var id: Long? = null,
+		var id: Int? = null,
 		@JsonProperty(value = "description")
 		var description: String,
 

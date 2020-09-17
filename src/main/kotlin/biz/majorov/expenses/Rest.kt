@@ -17,7 +17,9 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses
+import java.math.BigDecimal
 import java.sql.Date
+import java.sql.Timestamp
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.ws.rs.*
@@ -116,17 +118,11 @@ interface ExpensesService {
  */
 @ApplicationScoped
 class ExpensesServiceImpl : ExpensesService {
-//    @Inject
-  //  @DataSource("camel-sql")
-   // var dataSource: AgroalDataSource? = null
-
-    //@Inject
-    //var producerTemplate: ProducerTemplate? = null
 
     private val logger = LogFactory.getLog(ExpensesServiceImpl::class.java)
 
     @Inject
-    private lateinit var camelContext:CamelContext
+    lateinit var camelContext:CamelContext
 
 
     override fun create(expense: Expense): Response {
@@ -179,12 +175,7 @@ class ExpensesServiceImpl : ExpensesService {
             logger.info("result is not empty")
             //convert sql result to the entities
             camelResult.get(0).let{
-                val entity =Expense(id = (it.get("id".toUpperCase()) as Long),
-                        description = (it.get("description".toUpperCase()) as String),
-                        amount = (it.get("amount".toUpperCase()) as Double),
-                        createdAT = (it.get("created".toUpperCase()) as Date).toLocalDate(),
-                        tstamp = (it.get("tstamp".toUpperCase()) as Date).toLocalDate()
-                )
+                val entity =convertRowToEntity(it)
 
                 return Response.ok(entity, MediaType.APPLICATION_JSON).build()
             }
@@ -203,12 +194,7 @@ class ExpensesServiceImpl : ExpensesService {
         val entities = mutableListOf<Expense>()
         //convert sql result to the entities
         camelResult.forEach {
-            entities.add(Expense(id = (it.get("id".toUpperCase()) as Long),
-                    description = (it.get("description".toUpperCase()) as String),
-                    amount = (it.get("amount".toUpperCase()) as Double),
-                    createdAT = (it.get("created".toUpperCase()) as Date).toLocalDate(),
-                    tstamp = (it.get("tstamp".toUpperCase()) as Date).toLocalDate()
-            ))
+            entities.add(convertRowToEntity(it))
         }
         return Response.ok(entities, MediaType.APPLICATION_JSON).build()
     }
@@ -220,6 +206,29 @@ class ExpensesServiceImpl : ExpensesService {
         this.camelContext.createFluentProducerTemplate().to("direct:delete-one")
                 .withBody(id).send()
         return Response.ok().build()
+    }
+
+
+    /**
+     * convert database row to expense entity
+     *
+     */
+    private fun convertRowToEntity(row:Map<String,Any>):Expense {
+            var expense = Expense()
+            expense.id = row.get("id".toUpperCase()) as Int
+            expense.description = (row.get("description".toUpperCase()) as String)
+            var amountRaw = row.get("amount".toUpperCase())
+            when (amountRaw){
+                is Double -> expense.amount = amountRaw
+                is BigDecimal -> expense.amount = amountRaw.toDouble()
+            }
+            expense.createdAT = (row.get("created".toUpperCase()) as Date).toLocalDate()
+            var timestampRaw = row.get("tstamp".toUpperCase())
+            when (timestampRaw) {
+                is Timestamp -> expense.tstamp = timestampRaw.toLocalDateTime().toLocalDate()
+                is Date -> expense.tstamp = timestampRaw.toLocalDate()
+            }
+            return expense
     }
 
 }
