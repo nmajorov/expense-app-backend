@@ -13,13 +13,15 @@ import javax.enterprise.inject.Produces
 class Routes {
     @Produces
     fun myRoutes() = routes {
-        from("direct:select").to("sql:select * from EXPENSES ORDER BY ID")
+        from("direct:select-all-expenses").to("sql:select * from EXPENSES ORDER BY ID")
                 .log("\${body}")
-        from("direct:insert")
+        from("direct:insert-expense")
                 .log("insert-expenses route body: \$simple{body.description},\$simple{body.amount}, \$simple{body.createdAT}")
-        .to("sql:INSERT INTO EXPENSES (DESCRIPTION, AMOUNT ,CREATED) " +
+        .to("sql:INSERT INTO EXPENSES (DESCRIPTION, AMOUNT ,CREATED,FK_REPORT) " +
                 "VALUES (:#\$simple{body.description},:#\$simple{body.amount}," +
-                "to_date(:#\$simple{body.createdAT.toString},'%Y-%m-%d'));")
+                "to_date(:#\$simple{body.createdAT.toString},'%Y-%m-%d'), "
+                +":#\$simple{body.report})")
+        from("direct:select-one-expense").to("sql:select * from EXPENSES WHERE ID=:#\${body}").log("\${body}")
 
     }
 

@@ -127,21 +127,10 @@ class ExpensesServiceImpl : ExpensesService {
 
     override fun create(expense: Expense): Response {
         logger.info("got expense to insert: $expense")
-        val endpoint = camelContext.getEndpoint("direct:insert")
-        val exchange =  endpoint.createExchange();
-        exchange.getIn().setHeader(SqlConstants.SQL_RETRIEVE_GENERATED_KEYS, true);
-        exchange.getIn().setHeader(SqlConstants.SQL_GENERATED_COLUMNS, arrayOf("ID"))
-        exchange.getIn().body = (expense)
+        val template = camelContext.createFluentProducerTemplate()
+        template.to("direct:insert-expense").withBody(expense).send()
 
-
-        val out = camelContext.createProducerTemplate().send(endpoint, exchange).out
-
-        val generatedKeys = out.getHeader(SqlConstants.SQL_GENERATED_KEYS_DATA, List::class.java)
-                as List<Map<String, Int>>
-
-        logger.info("get generated keys ${generatedKeys}")
-
-        return Response.ok(generatedKeys, MediaType.APPLICATION_JSON).build()
+        return Response.ok().build()
     }
 
 
@@ -167,7 +156,7 @@ class ExpensesServiceImpl : ExpensesService {
 
     override fun find(id: Long):Response{
         logger.info("call find by id: $id")
-        val exchange = this.camelContext.createFluentProducerTemplate().to("direct:select-one")
+        val exchange = this.camelContext.createFluentProducerTemplate().to("direct:select-one-expense")
                 .withBody(id).send()
         val camelResult= exchange.getIn().body as List<Map<String, Any>>
 
@@ -189,7 +178,7 @@ class ExpensesServiceImpl : ExpensesService {
 
 
     override fun findAll(): Response {
-        val exchange = this.camelContext.createFluentProducerTemplate().to("direct:select").send()
+        val exchange = this.camelContext.createFluentProducerTemplate().to("direct:select-all-expenses").send()
         val camelResult= exchange.getIn().body as List<Map<String, Any>>
         val entities = mutableListOf<Expense>()
         //convert sql result to the entities
