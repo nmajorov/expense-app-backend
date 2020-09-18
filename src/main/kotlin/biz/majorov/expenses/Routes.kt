@@ -22,7 +22,9 @@ class Routes {
                 "to_date(:#\$simple{body.createdAT.toString},'%Y-%m-%d'), "
                 +":#\$simple{body.report})")
         from("direct:select-one-expense").to("sql:select * from EXPENSES WHERE ID=:#\${body}").log("\${body}")
-
+        from("direct:update-expense").to("sql:UPDATE EXPENSES SET AMOUNT = :#\$simple{body.amount} , DESCRIPTION=:#\$simple{body.description}," +
+                "  CREATED = to_date(:#\$simple{body.createdAT.toString},'YYYY-MM-DD'),  TSTAMP = now(), FK_REPORT=:#\$simple{body.report} " +
+                " WHERE ID= :#\$simple{body.id}")
     }
 
 }

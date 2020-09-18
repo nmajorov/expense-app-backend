@@ -25,6 +25,7 @@ import javax.inject.Inject
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
+import kotlin.math.exp
 
 
 /**
@@ -140,7 +141,7 @@ class ExpensesServiceImpl : ExpensesService {
         val template = this.camelContext.createFluentProducerTemplate()
         expense.id?.run {
             //id is not null do update and return ok
-            val exchange =template.to("direct:update-one").withBody(expense).send()
+            val exchange =template.to("direct:update-expense").withBody(expense).send()
             return Response.ok().build()
         }
 
@@ -217,6 +218,8 @@ class ExpensesServiceImpl : ExpensesService {
                 is Timestamp -> expense.tstamp = timestampRaw.toLocalDateTime().toLocalDate()
                 is Date -> expense.tstamp = timestampRaw.toLocalDate()
             }
+            expense.report = row["fk_report".toUpperCase()] as Int
+
             return expense
     }
 

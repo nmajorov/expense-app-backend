@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.inject.Inject
 import javax.transaction.Transactional
@@ -141,5 +142,31 @@ class ExpenseResourceTest : ResourceTest() {
         val desc = response.last()["description"]
         print("description :${desc}")
         assertEquals(expense.description, desc)
+    }
+
+    @Test
+    fun `test update expense item`(){
+        println("${object {}.javaClass.enclosingMethod.name} ")
+        val response = given().get("/expenses/1").`as` (hashMapOf<Any?, Any?>()::class.java)
+        println("get response:${response}")
+        val expense = Expense()
+        expense.id = response["id"] as Int
+        expense.description = response["description"] as String
+        expense.report = response["report"] as Int
+        expense.amount = response["amount"] as Double
+
+        val dt = LocalDate.parse(response["createdAT"] as String,DateTimeFormatter.ISO_DATE)
+        expense.createdAT = dt
+
+        println("change amount")
+
+        expense.amount=45.99
+        given().contentType("application/json").body(expense)
+                .`when`().put("/expenses").then().statusCode(200)
+        println ("get updated expense and check if it has a different amount")
+        val responseStep2 = given().get("/expenses/1").`as` (hashMapOf<Any?, Any?>()::class.java)
+
+        assertEquals(expense.amount,responseStep2["amount"] as Double)
+
     }
 }
