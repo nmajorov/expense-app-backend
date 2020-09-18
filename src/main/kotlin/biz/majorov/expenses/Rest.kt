@@ -31,7 +31,7 @@ import kotlin.math.exp
 /**
  * expenses RESTful services
  */
-@Path("/expenses")
+
 @OpenAPIDefinition(
         info = Info(
                 title = "Expenses API demo app",
@@ -44,10 +44,11 @@ import kotlin.math.exp
                         name = "Apache 2.0",
                         url = "http://www.apache.org/licenses/LICENSE-2.0.html"))
 )
+@Path("/")
 interface ExpensesService {
 
     @GET
-    @Path("")
+    @Path("/expenses")
     @Operation(description = "Get all expenses in system")
     @Produces(MediaType.APPLICATION_JSON)
     @APIResponses(value = [
@@ -59,7 +60,7 @@ interface ExpensesService {
     fun findAll(): Response
 
     @DELETE
-    @Path("/{id}")
+    @Path("/expenses/{id}")
     @Operation(summary = "Delete an expense")
     @APIResponses(value = [
 
@@ -73,7 +74,7 @@ interface ExpensesService {
             schema = Schema(type = SchemaType.NUMBER)) id: Long) :Response
 
     @POST
-    @Path("/")
+    @Path("/expenses")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Add a new expense")
@@ -87,7 +88,7 @@ interface ExpensesService {
 
 
     @PUT
-    @Path("/")
+    @Path("/expenses")
     @Operation(summary = "update an existing expense")
     @Consumes(MediaType.APPLICATION_JSON)
     @APIResponses(value = [
@@ -98,7 +99,7 @@ interface ExpensesService {
 
 
     @GET
-    @Path("/{id}")
+    @Path("/expenses/{id}")
     @Operation(summary = "fetch an expense by id")
     @APIResponses(value = [
         APIResponse(responseCode = "400", description = "invalid id supplied"),
