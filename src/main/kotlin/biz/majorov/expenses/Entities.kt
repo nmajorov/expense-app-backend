@@ -44,9 +44,26 @@ class Expense(
 ) {
     constructor() : this(null, "", null, 0.0)
 
-    override fun toString(): String = """[ id: ${id} | description: ${description} | amout: ${amount} | createAt: ${createdAT} ] """
+    override fun toString(): String = """Expense[ id: ${id} | description: ${description} | amout: ${amount} | createAt: ${createdAT} ] """
 }
 
+ @JsonIgnoreProperties(ignoreUnknown = true)
+class Report(
+		@JsonProperty(value = "id")
+		var id: Int? = null,
+		@JsonProperty(value = "description")
+		var name: String,
+
+		@JsonProperty(value = "createdAT")
+		@JsonDeserialize(using = LocalDateDeserializer::class)
+		@JsonSerialize(using = LocalDateSerializer::class)
+		var createdAT: LocalDate? = null
+
+) {
+	constructor() : this(null, "", null)
+
+	override fun toString(): String = """Report[ id: ${id} | name: ${name} | createAt: ${createdAT} ] """
+}
 
 class LocalDateDeserializer : StdDeserializer<LocalDate>(LocalDate::class.java) {
 
