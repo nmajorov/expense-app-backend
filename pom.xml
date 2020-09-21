@@ -94,6 +94,7 @@
       <artifactId>quarkus-jdbc-h2</artifactId>
       <scope>test</scope>
     </dependency>
+    <!--
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-oidc</artifactId>
@@ -102,6 +103,7 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-keycloak-authorization</artifactId>
     </dependency>
+    -->
   </dependencies>
   <build>
     <sourceDirectory>src/main/kotlin</sourceDirectory>
