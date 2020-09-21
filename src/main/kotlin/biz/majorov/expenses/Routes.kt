@@ -19,7 +19,7 @@ class Routes {
                 .log("insert-expenses route body: \$simple{body.description},\$simple{body.amount}, \$simple{body.createdAT}")
         .to("sql:INSERT INTO EXPENSES (DESCRIPTION, AMOUNT ,CREATED,FK_REPORT) " +
                 "VALUES (:#\$simple{body.description},:#\$simple{body.amount}," +
-                "to_date(:#\$simple{body.createdAT.toString},'%Y-%m-%d'), "
+                "to_date(:#\$simple{body.createdAT.toString},'YYYY-MM-DD'), "
                 +":#\$simple{body.report})")
         from("direct:select-one-expense").to("sql:select * from EXPENSES WHERE ID=:#\${body}").log("\${body}")
         from("direct:update-expense").to("sql:UPDATE EXPENSES SET AMOUNT = :#\$simple{body.amount} , DESCRIPTION=:#\$simple{body.description}," +
