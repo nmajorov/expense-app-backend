@@ -21,6 +21,7 @@ class CORSFilter : ContainerResponseFilter {
         val headers = responseContext.headers
         headers.putSingle("Access-Control-Allow-Origin", "*")
         headers.putSingle("Access-Control-Allow-Headers","*")
+        headers.putSingle("Access-Control-Allow-Methods", "*")
         LOGGER.debug("Modified to add the required header: " + responseContext.headers)
     }
 

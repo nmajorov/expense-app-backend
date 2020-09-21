@@ -129,6 +129,10 @@ class ExpensesServiceImpl : ExpensesService {
 
     override fun create(expense: Expense): Response {
         logger.info("got expense to insert: $expense")
+        //TODO fix report api
+        if (expense.report == null) {
+            expense.report =1
+        }
         val template = camelContext.createFluentProducerTemplate()
         template.to("direct:insert-expense").withBody(expense).send()
 
