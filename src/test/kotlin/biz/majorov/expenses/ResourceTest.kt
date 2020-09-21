@@ -114,11 +114,24 @@ class ExpenseResourceTest : ResourceTest() {
     @Test
     fun `test select one expense item`() {
         println("${object {}.javaClass.enclosingMethod.name} ")
-        val response = given().get("/expenses/1").`as` (hashMapOf<Any?, Any?>()::class.java)
+        println("first get all expenses")
+        val response = given().get("/expenses").`as`(mutableListOf<HashMap<String?, String?>>()::class.java)
+        assertFalse(response.isEmpty())
+
+        val expenseFromRequest = Expense()
+        expenseFromRequest.id = response.last()["id"] as Int
+        expenseFromRequest.description = response.last()["description"] as String
+        expenseFromRequest.report = response.last()["report"] as Int
+        expenseFromRequest.amount = response.last()["amount"] as Double
+        expenseFromRequest.createdAT = LocalDate.parse(response.last()["createdAT"] as String,DateTimeFormatter.ISO_DATE)
+
+        val response2 = given().get("/expenses/" + expenseFromRequest.id).`as` (hashMapOf<Any?, Any?>()::class.java)
         println("get response:${response}")
-        val id = response["id"]
+        val id = response2["id"]
         println("got id from restful service call:$id")
-        assertEquals(id, 1)
+        assertEquals(id, expenseFromRequest.id)
+        assertEquals(response2["amount"], expenseFromRequest.amount)
+
     }
 
     @Test
@@ -147,26 +160,87 @@ class ExpenseResourceTest : ResourceTest() {
     @Test
     fun `test update expense item`(){
         println("${object {}.javaClass.enclosingMethod.name} ")
-        val response = given().get("/expenses/1").`as` (hashMapOf<Any?, Any?>()::class.java)
-        println("get response:${response}")
         val expense = Expense()
-        expense.id = response["id"] as Int
-        expense.description = response["description"] as String
-        expense.report = response["report"] as Int
-        expense.amount = response["amount"] as Double
+        expense.amount=80.12
+        expense.description ="train ticket"
+        expense.createdAT= LocalDate.now()
+        expense.report =1
 
-        val dt = LocalDate.parse(response["createdAT"] as String,DateTimeFormatter.ISO_DATE)
-        expense.createdAT = dt
+        println("step1 create item  $expense")
+        given().contentType("application/json").body(expense)
+                .`when`().post("/expenses").then().statusCode(200)
+
+        println("get all expenses")
+        var response = given().get("/expenses").`as`(mutableListOf<HashMap<String?, String?>>()::class.java)
+        val allExpenseSizeBeforDelete = response.size
+        println("get ${allExpenseSizeBeforDelete} expenses")
+        println("get last expense from received list")
+        val expenseFromRequest = Expense()
+        expenseFromRequest.id = response.last()["id"] as Int
+        expenseFromRequest.description = response.last()["description"] as String
+        expenseFromRequest.report = response.last()["report"] as Int
+        expenseFromRequest.amount = response.last()["amount"] as Double
+
+        val dt = LocalDate.parse(response.last()["createdAT"] as String,DateTimeFormatter.ISO_DATE)
+        expenseFromRequest.createdAT = dt
+
+        //be sure you take the same expense
+        assertEquals(expenseFromRequest.amount , expense.amount)
 
         println("change amount")
 
-        expense.amount=45.99
-        given().contentType("application/json").body(expense)
+        expenseFromRequest.amount=45.99
+        given().contentType("application/json").body(expenseFromRequest)
                 .`when`().put("/expenses").then().statusCode(200)
         println ("get updated expense and check if it has a different amount")
-        val responseStep2 = given().get("/expenses/1").`as` (hashMapOf<Any?, Any?>()::class.java)
+        val responseStep2 = given().get("/expenses/" + expenseFromRequest.id).`as` (hashMapOf<Any?, Any?>()::class.java)
 
-        assertEquals(expense.amount,responseStep2["amount"] as Double)
+        assertEquals(expenseFromRequest.amount,responseStep2["amount"] as Double)
+
+
+    }
+
+    @Test
+    fun `test delete expense item`(){
+        println("${object {}.javaClass.enclosingMethod.name} ")
+
+        val expense = Expense()
+        expense.amount=110.12
+        expense.description ="train ticket"
+        expense.createdAT= LocalDate.now()
+        expense.report =1
+
+        println("step1 create item  $expense")
+        given().contentType("application/json").body(expense)
+                .`when`().post("/expenses").then().statusCode(200)
+
+        println("get all expenses")
+        var response = given().get("/expenses").`as`(mutableListOf<HashMap<String?, String?>>()::class.java)
+        val allExpenseSizeBeforDelete = response.size
+        println("get ${allExpenseSizeBeforDelete} expenses")
+        println("get last expense from received list")
+        val expenseFromRequest = Expense()
+        expenseFromRequest.id = response.last()["id"] as Int
+        expenseFromRequest.description = response.last()["description"] as String
+        expenseFromRequest.report = response.last()["report"] as Int
+        expenseFromRequest.amount = response.last()["amount"] as Double
+
+        val dt = LocalDate.parse(response.last()["createdAT"] as String,DateTimeFormatter.ISO_DATE)
+        expenseFromRequest.createdAT = dt
+
+        //be sure last expenses is inserted one
+        assertEquals(expense.amount,expenseFromRequest.amount)
+
+        println("step 3 delete expense with id ${expenseFromRequest.id}" )
+        given().contentType("application/json")
+                .`when`().delete("/expenses/" + expenseFromRequest.id).then().statusCode(200)
+
+        response = given().get("/expenses").`as`(mutableListOf<HashMap<String?, String?>>()::class.java)
+        val allExpenseSizeAfterDelete = response.size
+
+        assertTrue(allExpenseSizeAfterDelete < allExpenseSizeBeforDelete)
+        assertEquals(allExpenseSizeAfterDelete,(allExpenseSizeBeforDelete -1))
+
 
     }
 }

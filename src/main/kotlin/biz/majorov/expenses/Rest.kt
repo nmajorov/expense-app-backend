@@ -194,7 +194,7 @@ class ExpensesServiceImpl : ExpensesService {
 
     override fun delete(id: Long) : Response {
         logger.info("got expense id to delete: $id")
-        this.camelContext.createFluentProducerTemplate().to("direct:delete-one")
+        this.camelContext.createFluentProducerTemplate().to("direct:delete-expense")
                 .withBody(id).send()
         return Response.ok().build()
     }
