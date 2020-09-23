@@ -4,3 +4,9 @@ language: java
 interpreter-version: 3-jdk-11
 name: expences-backend-quarkus
 version: 1.0-SNAPSHOT
+  - preBuild: |
+           podman run --rm -d --name  postgresql-database -e POSTGRESQL_USER=fuse -e POSTGRESQL_PASSWORD=fuse
+           -e POSTGRESQL_DATABASE=fuse
+           -p 127.0.0.1:5432:5432 centos/postgresql-96-centos7
+
+  - postBuild: podman stop postgresql-database

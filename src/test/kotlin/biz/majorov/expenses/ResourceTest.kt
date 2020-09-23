@@ -8,6 +8,7 @@ import io.restassured.RestAssured.given
 import io.restassured.parsing.Parser
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -97,7 +98,7 @@ val defaultParser = Parser.JSON
 
 
 /**
- * test using default dataset
+ * test Expenses api
  */
 @QuarkusTest
 class ExpenseResourceTest : ResourceTest() {
@@ -242,5 +243,18 @@ class ExpenseResourceTest : ResourceTest() {
         assertEquals(allExpenseSizeAfterDelete,(allExpenseSizeBeforDelete -1))
 
 
+    }
+
+    @QuarkusTest
+    class ReportApiTest : ResourceTest() {
+        @Test
+        fun `test get all report for user`() {
+            println("${object {}.javaClass.enclosingMethod.name} ")
+            println("reports should be get for  specific  user ")
+            given()
+                    .`when`().get("/reports")
+                    .then()
+                    .statusCode(200)
+        }
     }
 }
