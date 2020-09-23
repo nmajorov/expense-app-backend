@@ -1,0 +1,6 @@
+---
+apiVersion: build.rhone.io/v1
+language: java
+interpreter-version: 3-jdk-11
+name: expences-backend-quarkus
+version: 1.0-SNAPSHOT
