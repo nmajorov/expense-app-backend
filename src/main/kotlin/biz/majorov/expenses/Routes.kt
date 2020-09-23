@@ -26,6 +26,8 @@ class Routes {
                 "  CREATED = to_date(:#\$simple{body.createdAT.toString},'YYYY-MM-DD'),  TSTAMP = now(), FK_REPORT=:#\$simple{body.report} " +
                 " WHERE ID= :#\$simple{body.id}")
         from("direct:delete-expense").to("sql:DELETE FROM EXPENSES  WHERE EXPENSES.ID =:#\${body}")
+
+        from("direct:select-all-reports").to("sql:select * FROM REPORT").log("\${body}")
     }
 
 }

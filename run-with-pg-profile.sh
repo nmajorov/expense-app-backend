@@ -15,4 +15,11 @@ export POSTGRESQL_DATABASE=fuse
 
 echo $(env | grep POSTGRESQL)
 
+
+
+# keycloak properties
+export KEYCLOAK_URL="http://localhost:7080/auth/realms/geektour"
+export KEYCLOAK_CLIENT_ID=geektourclient
+export KEYCLOAK_SECRET=1fa6301c-7f86-4c3f-abee-d0bcb506fbc5
+
 $SCRIPT_DIR/mvnw  clean compile quarkus:dev

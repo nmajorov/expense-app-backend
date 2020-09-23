@@ -2,6 +2,7 @@ package biz.majorov.expenses
 
 import io.agroal.api.AgroalDataSource
 import io.quarkus.agroal.DataSource
+import io.quarkus.security.Authenticated
 import org.apache.camel.CamelContext
 import org.apache.camel.ProducerTemplate
 import org.apache.camel.component.sql.SqlConstants
@@ -25,7 +26,7 @@ import javax.inject.Inject
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
-import kotlin.math.exp
+
 
 
 /**
@@ -113,6 +114,22 @@ interface ExpensesService {
             schema = Schema(type = SchemaType.NUMBER)) id: Long): Response
 }
 
+@Path("/reports")
+
+interface ReportService {
+    @GET
+    @Path("/")
+    @Operation(description = "Get reports for user")
+    @Produces(MediaType.APPLICATION_JSON)
+    @APIResponses(value = [
+        APIResponse(responseCode = "200", description = "successful operation",
+                content = [Content(mediaType = "application/json",
+                        schema = Schema(implementation = Array<Report>::class) )]
+        )
+    ])
+    @Authenticated
+    fun findAll(): Response
+}
 
 /**
  * Implementation of expenses service.
@@ -230,4 +247,42 @@ class ExpensesServiceImpl : ExpensesService {
 
 
     //TODO add API for report
+}
+
+
+@ApplicationScoped
+class ReportServiceImpl: ReportService {
+
+    private val logger = LogFactory.getLog(ReportServiceImpl::class.java)
+
+    @Inject
+    lateinit var camelContext:CamelContext
+
+
+    override fun findAll(): Response {
+        logger.info("find all reports called - camel endpoints: " + this.camelContext.endpoints)
+        val exchange = this.camelContext.createFluentProducerTemplate().to("direct:select-all-reports").send()
+        val camelResult= exchange.getIn().body as List<Map<String, Any>>
+        val entities = mutableListOf<Report>()
+        //convert sql result to the entities
+        camelResult.forEach {
+            entities.add(convertRowToEntity(it))
+        }
+        return Response.ok(entities, MediaType.APPLICATION_JSON).build()
+    }
+
+
+    /**
+     * convert report  database row to expense entity
+     *
+     */
+    private fun convertRowToEntity(row:Map<String,Any>):Report {
+        var report = Report()
+        report.id = row.get("id".toUpperCase()) as Int
+        report.name = (row.get("name".toUpperCase()) as String)
+        report.createdAT = (row.get("created".toUpperCase()) as Date).toLocalDate()
+
+        return report
+    }
+
 }
