@@ -15,5 +15,7 @@ echo "access_token: $access_token"
 
 
 curl -v -X GET \
-  http://localhost:8080/api/users/me \
+  http://localhost:8080/reports \
   -H "Authorization: Bearer "$access_token
+
+

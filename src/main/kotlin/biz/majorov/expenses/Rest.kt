@@ -21,6 +21,7 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponses
 import java.math.BigDecimal
 import java.sql.Date
 import java.sql.Timestamp
+import javax.annotation.security.RolesAllowed
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.ws.rs.*
@@ -115,7 +116,6 @@ interface ExpensesService {
 }
 
 @Path("/reports")
-
 interface ReportService {
     @GET
     @Path("/")
@@ -127,7 +127,6 @@ interface ReportService {
                         schema = Schema(implementation = Array<Report>::class) )]
         )
     ])
-    @Authenticated
     fun findAll(): Response
 }
 
@@ -259,6 +258,8 @@ class ReportServiceImpl: ReportService {
     lateinit var camelContext:CamelContext
 
 
+    //@RolesAllowed( "USER")
+    @Authenticated
     override fun findAll(): Response {
         logger.info("find all reports called - camel endpoints: " + this.camelContext.endpoints)
         val exchange = this.camelContext.createFluentProducerTemplate().to("direct:select-all-reports").send()

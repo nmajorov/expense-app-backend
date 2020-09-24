@@ -19,7 +19,9 @@ echo $(env | grep POSTGRESQL)
 
 # keycloak properties
 export KEYCLOAK_URL="http://localhost:7080/auth/realms/geektour"
+export KEYCLOAK_INTROSPECT_URL="$KEYCLOAK_URL/protocol/openid-connect/token/introspect"
 export KEYCLOAK_CLIENT_ID=geektourclient
 export KEYCLOAK_SECRET=1fa6301c-7f86-4c3f-abee-d0bcb506fbc5
+
 
 $SCRIPT_DIR/mvnw  clean compile quarkus:dev
