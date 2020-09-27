@@ -1,7 +1,7 @@
 package biz.majorov.expenses
 
 import org.apache.camel.CamelContext
-import org.apache.commons.logging.LogFactory
+import org.jboss.logging.Logger
 import java.math.BigDecimal
 import java.sql.Date
 import java.sql.Timestamp
@@ -20,14 +20,14 @@ import javax.ws.rs.core.Response
 @ApplicationScoped
 class ExpensesServiceImpl : ExpensesService {
 
-    private val logger = LogFactory.getLog(ExpensesServiceImpl::class.java)
+    private val logger: Logger = Logger.getLogger(ExpensesService::class.java)
 
     @Inject
     lateinit var camelContext:CamelContext
 
 
     override fun create(expense: Expense): Response {
-        logger.info("got expense to insert: $expense")
+        logger.debug("got expense to insert: $expense")
         //TODO fix report api
         if (expense.report == null) {
             expense.report =1
@@ -41,7 +41,7 @@ class ExpensesServiceImpl : ExpensesService {
 
 
     override fun update(expense: Expense) :Response  {
-        logger.info("call update expense: $expense")
+        logger.debug("call update expense: $expense")
         val template = this.camelContext.createFluentProducerTemplate()
         expense.id?.run {
             //id is not null do update and return ok
@@ -60,7 +60,7 @@ class ExpensesServiceImpl : ExpensesService {
 
 
     override fun find(id: Long):Response{
-        logger.info("call find by id: $id")
+        logger.debug("call find by id: $id")
         val exchange = this.camelContext.createFluentProducerTemplate().to("direct:select-one-expense")
                 .withBody(id).send()
         val camelResult= exchange.getIn().body as List<Map<String, Any>>
