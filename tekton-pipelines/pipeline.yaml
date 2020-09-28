@@ -1,0 +1,31 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: build-and-deploy-backend
+spec:
+  workspaces:
+    - name: shared-workspace
+      description: |
+        This workspace will receive the cloned git repo and be passed
+        to the next Task.
+      #persistentVolumeClaim:
+      #  claimName: source-pvc
+
+  resources:
+    - name: expenses-backend-git
+      type: git
+    - name: backend-image
+      type: image
+
+  tasks:
+  - name: fetch-repository
+    taskRef:
+      name: git-clone
+      kind: ClusterTask
+    params:
+      - name: url
+        value: $(inputs.app-git)
+    workspaces:
+    - name: output
+      workspace: shared-workspace

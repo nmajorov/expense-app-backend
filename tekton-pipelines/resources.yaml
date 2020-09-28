@@ -1,0 +1,35 @@
+# create a pvc for workspace
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: source-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi
+
+---
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineResource
+metadata:
+  name: expenses-backend-git
+spec:
+  type: git
+  params:
+    - name: revision
+      value: $(inputs.params.REVISION)
+    - name: url
+      value: https://github.com/nmajorov/expenses-backend-quarkus.git
+---
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineResource
+metadata:
+  name: backend-image
+spec:
+  type: image
+  params:
+    - name: url
+      value: image-registry.openshift-image-registry.svc:5000/nm-demo/expenses-backend-quarkus:latest
