@@ -9,14 +9,13 @@ spec:
       description: |
         This workspace will receive the cloned git repo and be passed
         to the next Task.
-      #persistentVolumeClaim:
-      #  claimName: source-pvc
-
-  resources:
-    - name: expenses-backend-git
-      type: git
-    - name: backend-image
-      type: image
+  params:
+    - name: git-url
+      type: string
+      default: "https://github.com/nmajorov/expenses-backend-quarkus.git"
+    - name: git-revision
+      type: string
+      default: "master"
 
   tasks:
   - name: fetch-repository
@@ -25,7 +24,7 @@ spec:
       kind: ClusterTask
     params:
       - name: url
-        value: $(inputs.app-git)
+        value: $(params.git-url)
     workspaces:
     - name: output
       workspace: shared-workspace
