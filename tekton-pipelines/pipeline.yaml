@@ -18,10 +18,15 @@ spec:
       default: "master"
 
   tasks:
+  - name: deploy-test-database
+    taskRef:
+      name: deploy-test-postgresql
   - name: fetch-repository
     taskRef:
       name: git-clone
       kind: ClusterTask
+    runAfter:
+      - deploy-test-database
     params:
       - name: url
         value: $(params.git-url)
