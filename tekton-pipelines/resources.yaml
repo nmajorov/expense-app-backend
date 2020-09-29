@@ -11,18 +11,7 @@ spec:
     requests:
       storage: 500Mi
 
----
-apiVersion: tekton.dev/v1alpha1
-kind: PipelineResource
-metadata:
-  name: expenses-backend-git
-spec:
-  type: git
-  params:
-    - name: revision
-      value: $(inputs.params.REVISION)
-    - name: url
-      value: https://github.com/nmajorov/expenses-backend-quarkus.git
+
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: PipelineResource

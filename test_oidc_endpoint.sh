@@ -7,7 +7,7 @@ PASSWORD=niko
 
 export access_token=$(\
 
-    curl -v  -X POST "http://localhost:7080/auth/realms/geektour/protocol/openid-connect/token" \
+    curl -v  -X POST "http://localhost:7080/auth/realms/basic/protocol/openid-connect/token" \
     -H 'content-type: application/x-www-form-urlencoded' \
     -d "grant_type=password&username=$USER_NAME&password=$PASSWORD&client_id=app-react" | jq --raw-output '.access_token' \
 )

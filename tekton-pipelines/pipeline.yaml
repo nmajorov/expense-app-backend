@@ -18,18 +18,26 @@ spec:
       default: "master"
 
   tasks:
-  - name: deploy-test-database
-    taskRef:
-      name: deploy-test-postgresql
-  - name: fetch-repository
-    taskRef:
-      name: git-clone
-      kind: ClusterTask
-    runAfter:
-      - deploy-test-database
-    params:
-      - name: url
-        value: $(params.git-url)
-    workspaces:
-    - name: output
-      workspace: shared-workspace
+    - name: deploy-test-database
+      taskRef:
+        name: deploy-test-postgresql
+      runAfter:
+        - clean-workspace
+    - name: clean-workspace
+      taskRef:
+        name: clean-up
+      workspaces:
+        - name: output
+          workspace: shared-workspace
+    - name: fetch-repository
+      taskRef:
+        name: git-clone
+        kind: ClusterTask
+      runAfter:
+        - clean-workspace
+      params:
+        - name: url
+          value: $(params.git-url)
+      workspaces:
+        - name: output
+          workspace: shared-workspace

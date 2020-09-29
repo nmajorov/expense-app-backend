@@ -120,7 +120,7 @@ interface ExpensesService {
 interface ReportService {
     @GET
     @Path("/")
-    @Operation(description = "Get reports for user")
+    @Operation(description = "Get reports for user. User has to be authenticated with RedHat SSO")
     @Produces(MediaType.APPLICATION_JSON)
     @APIResponses(value = [
         APIResponse(responseCode = "200", description = "successful operation",

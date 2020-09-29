@@ -21,10 +21,10 @@ spec:
           oc get dc/postgresql-test
           if [[ $? -ne 0 ]]
              then
-              oc new-app --template openshift/postgresql-ephemeral \
-              --param POSTGRESQL_USER=quarkus \
-              --param POSTGRESQL_PASSWORD=quarkus \
-              --param POSTGRESQL_DATABASE=quarkus-test \
+              oc new-app --name=postgresql-test --template openshift/postgresql-ephemeral \
+              --param POSTGRESQL_USER=keycloack \
+              --param POSTGRESQL_PASSWORD=keycloack \
+              --param POSTGRESQL_DATABASE=keycloack \
               --param DATABASE_SERVICE_NAME=postgresql-test
              else
                 echo "deployment already exist.. should not ...error"

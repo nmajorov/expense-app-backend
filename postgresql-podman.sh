@@ -14,20 +14,20 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 DATA_DIR="$SCRIPT_DIR/pgdatabase"
 
-POSTGRESQL_USER=fuse
-POSTGRESQL_PASSWORD=fuse
-POSTGRESQL_DATABASE=fuse
+POSTGRESQL_USER=keycloack
+POSTGRESQL_PASSWORD=keycloack
+POSTGRESQL_DATABASE=root
 
 if [ ! -d "$DATA_DIR" ];then
-     echo "create data directory"   
+     echo "create data directory"
      mkdir -p $DATA_DIR
-      setfacl -m u:$USER_ID:-wx $DATA_DIR 
+      setfacl -m u:$USER_ID:-wx $DATA_DIR
 fi
 
 echo "current local  data dir for database storage  $DATA_DIR"
 
- 
-## get UID 
+
+## get UID
 uid=$(id -u)
 
 echo "run container as user $uid"
@@ -38,7 +38,6 @@ if [ -z "$1" ]
     podman run --rm -d -u $uid  --name  postgresql-database \
      -e POSTGRESQL_USER=$POSTGRESQL_USER -e POSTGRESQL_PASSWORD=$POSTGRESQL_PASSWORD \
      -e POSTGRESQL_DATABASE=$POSTGRESQL_DATABASE \
-     -v $DATA_DIR:/var/lib/pgsql/data:Z \
      -p 127.0.0.1:5432:5432 \
      centos/postgresql-96-centos7
 
@@ -47,10 +46,10 @@ if [ -z "$1" ]
 
     echo "check connection"
     podman exec  postgresql-database pg_isready
- 
+
  else
     echo "pod name is to join  is $1"
-    # run command to join the pod 
+    # run command to join the pod
     podman run --rm -d -u $uid \
      --pod $1 \
      --name  postgresql-database \
