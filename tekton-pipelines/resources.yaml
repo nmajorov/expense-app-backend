@@ -1,17 +1,3 @@
-# create a pvc for workspace
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: source-pvc
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 500Mi
-
-
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: PipelineResource

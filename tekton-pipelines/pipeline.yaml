@@ -16,7 +16,9 @@ spec:
     - name: git-revision
       type: string
       default: "master"
-
+  resources:
+    - name: backend-image
+      type: image
   tasks:
     - name: deploy-test-database
       taskRef:
@@ -41,3 +43,16 @@ spec:
       workspaces:
         - name: output
           workspace: shared-workspace
+    - name: build-quarkus-native
+      taskRef:
+        name: s2i-quarkus-maven
+      runAfter:
+        - fetch-repository
+      resources:
+        outputs:
+          - name: image
+            resource: backend-image
+      workspaces:
+        - name: input
+          workspace: shared-workspace
+

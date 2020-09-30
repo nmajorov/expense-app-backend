@@ -12,3 +12,7 @@ spec:
   - name: shared-workspace
     persistentVolumeClaim:
       claimName: source-pvc
+  resources:
+    - name: backend-image
+      resourceRef:
+        name: backend-image
