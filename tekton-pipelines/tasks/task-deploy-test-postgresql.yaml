@@ -2,31 +2,90 @@
 
 # deploy for each pipeline run posgresql for camel tests only
 # and destroy it after
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1alpha1
 kind: Task
 metadata:
   name: deploy-test-postgresql
 spec:
-  params:
-    - name: postgresql-image
-      type: string
-      description: The postgresql image to deploy
-      default: registry.redhat.io/rhel8/postgresql-10
+  inputs:
+    params:
+      - name: postgresql-image
+        type: string
+        description: The postgresql image to deploy
+        default: registry.redhat.io/rhel8/postgresql-10
+      - name: postgesql-user
+        type: string
+        description: login for postgresql database
+        default: keycloak
+      - name: postgresql-password
+        type: string
+        description: password for postgresql database
+        default: keycloak
+      - name: postresql-database
+        type: string
+        default: keycloak
+        description: default database
+      - name: database-service-name
+        type: string
+        default: postgresql-test
+
+
   steps:
     - name: deploy-app
       image: quay.io/openshift/origin-cli:latest
-      command: ["/bin/bash", "-c"]
-      args:
-        - |-
+      script: |
+          #!/usr/bin/env bash
           oc get dc/postgresql-test
           if [[ $? -ne 0 ]]
              then
-              oc new-app --name=postgresql-test --template openshift/postgresql-ephemeral \
-              --param POSTGRESQL_USER=keycloack \
-              --param POSTGRESQL_PASSWORD=keycloack \
-              --param POSTGRESQL_DATABASE=keycloack \
-              --param DATABASE_SERVICE_NAME=postgresql-test
+              oc new-app --name=$(inputs.params.database-service-name) --template openshift/postgresql-ephemeral \
+              --param POSTGRESQL_USER=$(inputs.params.postgesql-user) \
+              --param POSTGRESQL_PASSWORD=$(inputs.params.postgresql-password) \
+              --param POSTGRESQL_DATABASE=$(inputs.params.postresql-database) \
+              --param DATABASE_SERVICE_NAME=$(inputs.params.database-service-name)
              else
                 echo "deployment already exist.. should not ...error"
                 exit 1
           fi
+
+    - name: check-if-database-is-ready
+      image: quay.io/openshift/origin-cli:latest
+      script: |
+        #!/usr/bin/env bash
+        # check for 3 minute if container is ready
+
+        containerReady="False"
+
+        for i in {1..3}
+        do
+          response=$(oc get pods --selector name=$(inputs.params.database-service-name) -o=jsonpath="{.items['.status'].conditions[?(@.type=='Ready')].status}")
+
+          echo " database deployment is ready: $response "
+
+          if [[ "$response" == "True" ]]
+           then
+              containerReady="True"
+              break
+           else
+              sleep 1m
+          fi
+
+        done
+
+        if [[ "$containerReady" == "False" ]]
+        then
+          exit 1
+        fi
+
+    - name: provision-database
+      image: registry.redhat.io/rhel8/postgresql-10
+      workingDir: /workspace/source
+      command: ["/bin/bash", "-c"]
+      args:
+        - |-
+          ls -lisa
+          psql $(inputs.params.postresql-database) < ./data/keycloak_export.sql
+
+  workspaces:
+    - name: input
+      mountPath: /workspace/source

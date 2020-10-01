@@ -25,6 +25,9 @@ spec:
         name: deploy-test-postgresql
       runAfter:
         - clean-workspace
+      workspaces:
+        - name: input
+          workspace: shared-workspace
     - name: clean-workspace
       taskRef:
         name: clean-up
@@ -55,4 +58,3 @@ spec:
       workspaces:
         - name: input
           workspace: shared-workspace
-
