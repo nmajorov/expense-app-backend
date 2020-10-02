@@ -106,7 +106,7 @@ spec:
           echo "import test sql data"
           PGPASSWORD=$(inputs.params.postgresql-password) psql --host=$(inputs.params.database-service-name) \
             --username=$(inputs.params.postgesql-user) \
-            --dbname=$(inputs.params.postresql-database) < ./data/keycloak_export.sql
+            --dbname=$(inputs.params.postresql-database) < ./keycloak/keycloak_export.sql
 
   workspaces:
     - name: input
