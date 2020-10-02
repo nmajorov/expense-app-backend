@@ -20,9 +20,9 @@ spec:
     - name: backend-image
       type: image
   tasks:
-    - name: deploy-test-database
+    - name: deploy-test-containers
       taskRef:
-        name: deploy-test-postgresql
+        name: deploy-test-containers
       runAfter:
         - clean-workspace
       workspaces:
