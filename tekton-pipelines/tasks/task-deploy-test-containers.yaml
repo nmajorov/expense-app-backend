@@ -27,22 +27,44 @@ spec:
         description: default database
       - name: database-service-name
         type: string
-        default: keycloak-postgresql
+        default: sso-test-postgresql
 
 
   steps:
     - name: deploy-app
       image: quay.io/openshift/origin-cli:latest
+      workingDir: /workspace/source
       script: |
           #!/usr/bin/env bash
-          oc get dc/postgresql-test
+          oc get dc/sso-test-postgresql
           if [[ $? -ne 0 ]]
              then
-              oc new-app --name=$(inputs.params.database-service-name) --template openshift/postgresql-ephemeral \
-              --param POSTGRESQL_USER=$(inputs.params.postgesql-user) \
-              --param POSTGRESQL_PASSWORD=$(inputs.params.postgresql-password) \
-              --param POSTGRESQL_DATABASE=$(inputs.params.postresql-database) \
-              --param DATABASE_SERVICE_NAME=$(inputs.params.database-service-name)
+              oc policy add-role-to-user view system:serviceaccount:$(oc project -q):default
+              echo "create secret"
+
+              oc create -f ./keycloak/deploy_from_template/sso-app-secret.yaml
+              oc secrets link default sso-app-secret
+
+              
+              oc new-app --name=sso-test --template openshift/sso74-postgresql \
+              --param DB_USERNAME=$(inputs.params.postgresql-password) \
+              --param DB_PASSWORD=$(inputs.params.postgesql-user) \
+              --param APPLICATION_NAME=sso-test \
+              -p HTTPS_SECRET="sso-app-secret" \
+              -p HTTPS_KEYSTORE="keystore.jks" \
+              -p HTTPS_NAME="jboss" \
+              -p HTTPS_PASSWORD="mykeystorepass" \
+              -p JGROUPS_ENCRYPT_SECRET="sso-app-secret" \
+              -p JGROUPS_ENCRYPT_KEYSTORE="jgroups.jceks" \
+              -p JGROUPS_ENCRYPT_NAME="secret-key" \
+              -p JGROUPS_ENCRYPT_PASSWORD="mykeystorepass" \
+              -p SSO_ADMIN_USERNAME="admin" \
+              -p SSO_ADMIN_PASSWORD="admin" \
+              -p SSO_REALM="demorealm" \
+              -p SSO_TRUSTSTORE="truststore.jks" \
+              -p SSO_TRUSTSTORE_PASSWORD="mykeystorepass" \
+              -p SSO_TRUSTSTORE_SECRET="sso-app-secret"
+
              else
                 echo "deployment already exist.. should not ...error"
                 exit 1

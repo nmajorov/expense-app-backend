@@ -15,9 +15,8 @@ spec:
         find  /workspace/output/  -exec rm -rf {} \;
 
         echo "delete openshift test resources"
-        oc delete  all --selector=app=keycloak-postgresql
-        # can't delete secrets
-        oc delete secrets  --selector=app=keycloak-postgresql
+        oc delete all --selector=app.kubernetes.io/component=sso-test
+        oc delete secrets sso-app-secret
 
   workspaces:
     - name: output
