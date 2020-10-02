@@ -23,11 +23,11 @@ spec:
         default: keycloak
       - name: postresql-database
         type: string
-        default: keycloak
+        default: root
         description: default database
       - name: database-service-name
         type: string
-        default: postgresql-test
+        default: keycloak-postgresql
 
 
   steps:
