@@ -45,7 +45,7 @@ class ExpensesServiceImpl : ExpensesService {
         val template = this.camelContext.createFluentProducerTemplate()
         expense.id?.run {
             //id is not null do update and return ok
-            val exchange =template.to("direct:update-expense").withBody(expense).send()
+            template.to("direct:update-expense").withBody(expense).send()
             return Response.ok().build()
         }
 
@@ -63,7 +63,9 @@ class ExpensesServiceImpl : ExpensesService {
         logger.debug("call find by id: $id")
         val exchange = this.camelContext.createFluentProducerTemplate().to("direct:select-one-expense")
                 .withBody(id).send()
-        val camelResult= exchange.getIn().body as List<Map<String, Any>>
+
+        @Suppress("UNCHECKED_CAST")
+        val camelResult = exchange.getIn().body as List<Map<String, Any>>
 
         if (camelResult.isNotEmpty()){
             logger.info("result is not empty")
@@ -84,6 +86,8 @@ class ExpensesServiceImpl : ExpensesService {
 
     override fun findAll(): Response {
         val exchange = this.camelContext.createFluentProducerTemplate().to("direct:select-all-expenses").send()
+
+        @Suppress("UNCHECKED_CAST")
         val camelResult= exchange.getIn().body as List<Map<String, Any>>
         val entities = mutableListOf<Expense>()
         //convert sql result to the entities

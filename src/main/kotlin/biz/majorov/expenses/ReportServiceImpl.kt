@@ -28,6 +28,8 @@ class ReportServiceImpl: ReportService {
     override fun findAll(@Context ctx: SecurityContext): Response {
         logger.debug("findAll report for user name: ${ctx.userPrincipal.name}")
         val exchange = this.camelContext.createFluentProducerTemplate().to("direct:select-all-reports").send()
+
+        @Suppress("UNCHECKED_CAST")
         val camelResult= exchange.getIn().body as List<Map<String, Any>>
         val entities = mutableListOf<Report>()
         //convert sql result to the entities
