@@ -1,19 +1,17 @@
 package biz.majorov.expenses
 
 
-import java.time.LocalDate
-import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.fasterxml.jackson.databind.deser.std.NumberDeserializers
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
-import com.fasterxml.jackson.databind.ser.std.NumberSerializers
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 //https://spring.io/guides/tutorials/spring-boot-kotlin/
@@ -67,7 +65,7 @@ class Report(
 ) {
 	constructor() : this(null, "", null)
 
-	override fun toString(): String = """Report[ id: ${id} | name: ${name} | createAt: ${createdAT} ] """
+	override fun toString(): String = """Report[ id: ${id} | name: $name | createAt: ${createdAT} ] """
 }
 
 class LocalDateDeserializer : StdDeserializer<LocalDate>(LocalDate::class.java) {

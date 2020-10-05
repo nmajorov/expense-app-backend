@@ -2,20 +2,14 @@ package biz.majorov.expenses
 
 
 
-import biz.majorov.expenses.Expense
 import io.quarkus.test.junit.QuarkusTest
 import io.restassured.RestAssured.given
 import io.restassured.parsing.Parser
 import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
-import javax.inject.Inject
-import javax.transaction.Transactional
-import javax.ws.rs.core.MediaType
 
 /**
  * test restful api
@@ -245,16 +239,5 @@ class ExpenseResourceTest : ResourceTest() {
 
     }
 
-    @QuarkusTest
-    class ReportApiTest : ResourceTest() {
-        @Test
-        fun `test get all report for user`() {
-            println("${object {}.javaClass.enclosingMethod.name} ")
-            println("reports should be get for  specific  user ")
-            given()
-                    .`when`().get("/reports")
-                    .then()
-                    .statusCode(200)
-        }
-    }
+
 }

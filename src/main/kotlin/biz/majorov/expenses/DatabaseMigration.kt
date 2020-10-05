@@ -4,14 +4,15 @@ import io.quarkus.flyway.FlywayDataSource
 import org.flywaydb.core.Flyway
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
-import javax.inject.Named
 
 
+/**
+ *
+ * Run database migration at start
+ *
+ */
 @ApplicationScoped
 class MigrationService {
-    // You can Inject the object if you want to use it manually
-    //@Inject
-    //lateinit var flyway: Flyway
 
     @Inject
     @FlywayDataSource("camel-sql")
@@ -23,6 +24,6 @@ class MigrationService {
         flyway.clean()
         flyway.migrate()
         // This will print 1.0.0
-        System.out.println(flyway.info().current().getVersion().toString())
+        println(flyway.info().current().version.toString())
     }
 }
