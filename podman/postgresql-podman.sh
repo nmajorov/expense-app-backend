@@ -59,3 +59,10 @@ echo "wait database to start"
 sleep 15
 echo "check connection"
 podman exec  postgresql-database pg_isready
+
+
+
+podman cp $SCRIPT_DIR/export.sql postgresql-database:/tmp
+
+echo "run sql import"
+podman exec postgresql-database bash -c "psql root  < /tmp/export.sql"
