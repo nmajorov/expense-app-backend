@@ -5,7 +5,7 @@ metadata:
 spec:
   params:
     - name: git-revision
-      value: "keycloak"
+      value: "oidc"
   pipelineRef:
     name: build-and-deploy-backend
   workspaces:

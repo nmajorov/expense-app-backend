@@ -30,7 +30,7 @@ spec:
           workspace: shared-workspace
     - name: clean-workspace
       taskRef:
-        name: clean-up
+        name: clean-up-backend
       workspaces:
         - name: output
           workspace: shared-workspace
@@ -46,11 +46,21 @@ spec:
       workspaces:
         - name: output
           workspace: shared-workspace
+
+    - name: test
+      taskRef:
+        name: backend-mvn
+      runAfter:
+        - fetch-repository
+      workspaces:
+        - name: input
+          workspace: shared-workspace
+
     - name: build-quarkus-native
       taskRef:
         name: s2i-quarkus-maven
       runAfter:
-        - fetch-repository
+        - test
       resources:
         outputs:
           - name: image

@@ -1,0 +1,63 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: backend-mvn
+spec:
+
+  inputs:
+    params:
+      - name: VERSION
+        type: string
+        description: The version of the build image
+        default: '20.1.0-java11'
+      - name: GOALS
+        description: The Maven goals to run
+        type: array
+        default: ["test"]
+     # database parameters
+      - name: postgesql-user
+        type: string
+        description: login for postgresql database
+        default: keycloak
+      - name: postgresql-password
+        type: string
+        description: password for postgresql database
+        default: keycloak
+      - name: postresql-database
+        type: string
+        default: root
+        description: default database
+      - name: database-service-name
+        type: string
+        default: sso-test-postgresql
+  steps:
+    - name: mvn
+      image:  "quay.io/quarkus/centos-quarkus-maven::$(inputs.params.VERSION)"
+      workingDir: /workspace/source
+      script: |
+        #!/usr/bin/env bash
+
+        SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+        echo "current dir: $SCRIPT_DIR"
+
+        echo "run with postgresql"
+        export POSTGRESQL_SERVICE_NAME="$(inputs.params.database-service-name)"
+
+        export POSTGRESQL_USER="$(inputs.params.postgesql-user)"
+        export POSTGRESQL_PASSWORD="$(inputs.params.postgresql-password)"
+        export POSTGRESQL_DATABASE= "$(inputs.params.postresql-database)"
+
+        echo $(env | grep POSTGRESQL)
+
+        # keycloak properties
+        #export KEYCLOAK_URL="http://localhost:7080/auth/realms/basic"
+        #export KEYCLOAK_INTROSPECT_URL="$KEYCLOAK_URL/protocol/openid-connect/token/introspect"
+        #export KEYCLOAK_CLIENT_ID="backend"
+        #export KEYCLOAK_SECRET="b530c9d1-45f0-4f30-87d2-471530534c4a"
+        $SCRIPT_DIR/mvnw  clean test
+
+
+  workspaces:
+    - name: input
+      mountPath: /workspace/source

@@ -103,6 +103,7 @@ ALTER TABLE IF EXISTS ONLY public.federated_identity DROP CONSTRAINT IF EXISTS f
 ALTER TABLE IF EXISTS ONLY public.client_attributes DROP CONSTRAINT IF EXISTS fk3c47c64beacca966;
 ALTER TABLE IF EXISTS ONLY public.identity_provider DROP CONSTRAINT IF EXISTS fk2b4ebc52ae5c3b34;
 ALTER TABLE IF EXISTS ONLY public.client_session_auth_status DROP CONSTRAINT IF EXISTS auth_status_constraint;
+ALTER TABLE IF EXISTS ONLY expenses.expenses DROP CONSTRAINT IF EXISTS expenses_fk_report_fkey;
 DROP INDEX IF EXISTS public.idx_web_orig_client;
 DROP INDEX IF EXISTS public.idx_usr_fed_prv_realm;
 DROP INDEX IF EXISTS public.idx_usr_fed_map_realm;
@@ -180,6 +181,8 @@ DROP INDEX IF EXISTS public.idx_auth_exec_realm_flow;
 DROP INDEX IF EXISTS public.idx_auth_exec_flow;
 DROP INDEX IF EXISTS public.idx_auth_config_realm;
 DROP INDEX IF EXISTS public.idx_assoc_pol_assoc_pol_id;
+DROP INDEX IF EXISTS public.flyway_schema_history_s_idx;
+DROP INDEX IF EXISTS expenses.flyway_schema_history_s_idx;
 ALTER TABLE IF EXISTS ONLY public.user_entity DROP CONSTRAINT IF EXISTS uk_ru8tt6t700s9v50bu18ws5ha6;
 ALTER TABLE IF EXISTS ONLY public.realm DROP CONSTRAINT IF EXISTS uk_orvsdmla56612eaefiq6wl5oi;
 ALTER TABLE IF EXISTS ONLY public.user_consent DROP CONSTRAINT IF EXISTS uk_jkuwuvd56ontgsuhogm8uewrt;
@@ -201,6 +204,7 @@ ALTER TABLE IF EXISTS ONLY public.resource_server DROP CONSTRAINT IF EXISTS pk_r
 ALTER TABLE IF EXISTS ONLY public.databasechangeloglock DROP CONSTRAINT IF EXISTS pk_databasechangeloglock;
 ALTER TABLE IF EXISTS ONLY public.client_scope DROP CONSTRAINT IF EXISTS pk_cli_template;
 ALTER TABLE IF EXISTS ONLY public.client_scope_attributes DROP CONSTRAINT IF EXISTS pk_cl_tmpl_attr;
+ALTER TABLE IF EXISTS ONLY public.flyway_schema_history DROP CONSTRAINT IF EXISTS flyway_schema_history_pk;
 ALTER TABLE IF EXISTS ONLY public.web_origins DROP CONSTRAINT IF EXISTS constraint_web_origins;
 ALTER TABLE IF EXISTS ONLY public.user_session_note DROP CONSTRAINT IF EXISTS constraint_usn_pk;
 ALTER TABLE IF EXISTS ONLY public.user_group_membership DROP CONSTRAINT IF EXISTS constraint_user_group;
@@ -288,6 +292,10 @@ ALTER TABLE IF EXISTS ONLY public.client_scope_client DROP CONSTRAINT IF EXISTS 
 ALTER TABLE IF EXISTS ONLY public.client_auth_flow_bindings DROP CONSTRAINT IF EXISTS c_cli_flow_bind;
 ALTER TABLE IF EXISTS ONLY public.keycloak_role DROP CONSTRAINT IF EXISTS "UK_J3RWUVD56ONTGSUHOGM184WW2-2";
 ALTER TABLE IF EXISTS ONLY public.username_login_failure DROP CONSTRAINT IF EXISTS "CONSTRAINT_17-2";
+ALTER TABLE IF EXISTS ONLY expenses.report DROP CONSTRAINT IF EXISTS report_pkey;
+ALTER TABLE IF EXISTS ONLY expenses.flyway_schema_history DROP CONSTRAINT IF EXISTS flyway_schema_history_pk;
+ALTER TABLE IF EXISTS ONLY expenses.expenses DROP CONSTRAINT IF EXISTS expenses_pkey;
+ALTER TABLE IF EXISTS expenses.expenses ALTER COLUMN id DROP DEFAULT;
 DROP TABLE IF EXISTS public.web_origins;
 DROP TABLE IF EXISTS public.username_login_failure;
 DROP TABLE IF EXISTS public.user_session_note;
@@ -341,6 +349,7 @@ DROP TABLE IF EXISTS public.identity_provider_config;
 DROP TABLE IF EXISTS public.identity_provider;
 DROP TABLE IF EXISTS public.group_role_mapping;
 DROP TABLE IF EXISTS public.group_attribute;
+DROP TABLE IF EXISTS public.flyway_schema_history;
 DROP TABLE IF EXISTS public.federated_user;
 DROP TABLE IF EXISTS public.federated_identity;
 DROP TABLE IF EXISTS public.fed_user_role_mapping;
@@ -381,8 +390,22 @@ DROP TABLE IF EXISTS public.authentication_flow;
 DROP TABLE IF EXISTS public.authentication_execution;
 DROP TABLE IF EXISTS public.associated_policy;
 DROP TABLE IF EXISTS public.admin_event_entity;
+DROP TABLE IF EXISTS expenses.report;
+DROP TABLE IF EXISTS expenses.flyway_schema_history;
+DROP SEQUENCE IF EXISTS expenses.expenses_id_seq;
+DROP TABLE IF EXISTS expenses.expenses;
 DROP EXTENSION IF EXISTS plpgsql;
 DROP SCHEMA IF EXISTS public;
+DROP SCHEMA IF EXISTS expenses;
+--
+-- Name: expenses; Type: SCHEMA; Schema: -; Owner: keycloack
+--
+
+CREATE SCHEMA expenses;
+
+
+ALTER SCHEMA expenses OWNER TO keycloack;
+
 --
 -- Name: public; Type: SCHEMA; Schema: -; Owner: postgres
 --
@@ -416,6 +439,77 @@ COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 SET default_tablespace = '';
 
 SET default_with_oids = false;
+
+--
+-- Name: expenses; Type: TABLE; Schema: expenses; Owner: keycloack
+--
+
+CREATE TABLE expenses.expenses (
+    id integer NOT NULL,
+    description character varying(250) NOT NULL,
+    amount numeric(15,6),
+    created date,
+    tstamp timestamp without time zone DEFAULT now(),
+    fk_report integer
+);
+
+
+ALTER TABLE expenses.expenses OWNER TO keycloack;
+
+--
+-- Name: expenses_id_seq; Type: SEQUENCE; Schema: expenses; Owner: keycloack
+--
+
+CREATE SEQUENCE expenses.expenses_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE expenses.expenses_id_seq OWNER TO keycloack;
+
+--
+-- Name: expenses_id_seq; Type: SEQUENCE OWNED BY; Schema: expenses; Owner: keycloack
+--
+
+ALTER SEQUENCE expenses.expenses_id_seq OWNED BY expenses.expenses.id;
+
+
+--
+-- Name: flyway_schema_history; Type: TABLE; Schema: expenses; Owner: keycloack
+--
+
+CREATE TABLE expenses.flyway_schema_history (
+    installed_rank integer NOT NULL,
+    version character varying(50),
+    description character varying(200) NOT NULL,
+    type character varying(20) NOT NULL,
+    script character varying(1000) NOT NULL,
+    checksum integer,
+    installed_by character varying(100) NOT NULL,
+    installed_on timestamp without time zone DEFAULT now() NOT NULL,
+    execution_time integer NOT NULL,
+    success boolean NOT NULL
+);
+
+
+ALTER TABLE expenses.flyway_schema_history OWNER TO keycloack;
+
+--
+-- Name: report; Type: TABLE; Schema: expenses; Owner: keycloack
+--
+
+CREATE TABLE expenses.report (
+    id integer NOT NULL,
+    name character varying(100) NOT NULL,
+    created date,
+    tstamp timestamp without time zone DEFAULT now()
+);
+
+
+ALTER TABLE expenses.report OWNER TO keycloack;
 
 --
 -- Name: admin_event_entity; Type: TABLE; Schema: public; Owner: keycloack
@@ -1041,6 +1135,26 @@ CREATE TABLE public.federated_user (
 
 
 ALTER TABLE public.federated_user OWNER TO keycloack;
+
+--
+-- Name: flyway_schema_history; Type: TABLE; Schema: public; Owner: keycloack
+--
+
+CREATE TABLE public.flyway_schema_history (
+    installed_rank integer NOT NULL,
+    version character varying(50),
+    description character varying(200) NOT NULL,
+    type character varying(20) NOT NULL,
+    script character varying(1000) NOT NULL,
+    checksum integer,
+    installed_by character varying(100) NOT NULL,
+    installed_on timestamp without time zone DEFAULT now() NOT NULL,
+    execution_time integer NOT NULL,
+    success boolean NOT NULL
+);
+
+
+ALTER TABLE public.flyway_schema_history OWNER TO keycloack;
 
 --
 -- Name: group_attribute; Type: TABLE; Schema: public; Owner: keycloack
@@ -1856,6 +1970,46 @@ CREATE TABLE public.web_origins (
 ALTER TABLE public.web_origins OWNER TO keycloack;
 
 --
+-- Name: expenses id; Type: DEFAULT; Schema: expenses; Owner: keycloack
+--
+
+ALTER TABLE ONLY expenses.expenses ALTER COLUMN id SET DEFAULT nextval('expenses.expenses_id_seq'::regclass);
+
+
+--
+-- Data for Name: expenses; Type: TABLE DATA; Schema: expenses; Owner: keycloack
+--
+
+INSERT INTO expenses.expenses VALUES (1, 'Lunch', 30.300000, '2019-07-30', '2020-10-06 15:20:13.817661', 1);
+INSERT INTO expenses.expenses VALUES (2, 'Lenovo Tablet', 149.000000, '2019-07-30', '2020-10-06 15:20:13.817661', 1);
+INSERT INTO expenses.expenses VALUES (3, 'Dinner', 30.300000, '2019-09-29', '2020-10-06 15:20:13.817661', 1);
+INSERT INTO expenses.expenses VALUES (4, 'Book', 28.190000, '2019-09-29', '2020-10-06 15:20:13.817661', 1);
+INSERT INTO expenses.expenses VALUES (5, 'TEST', 23.000000, '2020-10-06', '2020-10-06 15:39:46.905215', 1);
+
+
+--
+-- Name: expenses_id_seq; Type: SEQUENCE SET; Schema: expenses; Owner: keycloack
+--
+
+SELECT pg_catalog.setval('expenses.expenses_id_seq', 5, true);
+
+
+--
+-- Data for Name: flyway_schema_history; Type: TABLE DATA; Schema: expenses; Owner: keycloack
+--
+
+INSERT INTO expenses.flyway_schema_history VALUES (0, NULL, '<< Flyway Schema Creation >>', 'SCHEMA', '"expenses"', NULL, 'keycloack', '2020-10-06 15:20:13.775308', 0, true);
+INSERT INTO expenses.flyway_schema_history VALUES (1, '1.0.0', 'Quarkus', 'SQL', 'db/migration/V1.0.0__Quarkus.sql', 1558141439, 'keycloack', '2020-10-06 15:20:13.817661', 20, true);
+
+
+--
+-- Data for Name: report; Type: TABLE DATA; Schema: expenses; Owner: keycloack
+--
+
+INSERT INTO expenses.report VALUES (1, 'Simple Report', '2019-07-30', '2020-10-06 15:20:13.817661');
+
+
+--
 -- Data for Name: admin_event_entity; Type: TABLE DATA; Schema: public; Owner: keycloack
 --
 
@@ -2057,6 +2211,7 @@ INSERT INTO public.client VALUES ('34344398-f203-4014-b38f-7e7d448f1f0a', true, 
 INSERT INTO public.client VALUES ('3570f3bf-fdf4-4304-bdd6-dcb957c39e93', true, false, 'security-admin-console', 0, true, '56e610d5-11ea-4d0e-ba31-80089a3fcb3b', '/admin/basic/console/', false, NULL, false, 'basic', 'openid-connect', 0, false, false, '${client_security-admin-console}', false, 'client-secret', '${authAdminUrl}', NULL, NULL, true, false, false, false);
 INSERT INTO public.client VALUES ('f5a9cc85-fd60-43f3-b3a4-cd3627b5d9c0', true, false, 'admin-cli', 0, true, '413ee227-3e4d-4f15-a921-294aeb97834f', NULL, false, NULL, false, 'basic', 'openid-connect', 0, false, false, '${client_admin-cli}', false, 'client-secret', NULL, NULL, NULL, false, false, true, false);
 INSERT INTO public.client VALUES ('3a8404b9-3532-43de-8553-f015bdebfd2e', true, true, 'app-react', 0, true, '02cfb564-5414-4f61-ba20-95b8b8322eb5', NULL, false, 'http://localhost:3000', false, 'basic', 'openid-connect', -1, false, false, NULL, false, 'client-secret', 'http://localhost:3000', NULL, NULL, true, false, true, false);
+INSERT INTO public.client VALUES ('b58b8848-e780-438e-ba0f-c2c512c9b7a8', true, true, 'backend', 0, false, 'b530c9d1-45f0-4f30-87d2-471530534c4a', NULL, false, NULL, false, 'basic', 'openid-connect', -1, false, false, NULL, true, 'client-secret', NULL, NULL, NULL, false, false, true, false);
 
 
 --
@@ -2067,6 +2222,19 @@ INSERT INTO public.client_attributes VALUES ('8d948212-8e06-4645-a938-6cd42d9451
 INSERT INTO public.client_attributes VALUES ('4d960123-869a-4294-a38b-5f61f7f9667d', 'S256', 'pkce.code.challenge.method');
 INSERT INTO public.client_attributes VALUES ('21c7a827-4822-4707-9da4-e47acf42ea5a', 'S256', 'pkce.code.challenge.method');
 INSERT INTO public.client_attributes VALUES ('3570f3bf-fdf4-4304-bdd6-dcb957c39e93', 'S256', 'pkce.code.challenge.method');
+INSERT INTO public.client_attributes VALUES ('b58b8848-e780-438e-ba0f-c2c512c9b7a8', 'false', 'saml.server.signature');
+INSERT INTO public.client_attributes VALUES ('b58b8848-e780-438e-ba0f-c2c512c9b7a8', 'false', 'saml.server.signature.keyinfo.ext');
+INSERT INTO public.client_attributes VALUES ('b58b8848-e780-438e-ba0f-c2c512c9b7a8', 'false', 'saml.assertion.signature');
+INSERT INTO public.client_attributes VALUES ('b58b8848-e780-438e-ba0f-c2c512c9b7a8', 'false', 'saml.client.signature');
+INSERT INTO public.client_attributes VALUES ('b58b8848-e780-438e-ba0f-c2c512c9b7a8', 'false', 'saml.encrypt');
+INSERT INTO public.client_attributes VALUES ('b58b8848-e780-438e-ba0f-c2c512c9b7a8', 'false', 'saml.authnstatement');
+INSERT INTO public.client_attributes VALUES ('b58b8848-e780-438e-ba0f-c2c512c9b7a8', 'false', 'saml.onetimeuse.condition');
+INSERT INTO public.client_attributes VALUES ('b58b8848-e780-438e-ba0f-c2c512c9b7a8', 'false', 'saml_force_name_id_format');
+INSERT INTO public.client_attributes VALUES ('b58b8848-e780-438e-ba0f-c2c512c9b7a8', 'false', 'saml.multivalued.roles');
+INSERT INTO public.client_attributes VALUES ('b58b8848-e780-438e-ba0f-c2c512c9b7a8', 'false', 'saml.force.post.binding');
+INSERT INTO public.client_attributes VALUES ('b58b8848-e780-438e-ba0f-c2c512c9b7a8', 'false', 'exclude.session.state.from.auth.response');
+INSERT INTO public.client_attributes VALUES ('b58b8848-e780-438e-ba0f-c2c512c9b7a8', 'false', 'tls.client.certificate.bound.access.tokens');
+INSERT INTO public.client_attributes VALUES ('b58b8848-e780-438e-ba0f-c2c512c9b7a8', 'false', 'display.on.consent.screen');
 
 
 --
@@ -2305,6 +2473,15 @@ INSERT INTO public.client_scope_client VALUES ('3a8404b9-3532-43de-8553-f015bdeb
 INSERT INTO public.client_scope_client VALUES ('3a8404b9-3532-43de-8553-f015bdebfd2e', '28da7ca3-f9dc-4677-a119-7b1ce5385b5e', false);
 INSERT INTO public.client_scope_client VALUES ('3a8404b9-3532-43de-8553-f015bdebfd2e', 'b7eeca40-a0f1-4c7f-aaf1-c60a90297b95', false);
 INSERT INTO public.client_scope_client VALUES ('3a8404b9-3532-43de-8553-f015bdebfd2e', '3ee644de-d428-41e3-8a78-94c75365d25f', false);
+INSERT INTO public.client_scope_client VALUES ('b58b8848-e780-438e-ba0f-c2c512c9b7a8', 'bf778e8f-203b-42e2-ae8f-022f19183365', true);
+INSERT INTO public.client_scope_client VALUES ('b58b8848-e780-438e-ba0f-c2c512c9b7a8', 'dd4bb033-5caa-457c-b5f4-d229dae39846', true);
+INSERT INTO public.client_scope_client VALUES ('b58b8848-e780-438e-ba0f-c2c512c9b7a8', '2662754e-12e2-4756-9174-8532c1446dc7', true);
+INSERT INTO public.client_scope_client VALUES ('b58b8848-e780-438e-ba0f-c2c512c9b7a8', 'd1c987c5-5be9-42c7-82ba-509cfd46f785', true);
+INSERT INTO public.client_scope_client VALUES ('b58b8848-e780-438e-ba0f-c2c512c9b7a8', '6ebf1a5f-0d7d-415a-8827-01f090b7e363', true);
+INSERT INTO public.client_scope_client VALUES ('b58b8848-e780-438e-ba0f-c2c512c9b7a8', '7e90f56f-1663-446e-beda-97b5dc3f47c3', false);
+INSERT INTO public.client_scope_client VALUES ('b58b8848-e780-438e-ba0f-c2c512c9b7a8', '28da7ca3-f9dc-4677-a119-7b1ce5385b5e', false);
+INSERT INTO public.client_scope_client VALUES ('b58b8848-e780-438e-ba0f-c2c512c9b7a8', 'b7eeca40-a0f1-4c7f-aaf1-c60a90297b95', false);
+INSERT INTO public.client_scope_client VALUES ('b58b8848-e780-438e-ba0f-c2c512c9b7a8', '3ee644de-d428-41e3-8a78-94c75365d25f', false);
 
 
 --
@@ -2714,6 +2891,13 @@ INSERT INTO public.default_client_scope VALUES ('basic', '3ee644de-d428-41e3-8a7
 
 
 --
+-- Data for Name: flyway_schema_history; Type: TABLE DATA; Schema: public; Owner: keycloack
+--
+
+INSERT INTO public.flyway_schema_history VALUES (1, '1.0.0', '<< Flyway Baseline >>', 'BASELINE', '<< Flyway Baseline >>', NULL, 'null', '2020-10-06 13:18:48.552536', 0, true);
+
+
+--
 -- Data for Name: group_attribute; Type: TABLE DATA; Schema: public; Owner: keycloack
 --
 
@@ -2921,6 +3105,9 @@ INSERT INTO public.protocol_mapper VALUES ('48089017-c399-4138-ad7e-f28cce00a89d
 INSERT INTO public.protocol_mapper VALUES ('6509c0af-b711-426a-89dd-f0226fd50fd6', 'upn', 'openid-connect', 'oidc-usermodel-property-mapper', NULL, '3ee644de-d428-41e3-8a78-94c75365d25f');
 INSERT INTO public.protocol_mapper VALUES ('8d83c691-7e21-41a0-975e-03e632ca9a68', 'groups', 'openid-connect', 'oidc-usermodel-realm-role-mapper', NULL, '3ee644de-d428-41e3-8a78-94c75365d25f');
 INSERT INTO public.protocol_mapper VALUES ('7a9380d1-3001-4ce8-969a-abd7daea58df', 'locale', 'openid-connect', 'oidc-usermodel-attribute-mapper', '3570f3bf-fdf4-4304-bdd6-dcb957c39e93', NULL);
+INSERT INTO public.protocol_mapper VALUES ('2ab03750-0afd-412d-ad44-8e1404b07c3a', 'Client ID', 'openid-connect', 'oidc-usersessionmodel-note-mapper', 'b58b8848-e780-438e-ba0f-c2c512c9b7a8', NULL);
+INSERT INTO public.protocol_mapper VALUES ('9f3cf479-a1a6-4761-966a-9e225d376a62', 'Client Host', 'openid-connect', 'oidc-usersessionmodel-note-mapper', 'b58b8848-e780-438e-ba0f-c2c512c9b7a8', NULL);
+INSERT INTO public.protocol_mapper VALUES ('760477ad-bb8a-4961-8aaf-c4828fb34f95', 'Client IP Address', 'openid-connect', 'oidc-usersessionmodel-note-mapper', 'b58b8848-e780-438e-ba0f-c2c512c9b7a8', NULL);
 
 
 --
@@ -3217,6 +3404,21 @@ INSERT INTO public.protocol_mapper_config VALUES ('7a9380d1-3001-4ce8-969a-abd7d
 INSERT INTO public.protocol_mapper_config VALUES ('7a9380d1-3001-4ce8-969a-abd7daea58df', 'true', 'access.token.claim');
 INSERT INTO public.protocol_mapper_config VALUES ('7a9380d1-3001-4ce8-969a-abd7daea58df', 'locale', 'claim.name');
 INSERT INTO public.protocol_mapper_config VALUES ('7a9380d1-3001-4ce8-969a-abd7daea58df', 'String', 'jsonType.label');
+INSERT INTO public.protocol_mapper_config VALUES ('2ab03750-0afd-412d-ad44-8e1404b07c3a', 'clientId', 'user.session.note');
+INSERT INTO public.protocol_mapper_config VALUES ('2ab03750-0afd-412d-ad44-8e1404b07c3a', 'true', 'id.token.claim');
+INSERT INTO public.protocol_mapper_config VALUES ('2ab03750-0afd-412d-ad44-8e1404b07c3a', 'true', 'access.token.claim');
+INSERT INTO public.protocol_mapper_config VALUES ('2ab03750-0afd-412d-ad44-8e1404b07c3a', 'clientId', 'claim.name');
+INSERT INTO public.protocol_mapper_config VALUES ('2ab03750-0afd-412d-ad44-8e1404b07c3a', 'String', 'jsonType.label');
+INSERT INTO public.protocol_mapper_config VALUES ('9f3cf479-a1a6-4761-966a-9e225d376a62', 'clientHost', 'user.session.note');
+INSERT INTO public.protocol_mapper_config VALUES ('9f3cf479-a1a6-4761-966a-9e225d376a62', 'true', 'id.token.claim');
+INSERT INTO public.protocol_mapper_config VALUES ('9f3cf479-a1a6-4761-966a-9e225d376a62', 'true', 'access.token.claim');
+INSERT INTO public.protocol_mapper_config VALUES ('9f3cf479-a1a6-4761-966a-9e225d376a62', 'clientHost', 'claim.name');
+INSERT INTO public.protocol_mapper_config VALUES ('9f3cf479-a1a6-4761-966a-9e225d376a62', 'String', 'jsonType.label');
+INSERT INTO public.protocol_mapper_config VALUES ('760477ad-bb8a-4961-8aaf-c4828fb34f95', 'clientAddress', 'user.session.note');
+INSERT INTO public.protocol_mapper_config VALUES ('760477ad-bb8a-4961-8aaf-c4828fb34f95', 'true', 'id.token.claim');
+INSERT INTO public.protocol_mapper_config VALUES ('760477ad-bb8a-4961-8aaf-c4828fb34f95', 'true', 'access.token.claim');
+INSERT INTO public.protocol_mapper_config VALUES ('760477ad-bb8a-4961-8aaf-c4828fb34f95', 'clientAddress', 'claim.name');
+INSERT INTO public.protocol_mapper_config VALUES ('760477ad-bb8a-4961-8aaf-c4828fb34f95', 'String', 'jsonType.label');
 
 
 --
@@ -3476,6 +3678,7 @@ INSERT INTO public.user_entity VALUES ('41267900-ef49-428f-aeab-876c8f3e5cf2', N
 INSERT INTO public.user_entity VALUES ('6ad201eb-aa52-4053-8736-7457b38c491e', NULL, 'b2e5e9d1-4111-4c82-bcb6-f10c51bf9cd2', false, true, NULL, NULL, NULL, 'basic', 'admin', 1601980635661, NULL, 0);
 INSERT INTO public.user_entity VALUES ('0fbcd5c1-2dbe-4750-99ba-2441dd65cd66', 'nmajorov@redhat.com', 'nmajorov@redhat.com', false, true, NULL, 'Nikolaj', 'Majorov', 'basic', 'niko', 1601980706178, NULL, 0);
 INSERT INTO public.user_entity VALUES ('d25f8d35-54df-4048-9010-0dd9523c1f51', 'alice@oxford.ak.uk', 'alice@oxford.ak.uk', false, true, NULL, 'Alice', 'Fromwonderland', 'basic', 'alice', 1601980802850, NULL, 0);
+INSERT INTO public.user_entity VALUES ('c5276a22-311c-46d7-916a-557f70168eaa', NULL, 'e3e4cae2-3804-4be7-b376-d96fef9a958f', false, true, NULL, NULL, NULL, 'basic', 'service-account-backend', 1601981713595, 'b58b8848-e780-438e-ba0f-c2c512c9b7a8', 0);
 
 
 --
@@ -3536,6 +3739,10 @@ INSERT INTO public.user_role_mapping VALUES ('82a28430-f709-41d6-af26-08be2c07e0
 INSERT INTO public.user_role_mapping VALUES ('3bcf380d-eea3-4e5c-abc0-3c86fb7b603c', 'd25f8d35-54df-4048-9010-0dd9523c1f51');
 INSERT INTO public.user_role_mapping VALUES ('d8f3a233-72f4-4b8b-a2fe-66b6c34e0cfc', 'd25f8d35-54df-4048-9010-0dd9523c1f51');
 INSERT INTO public.user_role_mapping VALUES ('8087d3e2-e8ba-48f3-b795-df7150cc5dd8', 'd25f8d35-54df-4048-9010-0dd9523c1f51');
+INSERT INTO public.user_role_mapping VALUES ('82a28430-f709-41d6-af26-08be2c07e0d9', 'c5276a22-311c-46d7-916a-557f70168eaa');
+INSERT INTO public.user_role_mapping VALUES ('3bcf380d-eea3-4e5c-abc0-3c86fb7b603c', 'c5276a22-311c-46d7-916a-557f70168eaa');
+INSERT INTO public.user_role_mapping VALUES ('d8f3a233-72f4-4b8b-a2fe-66b6c34e0cfc', 'c5276a22-311c-46d7-916a-557f70168eaa');
+INSERT INTO public.user_role_mapping VALUES ('8087d3e2-e8ba-48f3-b795-df7150cc5dd8', 'c5276a22-311c-46d7-916a-557f70168eaa');
 
 
 --
@@ -3563,6 +3770,30 @@ INSERT INTO public.user_role_mapping VALUES ('8087d3e2-e8ba-48f3-b795-df7150cc5d
 INSERT INTO public.web_origins VALUES ('4d960123-869a-4294-a38b-5f61f7f9667d', '+');
 INSERT INTO public.web_origins VALUES ('3570f3bf-fdf4-4304-bdd6-dcb957c39e93', '+');
 INSERT INTO public.web_origins VALUES ('3a8404b9-3532-43de-8553-f015bdebfd2e', 'http://localhost:3000');
+
+
+--
+-- Name: expenses expenses_pkey; Type: CONSTRAINT; Schema: expenses; Owner: keycloack
+--
+
+ALTER TABLE ONLY expenses.expenses
+    ADD CONSTRAINT expenses_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: flyway_schema_history flyway_schema_history_pk; Type: CONSTRAINT; Schema: expenses; Owner: keycloack
+--
+
+ALTER TABLE ONLY expenses.flyway_schema_history
+    ADD CONSTRAINT flyway_schema_history_pk PRIMARY KEY (installed_rank);
+
+
+--
+-- Name: report report_pkey; Type: CONSTRAINT; Schema: expenses; Owner: keycloack
+--
+
+ALTER TABLE ONLY expenses.report
+    ADD CONSTRAINT report_pkey PRIMARY KEY (id);
 
 
 --
@@ -4262,6 +4493,14 @@ ALTER TABLE ONLY public.web_origins
 
 
 --
+-- Name: flyway_schema_history flyway_schema_history_pk; Type: CONSTRAINT; Schema: public; Owner: keycloack
+--
+
+ALTER TABLE ONLY public.flyway_schema_history
+    ADD CONSTRAINT flyway_schema_history_pk PRIMARY KEY (installed_rank);
+
+
+--
 -- Name: client_scope_attributes pk_cl_tmpl_attr; Type: CONSTRAINT; Schema: public; Owner: keycloack
 --
 
@@ -4427,6 +4666,20 @@ ALTER TABLE ONLY public.realm
 
 ALTER TABLE ONLY public.user_entity
     ADD CONSTRAINT uk_ru8tt6t700s9v50bu18ws5ha6 UNIQUE (realm_id, username);
+
+
+--
+-- Name: flyway_schema_history_s_idx; Type: INDEX; Schema: expenses; Owner: keycloack
+--
+
+CREATE INDEX flyway_schema_history_s_idx ON expenses.flyway_schema_history USING btree (success);
+
+
+--
+-- Name: flyway_schema_history_s_idx; Type: INDEX; Schema: public; Owner: keycloack
+--
+
+CREATE INDEX flyway_schema_history_s_idx ON public.flyway_schema_history USING btree (success);
 
 
 --
@@ -4966,6 +5219,14 @@ CREATE INDEX idx_usr_fed_prv_realm ON public.user_federation_provider USING btre
 --
 
 CREATE INDEX idx_web_orig_client ON public.web_origins USING btree (client_id);
+
+
+--
+-- Name: expenses expenses_fk_report_fkey; Type: FK CONSTRAINT; Schema: expenses; Owner: keycloack
+--
+
+ALTER TABLE ONLY expenses.expenses
+    ADD CONSTRAINT expenses_fk_report_fkey FOREIGN KEY (fk_report) REFERENCES expenses.report(id);
 
 
 --

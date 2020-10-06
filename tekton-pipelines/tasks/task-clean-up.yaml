@@ -2,7 +2,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: clean-up
+  name: clean-up-backend
 spec:
   steps:
     - name: clean
