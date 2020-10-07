@@ -1,0 +1,18 @@
+---
+# test mvn test command
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+
+metadata:
+  generateName: mvn-test-taskrun
+
+spec:
+  taskRef:
+    name: backend-mvn
+  params:
+    - name: GOALS
+      value: "clean test"
+  workspaces:
+    - name: input
+      persistentVolumeClaim:
+        claimName: source-pvc
