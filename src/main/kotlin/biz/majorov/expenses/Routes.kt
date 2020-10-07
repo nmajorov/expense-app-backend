@@ -27,7 +27,9 @@ class Routes {
                 " WHERE ID= :#\$simple{body.id}")
         from("direct:delete-expense").to("sql:DELETE FROM EXPENSES  WHERE EXPENSES.ID =:#\${body}")
 
-        from("direct:select-all-reports").to("sql:select * FROM REPORT").log("\${body}")
+        from("direct:select-all-reports").log("\${body}")
+                .to("sql:select * from report where fk_app_user IN (select id from app_user where name like :#\${body})")
+                .log("\${body}")
     }
 
 }

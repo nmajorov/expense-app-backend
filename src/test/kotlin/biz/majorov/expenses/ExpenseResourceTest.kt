@@ -11,91 +11,12 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
 
-/**
- * test restful api
- *
- */
-
-open class ResourceTest {
-
-
-//    @Inject
-//    lateinit var categoryRepository: CategoryRepository
-
- //    @Inject
- //   lateinit var locationRepository: LocationRepository
-
-    /**
-    @BeforeEach
-    @Transactional
-    fun `clean up database`() {
-        println("cleaning database")
-        cleanDB.invoke()
-    }
-
-    @Transactional
-    fun saveTour(description: String ="very nice tour", price: Double = 499.99,
-                 category: Category, location: Location): Tour {
-        val tour = Tour()
-        tour.category = category
-        tour.location = location
-        tour.price = price
-        tour.description = description
-
-        tourRepository?.persist(tour)
-
-        return tour
-    }
-
-    @Transactional
-    fun saveLocation(country: String, region: String, destName: String): Location {
-        println("called save location")
-        val location = Location()
-        location.country = country
-        location.region = region
-        location.destinationName = destName
-
-        locationRepository.run {
-            persist(location)
-        }
-
-        return location
-    }
-
-
-    @Transactional
-    fun saveCategory(t: String): Category {
-        val category = Category()
-        category.type = t
-
-        categoryRepository.run {
-            persist(category)
-        }
-
-        return category
-    }
-
-    /**
-     * lambda for cleaning database
-     */
-    val cleanDB = {
-        tourRepository?.deleteAll()
-        categoryRepository.deleteAll()
-        locationRepository.deleteAll()
-    }
-     **/
-}
-
-
-// parse json only for all tests
-val defaultParser = Parser.JSON
-
 
 /**
- * test Expenses api
+ * test Expenses API
  */
 @QuarkusTest
-class ExpenseResourceTest : ResourceTest() {
+class ExpenseResourceTest : OAuthTest() {
 
     @Test
     fun `test get all expenses`() {

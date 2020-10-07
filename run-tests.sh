@@ -24,4 +24,4 @@ export KEYCLOAK_CLIENT_ID="backend"
 export KEYCLOAK_SECRET="b530c9d1-45f0-4f30-87d2-471530534c4a"
 
 
-$SCRIPT_DIR/mvnw  clean test
+$SCRIPT_DIR/mvnw    clean test

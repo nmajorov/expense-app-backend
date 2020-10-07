@@ -30,7 +30,8 @@ class ReportServiceImpl: ReportService {
      */
     override fun findAll(@Context ctx: SecurityContext): Response {
         logger.debug("findAll report for user name: ${ctx.userPrincipal.name}")
-        val exchange = this.camelContext.createFluentProducerTemplate().to("direct:select-all-reports").send()
+        val exchange = this.camelContext.createFluentProducerTemplate().
+        to("direct:select-all-reports").withBody(ctx.userPrincipal.name).send()
 
         @Suppress("UNCHECKED_CAST")
         val camelResult= exchange.getIn().body as List<Map<String, Any>>
