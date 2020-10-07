@@ -1,12 +1,6 @@
 package biz.majorov.expenses
 
-import io.agroal.api.AgroalDataSource
-import io.quarkus.agroal.DataSource
 import io.quarkus.security.Authenticated
-import org.apache.camel.CamelContext
-import org.apache.camel.ProducerTemplate
-import org.apache.camel.component.sql.SqlConstants
-import org.apache.commons.logging.LogFactory
 import org.eclipse.microprofile.openapi.annotations.OpenAPIDefinition
 import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType
@@ -18,12 +12,6 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses
-import java.math.BigDecimal
-import java.sql.Date
-import java.sql.Timestamp
-import javax.annotation.security.RolesAllowed
-import javax.enterprise.context.ApplicationScoped
-import javax.inject.Inject
 import javax.ws.rs.*
 import javax.ws.rs.core.Context
 import javax.ws.rs.core.MediaType
@@ -130,6 +118,46 @@ interface ReportService {
     ])
     @Authenticated
     fun findAll(@Context ctx: SecurityContext): Response
+
+
+    @DELETE
+    @Path("/reports/{id}")
+    @Operation(summary = "Delete an report")
+    @APIResponses(value = [
+
+        APIResponse(responseCode = "200", description = "successful operation",
+                content = [Content(mediaType = "application/json",
+                        schema = Schema(implementation = Response::class))]),
+        APIResponse(responseCode = "400", description = "invalid input"),
+        APIResponse(responseCode = "404", description = "not found")
+    ])
+    fun delete(@PathParam("id") @Parameter(description = "item id to delete", required = true,
+            schema = Schema(type = SchemaType.NUMBER)) id: Long) :Response
+
+    @POST
+    @Path("/reports")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Add a new report item")
+    @APIResponses(value = [
+        APIResponse(responseCode = "200", description = "successful operation",
+                content = [Content(mediaType = "application/json",
+                        schema = Schema(implementation = Response::class))]),
+        APIResponse(responseCode = "405", description = "invalid input")
+    ])
+    fun create(report: Report) :Response
+
+
+    @PUT
+    @Path("/reports")
+    @Operation(summary = "update an existing report")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @APIResponses(value = [
+        APIResponse(responseCode = "200", description = "successful operation")
+    ]
+    )
+    fun update(report: Report):Response
+
 }
 
 

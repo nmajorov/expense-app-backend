@@ -24,7 +24,10 @@ class ReportServiceImpl: ReportService {
     lateinit var camelContext: CamelContext
 
 
-
+    /**
+     * get all reports for user
+     * user information will be taken from security context
+     */
     override fun findAll(@Context ctx: SecurityContext): Response {
         logger.debug("findAll report for user name: ${ctx.userPrincipal.name}")
         val exchange = this.camelContext.createFluentProducerTemplate().to("direct:select-all-reports").send()
@@ -37,6 +40,18 @@ class ReportServiceImpl: ReportService {
             entities.add(convertRowToEntity(it))
         }
         return Response.ok(entities, MediaType.APPLICATION_JSON).build()
+    }
+
+    override fun delete(id: Long): Response {
+        TODO("Not yet implemented")
+    }
+
+    override fun create(report: Report): Response {
+        TODO("Not yet implemented")
+    }
+
+    override fun update(report: Report): Response {
+        TODO("Not yet implemented")
     }
 
 

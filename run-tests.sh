@@ -10,9 +10,10 @@ cd $SCRIPT_DIR
 echo "run with postgresql"
 export POSTGRESQL_SERVICE_NAME=127.0.0.1
 
-export POSTGRESQL_USER=fuse
-export POSTGRESQL_PASSWORD=fuse
-export POSTGRESQL_DATABASE=fuse
+export POSTGRESQL_USER=keycloack
+export POSTGRESQL_PASSWORD=keycloack
+export POSTGRESQL_DATABASE=root
+
 
 echo $(env | grep POSTGRESQL)
 
