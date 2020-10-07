@@ -106,6 +106,7 @@ ALTER TABLE IF EXISTS ONLY public.federated_identity DROP CONSTRAINT IF EXISTS f
 ALTER TABLE IF EXISTS ONLY public.client_attributes DROP CONSTRAINT IF EXISTS fk3c47c64beacca966;
 ALTER TABLE IF EXISTS ONLY public.identity_provider DROP CONSTRAINT IF EXISTS fk2b4ebc52ae5c3b34;
 ALTER TABLE IF EXISTS ONLY public.client_session_auth_status DROP CONSTRAINT IF EXISTS auth_status_constraint;
+ALTER TABLE IF EXISTS ONLY expenses.expenses DROP CONSTRAINT IF EXISTS expenses_fk_report_fkey;
 DROP INDEX IF EXISTS public.idx_web_orig_client;
 DROP INDEX IF EXISTS public.idx_usr_fed_prv_realm;
 DROP INDEX IF EXISTS public.idx_usr_fed_map_realm;
@@ -183,6 +184,7 @@ DROP INDEX IF EXISTS public.idx_auth_exec_realm_flow;
 DROP INDEX IF EXISTS public.idx_auth_exec_flow;
 DROP INDEX IF EXISTS public.idx_auth_config_realm;
 DROP INDEX IF EXISTS public.idx_assoc_pol_assoc_pol_id;
+DROP INDEX IF EXISTS expenses.flyway_schema_history_s_idx;
 ALTER TABLE IF EXISTS ONLY public.user_entity DROP CONSTRAINT IF EXISTS uk_ru8tt6t700s9v50bu18ws5ha6;
 ALTER TABLE IF EXISTS ONLY public.realm DROP CONSTRAINT IF EXISTS uk_orvsdmla56612eaefiq6wl5oi;
 ALTER TABLE IF EXISTS ONLY public.user_consent DROP CONSTRAINT IF EXISTS uk_jkuwuvd56ontgsuhogm8uewrt;
@@ -205,6 +207,7 @@ ALTER TABLE IF EXISTS ONLY public.databasechangeloglock DROP CONSTRAINT IF EXIST
 ALTER TABLE IF EXISTS ONLY public.client_scope DROP CONSTRAINT IF EXISTS pk_cli_template;
 ALTER TABLE IF EXISTS ONLY public.client_scope_attributes DROP CONSTRAINT IF EXISTS pk_cl_tmpl_attr;
 ALTER TABLE IF EXISTS ONLY public.osssotest1t9vgmjbosststxtable DROP CONSTRAINT IF EXISTS osssotest1t9vgmjbosststxtable_pkey;
+ALTER TABLE IF EXISTS ONLY public.osssotest1szvwvjbosststxtable DROP CONSTRAINT IF EXISTS osssotest1szvwvjbosststxtable_pkey;
 ALTER TABLE IF EXISTS ONLY public.osssotest19m4nwjbosststxtable DROP CONSTRAINT IF EXISTS osssotest19m4nwjbosststxtable_pkey;
 ALTER TABLE IF EXISTS ONLY public.web_origins DROP CONSTRAINT IF EXISTS constraint_web_origins;
 ALTER TABLE IF EXISTS ONLY public.user_session_note DROP CONSTRAINT IF EXISTS constraint_usn_pk;
@@ -293,6 +296,10 @@ ALTER TABLE IF EXISTS ONLY public.client_scope_client DROP CONSTRAINT IF EXISTS 
 ALTER TABLE IF EXISTS ONLY public.client_auth_flow_bindings DROP CONSTRAINT IF EXISTS c_cli_flow_bind;
 ALTER TABLE IF EXISTS ONLY public.keycloak_role DROP CONSTRAINT IF EXISTS "UK_J3RWUVD56ONTGSUHOGM184WW2-2";
 ALTER TABLE IF EXISTS ONLY public.username_login_failure DROP CONSTRAINT IF EXISTS "CONSTRAINT_17-2";
+ALTER TABLE IF EXISTS ONLY expenses.report DROP CONSTRAINT IF EXISTS report_pkey;
+ALTER TABLE IF EXISTS ONLY expenses.flyway_schema_history DROP CONSTRAINT IF EXISTS flyway_schema_history_pk;
+ALTER TABLE IF EXISTS ONLY expenses.expenses DROP CONSTRAINT IF EXISTS expenses_pkey;
+ALTER TABLE IF EXISTS expenses.expenses ALTER COLUMN id DROP DEFAULT;
 DROP TABLE IF EXISTS public.web_origins;
 DROP TABLE IF EXISTS public.username_login_failure;
 DROP TABLE IF EXISTS public.user_session_note;
@@ -336,6 +343,7 @@ DROP TABLE IF EXISTS public.protocol_mapper_config;
 DROP TABLE IF EXISTS public.protocol_mapper;
 DROP TABLE IF EXISTS public.policy_config;
 DROP TABLE IF EXISTS public.osssotest1t9vgmjbosststxtable;
+DROP TABLE IF EXISTS public.osssotest1szvwvjbosststxtable;
 DROP TABLE IF EXISTS public.osssotest19m4nwjbosststxtable;
 DROP TABLE IF EXISTS public.offline_user_session;
 DROP TABLE IF EXISTS public.offline_client_session;
@@ -388,8 +396,22 @@ DROP TABLE IF EXISTS public.authentication_flow;
 DROP TABLE IF EXISTS public.authentication_execution;
 DROP TABLE IF EXISTS public.associated_policy;
 DROP TABLE IF EXISTS public.admin_event_entity;
+DROP TABLE IF EXISTS expenses.report;
+DROP TABLE IF EXISTS expenses.flyway_schema_history;
+DROP SEQUENCE IF EXISTS expenses.expenses_id_seq;
+DROP TABLE IF EXISTS expenses.expenses;
 DROP EXTENSION IF EXISTS plpgsql;
 DROP SCHEMA IF EXISTS public;
+DROP SCHEMA IF EXISTS expenses;
+--
+-- Name: expenses; Type: SCHEMA; Schema: -; Owner: keycloak
+--
+
+CREATE SCHEMA expenses;
+
+
+ALTER SCHEMA expenses OWNER TO keycloak;
+
 --
 -- Name: public; Type: SCHEMA; Schema: -; Owner: postgres
 --
@@ -423,6 +445,78 @@ COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 SET default_tablespace = '';
 
 SET default_with_oids = false;
+
+--
+-- Name: expenses; Type: TABLE; Schema: expenses; Owner: keycloak
+--
+
+CREATE TABLE expenses.expenses (
+    id integer NOT NULL,
+    description character varying(250) NOT NULL,
+    amount numeric(15,6),
+    created date,
+    tstamp timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    fk_report integer
+);
+
+
+ALTER TABLE expenses.expenses OWNER TO keycloak;
+
+--
+-- Name: expenses_id_seq; Type: SEQUENCE; Schema: expenses; Owner: keycloak
+--
+
+CREATE SEQUENCE expenses.expenses_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE expenses.expenses_id_seq OWNER TO keycloak;
+
+--
+-- Name: expenses_id_seq; Type: SEQUENCE OWNED BY; Schema: expenses; Owner: keycloak
+--
+
+ALTER SEQUENCE expenses.expenses_id_seq OWNED BY expenses.expenses.id;
+
+
+--
+-- Name: flyway_schema_history; Type: TABLE; Schema: expenses; Owner: keycloak
+--
+
+CREATE TABLE expenses.flyway_schema_history (
+    installed_rank integer NOT NULL,
+    version character varying(50),
+    description character varying(200) NOT NULL,
+    type character varying(20) NOT NULL,
+    script character varying(1000) NOT NULL,
+    checksum integer,
+    installed_by character varying(100) NOT NULL,
+    installed_on timestamp without time zone DEFAULT now() NOT NULL,
+    execution_time integer NOT NULL,
+    success boolean NOT NULL
+);
+
+
+ALTER TABLE expenses.flyway_schema_history OWNER TO keycloak;
+
+--
+-- Name: report; Type: TABLE; Schema: expenses; Owner: keycloak
+--
+
+CREATE TABLE expenses.report (
+    id integer NOT NULL,
+    name character varying(100) NOT NULL,
+    created date,
+    tstamp timestamp without time zone DEFAULT CURRENT_TIMESTAMP
+);
+
+
+ALTER TABLE expenses.report OWNER TO keycloak;
 
 --
 -- Name: admin_event_entity; Type: TABLE; Schema: public; Owner: keycloak
@@ -1234,6 +1328,21 @@ CREATE TABLE public.osssotest19m4nwjbosststxtable (
 ALTER TABLE public.osssotest19m4nwjbosststxtable OWNER TO keycloak;
 
 --
+-- Name: osssotest1szvwvjbosststxtable; Type: TABLE; Schema: public; Owner: keycloak
+--
+
+CREATE TABLE public.osssotest1szvwvjbosststxtable (
+    statetype integer NOT NULL,
+    hidden integer NOT NULL,
+    typename character varying(255) NOT NULL,
+    uidstring character varying(255) NOT NULL,
+    objectstate bytea
+);
+
+
+ALTER TABLE public.osssotest1szvwvjbosststxtable OWNER TO keycloak;
+
+--
 -- Name: osssotest1t9vgmjbosststxtable; Type: TABLE; Schema: public; Owner: keycloak
 --
 
@@ -1893,6 +2002,40 @@ CREATE TABLE public.web_origins (
 ALTER TABLE public.web_origins OWNER TO keycloak;
 
 --
+-- Name: expenses id; Type: DEFAULT; Schema: expenses; Owner: keycloak
+--
+
+ALTER TABLE ONLY expenses.expenses ALTER COLUMN id SET DEFAULT nextval('expenses.expenses_id_seq'::regclass);
+
+
+--
+-- Data for Name: expenses; Type: TABLE DATA; Schema: expenses; Owner: keycloak
+--
+
+INSERT INTO expenses.expenses VALUES (1, 'Lunch', 30.300000, '2019-07-30', '2020-10-07 09:02:45.624008', 1);
+INSERT INTO expenses.expenses VALUES (2, 'Lenovo Tablet', 149.000000, '2019-07-30', '2020-10-07 09:02:45.624008', 1);
+INSERT INTO expenses.expenses VALUES (3, 'Dinner', 30.300000, '2019-09-29', '2020-10-07 09:02:45.624008', 1);
+INSERT INTO expenses.expenses VALUES (4, 'Book', 28.190000, '2019-09-29', '2020-10-07 09:02:45.624008', 1);
+INSERT INTO expenses.expenses VALUES (5, 'train ticket', 10.120000, '2020-10-07', '2020-10-07 09:02:48.874697', 1);
+INSERT INTO expenses.expenses VALUES (7, 'train ticket', 45.990000, '2020-10-07', '2020-10-07 09:02:49.407413', 1);
+
+
+--
+-- Data for Name: flyway_schema_history; Type: TABLE DATA; Schema: expenses; Owner: keycloak
+--
+
+INSERT INTO expenses.flyway_schema_history VALUES (0, NULL, '<< Flyway Schema Creation >>', 'SCHEMA', '"expenses"', NULL, 'keycloak', '2020-10-07 09:02:45.586512', 0, true);
+INSERT INTO expenses.flyway_schema_history VALUES (1, '1.0.0', 'Quarkus', 'SQL', 'db/migration/V1.0.0__Quarkus.sql', 1558141439, 'keycloak', '2020-10-07 09:02:45.624008', 40, true);
+
+
+--
+-- Data for Name: report; Type: TABLE DATA; Schema: expenses; Owner: keycloak
+--
+
+INSERT INTO expenses.report VALUES (1, 'Simple Report', '2019-07-30', '2020-10-07 09:02:45.624008');
+
+
+--
 -- Data for Name: admin_event_entity; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
@@ -2171,8 +2314,8 @@ INSERT INTO public.client VALUES ('ea3ffadc-0a56-4c64-be05-daa6adf65801', true, 
 INSERT INTO public.client VALUES ('ce0f9453-cb5a-4f79-8269-bb303f7c2ce2', true, false, 'broker', 0, false, 'e6351c65-ad8c-4aa0-bb3e-c59df577a4c3', NULL, false, NULL, false, 'basic', 'openid-connect', 0, false, false, '${client_broker}', false, 'client-secret', NULL, NULL, NULL, true, false, false, false);
 INSERT INTO public.client VALUES ('9dac498e-28fa-4cc0-8673-199f0649e772', true, false, 'security-admin-console', 0, true, 'db54762e-6c6f-4502-a13f-4cbfa3c501cb', '/admin/basic/console/', false, NULL, false, 'basic', 'openid-connect', 0, false, false, '${client_security-admin-console}', false, 'client-secret', '${authAdminUrl}', NULL, NULL, true, false, false, false);
 INSERT INTO public.client VALUES ('ca96705a-df78-4b2d-8c45-d2c58a14027f', true, false, 'admin-cli', 0, true, 'ac40b73c-0f4d-4a68-a609-fb9ef7941183', NULL, false, NULL, false, 'basic', 'openid-connect', 0, false, false, '${client_admin-cli}', false, 'client-secret', NULL, NULL, NULL, false, false, true, false);
-INSERT INTO public.client VALUES ('b9383891-8e16-4b4b-9259-12f206ec6141', true, true, 'app-react', 0, true, 'f93045d6-6969-4a43-9871-e7d9a304719a', NULL, false, 'http://nodejs-gui-nm-demo.apps.ocp-cluster-1.rhlab.ch/', false, 'basic', 'openid-connect', -1, false, false, NULL, false, 'client-secret', 'http://nodejs-gui-nm-demo.apps.ocp-cluster-1.rhlab.ch/', NULL, NULL, true, false, true, false);
 INSERT INTO public.client VALUES ('16bbce31-7b08-4de6-bd54-e4def941561e', true, true, 'backend', 0, false, '16c3384b-725d-410d-8107-df3319165f70', NULL, false, NULL, false, 'basic', 'openid-connect', -1, false, false, NULL, true, 'client-secret', NULL, 'backend quarkus service', NULL, false, false, false, false);
+INSERT INTO public.client VALUES ('b9383891-8e16-4b4b-9259-12f206ec6141', true, true, 'app-react', 0, true, 'f93045d6-6969-4a43-9871-e7d9a304719a', 'http://nodejs-gui-nm-demo.apps.ocp-cluster-1.rhlab.ch', false, 'http://nodejs-gui-nm-demo.apps.ocp-cluster-1.rhlab.ch', false, 'basic', 'openid-connect', -1, false, false, NULL, false, 'client-secret', 'http://nodejs-gui-nm-demo.apps.ocp-cluster-1.rhlab.ch', NULL, NULL, true, false, true, false);
 
 
 --
@@ -3259,6 +3402,13 @@ INSERT INTO public.osssotest19m4nwjbosststxtable VALUES (1, 0, 'EISNAME', '0:fff
 
 
 --
+-- Data for Name: osssotest1szvwvjbosststxtable; Type: TABLE DATA; Schema: public; Owner: keycloak
+--
+
+INSERT INTO public.osssotest1szvwvjbosststxtable VALUES (1, 0, 'EISNAME', '0:ffff0a81033a:765ae18a:5f7d83b9:1d', '\x23424501102040000000001173736f2d746573742d312d737a7677760000000000000001000000226a6176613a6a626f73732f64617461736f75726365732f4b6579636c6f616b4453000000');
+
+
+--
 -- Data for Name: osssotest1t9vgmjbosststxtable; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
@@ -4225,6 +4375,37 @@ INSERT INTO public.web_origins VALUES ('b9383891-8e16-4b4b-9259-12f206ec6141', '
 
 
 --
+-- Name: expenses_id_seq; Type: SEQUENCE SET; Schema: expenses; Owner: keycloak
+--
+
+SELECT pg_catalog.setval('expenses.expenses_id_seq', 7, true);
+
+
+--
+-- Name: expenses expenses_pkey; Type: CONSTRAINT; Schema: expenses; Owner: keycloak
+--
+
+ALTER TABLE ONLY expenses.expenses
+    ADD CONSTRAINT expenses_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: flyway_schema_history flyway_schema_history_pk; Type: CONSTRAINT; Schema: expenses; Owner: keycloak
+--
+
+ALTER TABLE ONLY expenses.flyway_schema_history
+    ADD CONSTRAINT flyway_schema_history_pk PRIMARY KEY (installed_rank);
+
+
+--
+-- Name: report report_pkey; Type: CONSTRAINT; Schema: expenses; Owner: keycloak
+--
+
+ALTER TABLE ONLY expenses.report
+    ADD CONSTRAINT report_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: username_login_failure CONSTRAINT_17-2; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
@@ -4929,6 +5110,14 @@ ALTER TABLE ONLY public.osssotest19m4nwjbosststxtable
 
 
 --
+-- Name: osssotest1szvwvjbosststxtable osssotest1szvwvjbosststxtable_pkey; Type: CONSTRAINT; Schema: public; Owner: keycloak
+--
+
+ALTER TABLE ONLY public.osssotest1szvwvjbosststxtable
+    ADD CONSTRAINT osssotest1szvwvjbosststxtable_pkey PRIMARY KEY (uidstring, typename, statetype);
+
+
+--
 -- Name: osssotest1t9vgmjbosststxtable osssotest1t9vgmjbosststxtable_pkey; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
@@ -5102,6 +5291,13 @@ ALTER TABLE ONLY public.realm
 
 ALTER TABLE ONLY public.user_entity
     ADD CONSTRAINT uk_ru8tt6t700s9v50bu18ws5ha6 UNIQUE (realm_id, username);
+
+
+--
+-- Name: flyway_schema_history_s_idx; Type: INDEX; Schema: expenses; Owner: keycloak
+--
+
+CREATE INDEX flyway_schema_history_s_idx ON expenses.flyway_schema_history USING btree (success);
 
 
 --
@@ -5641,6 +5837,14 @@ CREATE INDEX idx_usr_fed_prv_realm ON public.user_federation_provider USING btre
 --
 
 CREATE INDEX idx_web_orig_client ON public.web_origins USING btree (client_id);
+
+
+--
+-- Name: expenses expenses_fk_report_fkey; Type: FK CONSTRAINT; Schema: expenses; Owner: keycloak
+--
+
+ALTER TABLE ONLY expenses.expenses
+    ADD CONSTRAINT expenses_fk_report_fkey FOREIGN KEY (fk_report) REFERENCES expenses.report(id);
 
 
 --
