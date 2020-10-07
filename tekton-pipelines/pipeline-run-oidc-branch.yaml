@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1alpha1
 kind: PipelineRun
 metadata:
-  generateName: backend-build-run
+  generateName: backend-build-run-oidc-branch
 spec:
   params:
     - name: git-revision
