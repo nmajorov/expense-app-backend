@@ -26,10 +26,23 @@ class Routes {
                 "  CREATED = to_date(:#\$simple{body.createdAT.toString},'YYYY-MM-DD'),  TSTAMP = now(), FK_REPORT=:#\$simple{body.report} " +
                 " WHERE ID= :#\$simple{body.id}")
         from("direct:delete-expense").to("sql:DELETE FROM EXPENSES  WHERE EXPENSES.ID =:#\${body}")
+        //user operations
+        // the user coming from sso so we have to save it before run other operations
+        from("direct:select-user-by-name").to("sql:SELECT  ID, NAME  FROM  app_user WHERE NAME LIKE :#\${body}").log("rows: \${body}")
 
-        from("direct:select-all-reports").log("\${body}")
-                .to("sql:select * from report where fk_app_user IN (select id from app_user where name like :#\${body})")
+        from("direct:insert-user").to("sql:INSERT INTO APP_USER (NAME) VALUES (:#\${body})")
+        
+
+	from("direct:select-all-reports").log("get reports for user with id: \${body}")
+                .to("sql:select * from report where fk_app_user = :#\${body}")
                 .log("\${body}")
+
+        from("direct:delete-report").to("sql:DELETE FROM report  WHERE report.id =:#\${body}")
+
+        //from("direct:insert-report").to("INSERT INTO REPORT (NAME, CREATED,fk_app_user) " +
+          //          "VALUES (3, 'Simple Report2','2019-07-30', (select DISTINCT id from app_user where name LIKE 'niko'))"
+           // )
+
     }
 
 }

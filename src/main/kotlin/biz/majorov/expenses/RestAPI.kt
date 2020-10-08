@@ -122,7 +122,7 @@ interface ReportService {
 
     @DELETE
     @Path("/reports/{id}")
-    @Operation(summary = "Delete an report")
+    @Operation(summary = "Delete an report by id")
     @APIResponses(value = [
 
         APIResponse(responseCode = "200", description = "successful operation",
@@ -131,7 +131,7 @@ interface ReportService {
         APIResponse(responseCode = "400", description = "invalid input"),
         APIResponse(responseCode = "404", description = "not found")
     ])
-    fun delete(@PathParam("id") @Parameter(description = "item id to delete", required = true,
+    fun delete(@Context ctx: SecurityContext ,@PathParam("id") @Parameter(description = "item id to delete", required = true,
             schema = Schema(type = SchemaType.NUMBER)) id: Long) :Response
 
     @POST

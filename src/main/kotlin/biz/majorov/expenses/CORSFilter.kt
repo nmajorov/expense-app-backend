@@ -17,12 +17,12 @@ import org.apache.commons.logging.Log
 class CORSFilter : ContainerResponseFilter {
     @Throws(IOException::class)
     override fun filter(requestContext: ContainerRequestContext, responseContext: ContainerResponseContext) {
-        LOGGER.debug("Modifing response with CORSFIlter: " + responseContext.headers)
+        LOGGER.debug("Modifying response with CORSFIlter: " + responseContext.headers)
         val headers = responseContext.headers
         headers.putSingle("Access-Control-Allow-Origin", "*")
         headers.putSingle("Access-Control-Allow-Headers","*")
         headers.putSingle("Access-Control-Allow-Methods", "*")
-        LOGGER.debug("Modified to add the required header: " + responseContext.headers)
+        LOGGER.debug("Modified headers: " + responseContext.headers)
     }
 
     companion object {

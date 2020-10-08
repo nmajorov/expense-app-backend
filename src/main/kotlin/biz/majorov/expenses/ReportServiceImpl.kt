@@ -23,6 +23,9 @@ class ReportServiceImpl: ReportService {
     @Inject
     lateinit var camelContext: CamelContext
 
+    @Inject
+    lateinit var userCheckService: UserCheckService
+
 
     /**
      * get all reports for user
@@ -30,8 +33,9 @@ class ReportServiceImpl: ReportService {
      */
     override fun findAll(@Context ctx: SecurityContext): Response {
         logger.debug("findAll report for user name: ${ctx.userPrincipal.name}")
+        val user = userCheckService.checkUser(ctx.userPrincipal.name)
         val exchange = this.camelContext.createFluentProducerTemplate().
-        to("direct:select-all-reports").withBody(ctx.userPrincipal.name).send()
+        to("direct:select-all-reports").withBody(user.id).send()
 
         @Suppress("UNCHECKED_CAST")
         val camelResult= exchange.getIn().body as List<Map<String, Any>>
@@ -43,9 +47,16 @@ class ReportServiceImpl: ReportService {
         return Response.ok(entities, MediaType.APPLICATION_JSON).build()
     }
 
-    override fun delete(id: Long): Response {
-        TODO("Not yet implemented")
+    /**
+     * delete report by id
+     */
+    override fun delete(@Context ctx: SecurityContext ,id: Long): Response {
+        logger.debug("delete report with id: $id for user name: ${ctx.userPrincipal.name}")
+        val exchange = this.camelContext.createFluentProducerTemplate().
+        to("direct:delete-report").withBody(id).send()
+        return Response.ok().build()
     }
+
 
     override fun create(report: Report): Response {
         TODO("Not yet implemented")

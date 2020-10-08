@@ -50,7 +50,7 @@ class Expense(
 		| createAt: ${createdAT} | report id: ${report} ] """.trimMargin()
 }
 
- @JsonIgnoreProperties(ignoreUnknown = true)
+@JsonIgnoreProperties(ignoreUnknown = true)
 class Report(
 		@JsonProperty(value = "id")
 		var id: Int? = null,
@@ -67,6 +67,20 @@ class Report(
 
 	override fun toString(): String = """Report[ id: ${id} | name: $name | createAt: ${createdAT} ] """
 }
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+class User(
+		@JsonProperty(value = "id")
+		var id: Int? = null,
+		@JsonProperty(value = "name")
+		var name: String
+){
+
+	constructor() : this(null, "")
+
+	override fun toString(): String = """User[ id: ${id} | name: $name] """
+}
+
 
 class LocalDateDeserializer : StdDeserializer<LocalDate>(LocalDate::class.java) {
 
