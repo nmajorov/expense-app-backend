@@ -23,5 +23,26 @@ export KEYCLOAK_INTROSPECT_URL="$KEYCLOAK_URL/protocol/openid-connect/token/intr
 export KEYCLOAK_CLIENT_ID="backend"
 export KEYCLOAK_SECRET="b530c9d1-45f0-4f30-87d2-471530534c4a"
 
-
+run_maven () {
 $SCRIPT_DIR/mvnw    clean test
+
+}
+
+run_gradle () {
+
+  $SCRIPT_DIR/gradlew test
+}
+
+while [ "$#" -gt 0 ]
+do
+    case "$1" in
+      gradle)
+          run_gradle
+          ;;
+      maven)
+         run_maven
+          ;;
+
+     esac
+    shift
+done
