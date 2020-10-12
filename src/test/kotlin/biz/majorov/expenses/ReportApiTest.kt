@@ -5,6 +5,8 @@ import io.restassured.RestAssured
 import io.restassured.RestAssured.given
 import io.restassured.parsing.Parser
 import org.junit.jupiter.api.Test
+import java.sql.Date
+import java.time.LocalDate
 import java.util.HashMap
 
 open
@@ -106,6 +108,51 @@ class ReportApiTest : OAuthTest() {
     fun testUpdateReport(){
         println("${object {}.javaClass.enclosingMethod.name} ")
         println("use token:" + OAuthTest.TOKEN)
+
+        println("\n\n *****  ${object {}.javaClass.enclosingMethod.name} ***** \n")
+
+        println("\n use token:" + OAuthTest.TOKEN)
+        println("\n 1: get  reports from Database\n ")
+        val reports = given().header("Authorization","Bearer " + OAuthTest.TOKEN)
+                .`when`().get("/reports").`as`(mutableListOf<HashMap<String?, Any?>>()::class.java)
+
+        assert(reports.isNotEmpty())
+        var lastReport =  Report()
+        reports.last().let {
+            lastReport.id = it["id"] as Int
+            lastReport.name = (it.get("name") as String)
+            lastReport.createdAT = LocalDate.parse(it.get("createdAT") as String)
+
+        }
+
+        println("\n 2: let change report: $lastReport")
+
+        lastReport.name ="new test report"
+
+        println("\n send  changed report: $lastReport to server \n")
+
+        given().contentType("application/json")
+                .header("Authorization","Bearer " + OAuthTest.TOKEN)
+                .body(lastReport)
+                .`when`().put("/reports").then().statusCode(200)
+
+        println("\n 3: get changed report from database \n")
+
+        val result = Report()
+        given().header("Authorization","Bearer " + OAuthTest.TOKEN)
+                .`when`().get("/reports/${lastReport.id}").
+                `as`(HashMap<String?, String?>()::class.java).let {
+
+                    result.id = it["id"] as Int
+                    result.name = (it.get("name") as String)
+                    result.createdAT = LocalDate.parse((it.get("createdAT") as String))
+
+                }
+
+        println("\n got result $result")
+        assert(lastReport.id == result.id)
+        assert(lastReport.name.equals(result.name))
+
     }
 }
 

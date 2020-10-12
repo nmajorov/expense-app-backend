@@ -47,6 +47,12 @@ class Routes {
               "VALUES ( :#\$simple{body['report'].name},(select  DATE(date) from CURRENT_TIMESTAMP as date)," +
                 " :#\$simple{body['user'].id})");
 
+        from("direct:update-report").log("report to update: \$simple{body['report']}")
+                .to("sql:UPDATE REPORT SET NAME = :#\$simple{body['report'].name} " +
+                ", CREATED = to_date(:#\$simple{body['report'].createdAT.toString},'YYYY-MM-DD') , TSTAMP = now() " +
+                        "WHERE fk_app_user =" +
+                " :#\$simple{body['user'].id} AND ID = :#\$simple{body['report'].id}");
+
     }
 
 }

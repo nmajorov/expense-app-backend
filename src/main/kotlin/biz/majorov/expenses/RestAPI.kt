@@ -172,7 +172,8 @@ interface ReportService {
         APIResponse(responseCode = "200", description = "successful operation")
     ]
     )
-    fun update(report: Report):Response
+    @Authenticated
+    fun update(@Context ctx: SecurityContext, report: Report):Response
 
 }
 

@@ -101,8 +101,16 @@ class ReportServiceImpl: ReportService {
 
     }
 
-    override fun update(report: Report): Response {
-        TODO("Not yet implemented")
+    override fun update(@Context ctx: SecurityContext,  report: Report): Response {
+        val user = userCheckService.checkUser(ctx.userPrincipal.name)
+        val bodyMessage = mapOf<String,Any>("report" to report, "user" to user)
+        val exchange= this.camelContext.createFluentProducerTemplate()
+                .to("direct:update-report").withBody(bodyMessage).send();
+        if (exchange.isFailed) {
+            return Response.serverError().build()
+        } else {
+            return Response.ok().build()
+        }
     }
 
 
