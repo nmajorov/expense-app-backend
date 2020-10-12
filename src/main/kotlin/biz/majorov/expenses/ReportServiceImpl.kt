@@ -47,9 +47,30 @@ class ReportServiceImpl: ReportService {
         return Response.ok(entities, MediaType.APPLICATION_JSON).build()
     }
 
+
+    /**
+     * get report by id
+     */
     override fun find(ctx: SecurityContext, id: Long): Response {
-        TODO("Not yet implemented")
+        logger.debug("find  report with id: $id for user name: ${ctx.userPrincipal.name}")
+        val exchange = this.camelContext.createFluentProducerTemplate().
+        to("direct:select-report-by-id").withBody(id).send()
+
+        @Suppress("UNCHECKED_CAST")
+        val camelResult= exchange.getIn().body as List<Map<String, Any>>
+        val entities = mutableListOf<Report>()
+        //convert sql result to the entities
+        //convert sql result to the entities
+        camelResult.forEach {
+            entities.add(convertRowToEntity(it))
+        }
+        if (entities.size > 1){
+            logger.error("found more then one report")
+            return Response.serverError().build()
+        }
+        return Response.ok(entities.first(), MediaType.APPLICATION_JSON).build()
     }
+
 
     /**
      * delete report by id

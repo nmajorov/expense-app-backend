@@ -74,7 +74,38 @@ class ReportApiTest : OAuthTest() {
                     .then()
                     .statusCode(200)
         }
+
+        //TODO check that related expenses deleted as well
+
+    }
+
+
+    @Test
+    fun testFindOneReport(){
+        println("\n\n *****  ${object {}.javaClass.enclosingMethod.name} ***** \n")
+
+        println("\n use token:" + OAuthTest.TOKEN)
+        println("\n 1: get  reports from Database\n ")
+        val reports = given().header("Authorization","Bearer " + OAuthTest.TOKEN)
+                .`when`().get("/reports").`as`(mutableListOf<HashMap<String?, Any?>>()::class.java)
+
+        assert(reports.isNotEmpty())
+        println("\n 2: get  report with id: ${reports.last()["id"]}")
+
+        val result =  given().header("Authorization","Bearer " + OAuthTest.TOKEN)
+                .`when`().get("/reports/${reports.last()["id"]}").`as`(HashMap<String?, String?>()::class.java)
+
+        println("\n 3: get  report: $result for id: ${reports.last()["id"]}\n ")
+
+        ((result["id"] as Int) == (reports.last()["id"] as Int)).let{ assert(it) }
+        assert(result["name"].toString().equals(reports.last()["name"]))
+
+    }
+
+    @Test
+    fun testUpdateReport(){
+        println("${object {}.javaClass.enclosingMethod.name} ")
+        println("use token:" + OAuthTest.TOKEN)
     }
 }
 
-class SSOClient

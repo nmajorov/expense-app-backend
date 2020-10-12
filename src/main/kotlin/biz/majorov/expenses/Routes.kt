@@ -37,6 +37,10 @@ class Routes {
                 .to("sql:select * from report where fk_app_user = :#\${body}")
                 .log("\${body}")
 
+        from("direct:select-report-by-id")
+                .to("sql:select * from report where id = :#\${body}")
+                .log("\${body}")
+
         from("direct:delete-report").to("sql:DELETE FROM report  WHERE report.id =:#\${body}")
 
         from("direct:insert-report").log("report to insert \$simple{body['report'].name}").to("sql:INSERT INTO REPORT (NAME, CREATED,fk_app_user) " +
