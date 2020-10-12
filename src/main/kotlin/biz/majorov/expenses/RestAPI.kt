@@ -40,7 +40,8 @@ interface ExpensesService {
 
     @GET
     @Path("/expenses")
-    @Operation(description = "Get all expenses in system")
+    @Operation(description = "Get all expenses for report")
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @APIResponses(value = [
         APIResponse(responseCode = "200", description = "successful operation",
@@ -48,7 +49,8 @@ interface ExpensesService {
                         schema = Schema(implementation = Expense::class))]
         )
     ])
-    fun findAll(): Response
+    @Authenticated
+    fun findAll(@Parameter(description = "report id") reportID:Int): Response
 
     @DELETE
     @Path("/expenses/{id}")
@@ -61,6 +63,7 @@ interface ExpensesService {
         APIResponse(responseCode = "400", description = "invalid input"),
         APIResponse(responseCode = "404", description = "expense not found")
     ])
+    @Authenticated
     fun delete(@PathParam("id") @Parameter(description = "Expense id to delete", required = true,
             schema = Schema(type = SchemaType.NUMBER)) id: Long) :Response
 
@@ -75,6 +78,7 @@ interface ExpensesService {
                         schema = Schema(implementation = Response::class))]),
         APIResponse(responseCode = "405", description = "invalid input")
     ])
+    @Authenticated
     fun create(expense: Expense) :Response
 
 
@@ -86,6 +90,7 @@ interface ExpensesService {
         APIResponse(responseCode = "200", description = "successful operation")
     ]
     )
+    @Authenticated
     fun update(expense: Expense):Response
 
 
@@ -99,7 +104,8 @@ interface ExpensesService {
                 content = [Content(mediaType = "application/json",
                         schema = Schema(implementation = Response::class))])
     ])
-    @Produces("application/json")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Authenticated
     fun find(@PathParam("id") @Parameter(description = "Expense id used to find one", required = true,
             schema = Schema(type = SchemaType.NUMBER)) id: Long): Response
 }

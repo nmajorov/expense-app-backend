@@ -13,6 +13,7 @@ import java.util.HashMap
  */
 open class OAuthTest {
     val defaultParser = Parser.JSON
+
     companion object {
         var TOKEN = ""
     }
@@ -38,13 +39,13 @@ open class OAuthTest {
 
         val response =
                 RestAssured.given(rbSpec).baseUri(ssoURL).formParam("grant_type", "password")
-                        .formParam("client_id", "app-react")
+                        .formParam("client_id", clientID)
                         .formParam("username", user)
                         .formParam("password", password).`when`().post("/")
                         .`as`(HashMap<String?, String?>()::class.java)
 
         TOKEN = response["access_token"].toString()
-        print("access_token now: ${TOKEN}")
+        println("\n access_token now: ${TOKEN}")
 
 
     }

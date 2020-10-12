@@ -84,8 +84,14 @@ class ExpensesServiceImpl : ExpensesService {
     }
 
 
-    override fun findAll(): Response {
-        val exchange = this.camelContext.createFluentProducerTemplate().to("direct:select-all-expenses").send()
+    /**
+     * get all expenses for report
+     *
+     */
+    override fun findAll(reportID: Int): Response {
+        val exchange = this.camelContext.createFluentProducerTemplate()
+                .to("direct:select-all-expenses")
+                .withBody(reportID).send()
 
         @Suppress("UNCHECKED_CAST")
         val camelResult= exchange.getIn().body as List<Map<String, Any>>

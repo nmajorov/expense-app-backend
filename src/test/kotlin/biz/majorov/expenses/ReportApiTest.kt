@@ -41,7 +41,7 @@ class ReportApiTest : OAuthTest() {
 
     @Test
     fun testDeleteReport (){
-        println("${object {}.javaClass.enclosingMethod.name} ")
+        println("\n\n  **** ${object {}.javaClass.enclosingMethod.name} **** \n")
         println("use token:" + OAuthTest.TOKEN)
         val generatedReportName = "test-report-" + System.currentTimeMillis();
         val report = Report(name=generatedReportName)
@@ -59,7 +59,7 @@ class ReportApiTest : OAuthTest() {
         var reportFromDB: Report? = null
 
         for(rep in reports){
-            println("\n check report from database:$rep")
+           // println("\n check report from database:$rep")
             if (rep["name"].toString().equals(generatedReportName)){
                 reportFromDB = Report(id=(rep["id"]as Int) , name=(rep["name"]as String))
                 break
