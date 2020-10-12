@@ -54,7 +54,7 @@ class Expense(
 class Report(
 		@JsonProperty(value = "id")
 		var id: Int? = null,
-		@JsonProperty(value = "description")
+		@JsonProperty
 		var name: String,
 
 		@JsonProperty(value = "createdAT")

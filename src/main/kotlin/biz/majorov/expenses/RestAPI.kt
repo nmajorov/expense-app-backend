@@ -119,6 +119,20 @@ interface ReportService {
     @Authenticated
     fun findAll(@Context ctx: SecurityContext): Response
 
+    @GET
+    @Path("/{id}")
+    @Operation(summary = "find an report by id")
+    @APIResponses(value = [
+
+        APIResponse(responseCode = "200", description = "successful operation",
+                content = [Content(mediaType = "application/json",
+                        schema = Schema(implementation = Response::class))]),
+        APIResponse(responseCode = "400", description = "invalid input"),
+        APIResponse(responseCode = "404", description = "not found")
+    ])
+    @Authenticated
+    fun find(@Context ctx: SecurityContext ,@PathParam("id") @Parameter(description = "report id", required = true,
+            schema = Schema(type = SchemaType.NUMBER)) id: Long) :Response
 
     @DELETE
     @Path("/{id}")

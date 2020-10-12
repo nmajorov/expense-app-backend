@@ -47,6 +47,10 @@ class ReportServiceImpl: ReportService {
         return Response.ok(entities, MediaType.APPLICATION_JSON).build()
     }
 
+    override fun find(ctx: SecurityContext, id: Long): Response {
+        TODO("Not yet implemented")
+    }
+
     /**
      * delete report by id
      */
@@ -54,7 +58,11 @@ class ReportServiceImpl: ReportService {
         logger.debug("delete report with id: $id for user name: ${ctx.userPrincipal.name}")
         val exchange = this.camelContext.createFluentProducerTemplate().
         to("direct:delete-report").withBody(id).send()
-        return Response.ok().build()
+        if (exchange.isFailed) {
+            return Response.serverError().build()
+        } else {
+            return Response.ok().build()
+        }
     }
 
 

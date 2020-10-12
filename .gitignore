@@ -33,6 +33,7 @@ build/
 .gradle/checksums/
 *.lock
 *.bin
+.gradle/buildOutputCleanup
 
 # Maven
 target/
