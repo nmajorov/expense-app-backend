@@ -42,7 +42,9 @@ do
       maven)
          run_maven
           ;;
-
+         *)
+         run_maven
+          ;;
      esac
     shift
 done
