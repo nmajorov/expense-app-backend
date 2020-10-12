@@ -20,6 +20,21 @@ class ReportApiTest : OAuthTest() {
                 .then()
                 .statusCode(200)
     }
+
+
+    @Test
+    fun `test create report for user`() {
+        println("${object {}.javaClass.enclosingMethod.name} ")
+        println("report  should be created for authenticated user ")
+        print("use token:" + OAuthTest.TOKEN)
+        val generatedReportName = "test-report-" + System.currentTimeMillis();
+        val report = Report(name=generatedReportName)
+        given().contentType("application/json").body(report)
+                .header("Authorization","Bearer " + OAuthTest.TOKEN)
+                .`when`().post("/reports")
+                .then()
+                .statusCode(200)
+    }
 }
 
 class SSOClient

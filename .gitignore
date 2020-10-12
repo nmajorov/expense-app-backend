@@ -31,6 +31,8 @@ nb-configuration.xml
 # Gradle
 build/
 .gradle/checksums/
+*.lock
+*.bin
 
 # Maven
 target/

@@ -30,7 +30,10 @@ $SCRIPT_DIR/mvnw    clean test
 
 run_gradle () {
 
-  $SCRIPT_DIR/gradlew test
+    # find ~/.gradle -type f -name "*.lock" -delete
+    $SCRIPT_DIR/gradlew --info test
+
+    exit
 }
 
 while [ "$#" -gt 0 ]

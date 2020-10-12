@@ -33,15 +33,15 @@ class Routes {
         from("direct:insert-user").to("sql:INSERT INTO APP_USER (NAME) VALUES (:#\${body})")
         
 
-	from("direct:select-all-reports").log("get reports for user with id: \${body}")
+	    from("direct:select-all-reports").log("get reports for user with id: \${body}")
                 .to("sql:select * from report where fk_app_user = :#\${body}")
                 .log("\${body}")
 
         from("direct:delete-report").to("sql:DELETE FROM report  WHERE report.id =:#\${body}")
 
-        //from("direct:insert-report").to("INSERT INTO REPORT (NAME, CREATED,fk_app_user) " +
-          //          "VALUES (3, 'Simple Report2','2019-07-30', (select DISTINCT id from app_user where name LIKE 'niko'))"
-           // )
+        from("direct:insert-report").log("report to insert \$simple{body['report'].name}").to("sql:INSERT INTO REPORT (NAME, CREATED,fk_app_user) " +
+              "VALUES ( :#\$simple{body['report'].name},(select  DATE(date) from CURRENT_TIMESTAMP as date)," +
+                " :#\$simple{body['user'].id})");
 
     }
 

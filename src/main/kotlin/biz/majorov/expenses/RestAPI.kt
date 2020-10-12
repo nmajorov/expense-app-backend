@@ -121,7 +121,7 @@ interface ReportService {
 
 
     @DELETE
-    @Path("/reports/{id}")
+    @Path("/{id}")
     @Operation(summary = "Delete an report by id")
     @APIResponses(value = [
 
@@ -131,11 +131,12 @@ interface ReportService {
         APIResponse(responseCode = "400", description = "invalid input"),
         APIResponse(responseCode = "404", description = "not found")
     ])
+    @Authenticated
     fun delete(@Context ctx: SecurityContext ,@PathParam("id") @Parameter(description = "item id to delete", required = true,
             schema = Schema(type = SchemaType.NUMBER)) id: Long) :Response
 
     @POST
-    @Path("/reports")
+    @Path("/")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Add a new report item")
@@ -145,11 +146,12 @@ interface ReportService {
                         schema = Schema(implementation = Response::class))]),
         APIResponse(responseCode = "405", description = "invalid input")
     ])
-    fun create(report: Report) :Response
+    @Authenticated
+    fun create(@Context ctx: SecurityContext, report: Report) :Response
 
 
     @PUT
-    @Path("/reports")
+    @Path("/")
     @Operation(summary = "update an existing report")
     @Consumes(MediaType.APPLICATION_JSON)
     @APIResponses(value = [

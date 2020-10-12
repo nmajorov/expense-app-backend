@@ -58,8 +58,18 @@ class ReportServiceImpl: ReportService {
     }
 
 
-    override fun create(report: Report): Response {
-        TODO("Not yet implemented")
+    override fun create( @Context ctx: SecurityContext, report: Report): Response {
+        logger.debug("create report: $report for user: ${ctx.userPrincipal.name}")
+        val user = userCheckService.checkUser(ctx.userPrincipal.name)
+        val bodyMessage = mapOf<String,Any>("report" to report, "user" to user)
+        val exchange= this.camelContext.createFluentProducerTemplate()
+                .to("direct:insert-report").withBody(bodyMessage).send();
+        if (exchange.isFailed) {
+            return Response.serverError().build()
+        } else {
+            return Response.ok().build()
+        }
+
     }
 
     override fun update(report: Report): Response {

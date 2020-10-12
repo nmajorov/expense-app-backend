@@ -103,7 +103,7 @@ ALTER TABLE IF EXISTS ONLY public.federated_identity DROP CONSTRAINT IF EXISTS f
 ALTER TABLE IF EXISTS ONLY public.client_attributes DROP CONSTRAINT IF EXISTS fk3c47c64beacca966;
 ALTER TABLE IF EXISTS ONLY public.identity_provider DROP CONSTRAINT IF EXISTS fk2b4ebc52ae5c3b34;
 ALTER TABLE IF EXISTS ONLY public.client_session_auth_status DROP CONSTRAINT IF EXISTS auth_status_constraint;
-ALTER TABLE IF EXISTS ONLY expenses.expenses DROP CONSTRAINT IF EXISTS expenses_fk_report_fkey;
+
 DROP INDEX IF EXISTS public.idx_web_orig_client;
 DROP INDEX IF EXISTS public.idx_usr_fed_prv_realm;
 DROP INDEX IF EXISTS public.idx_usr_fed_map_realm;
@@ -440,76 +440,10 @@ SET default_tablespace = '';
 
 SET default_with_oids = false;
 
---
--- Name: expenses; Type: TABLE; Schema: expenses; Owner: keycloack
---
-
-CREATE TABLE expenses.expenses (
-    id integer NOT NULL,
-    description character varying(250) NOT NULL,
-    amount numeric(15,6),
-    created date,
-    tstamp timestamp without time zone DEFAULT now(),
-    fk_report integer
-);
 
 
-ALTER TABLE expenses.expenses OWNER TO keycloack;
-
---
--- Name: expenses_id_seq; Type: SEQUENCE; Schema: expenses; Owner: keycloack
---
-
-CREATE SEQUENCE expenses.expenses_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
 
 
-ALTER TABLE expenses.expenses_id_seq OWNER TO keycloack;
-
---
--- Name: expenses_id_seq; Type: SEQUENCE OWNED BY; Schema: expenses; Owner: keycloack
---
-
-ALTER SEQUENCE expenses.expenses_id_seq OWNED BY expenses.expenses.id;
-
-
---
--- Name: flyway_schema_history; Type: TABLE; Schema: expenses; Owner: keycloack
---
-
-CREATE TABLE expenses.flyway_schema_history (
-    installed_rank integer NOT NULL,
-    version character varying(50),
-    description character varying(200) NOT NULL,
-    type character varying(20) NOT NULL,
-    script character varying(1000) NOT NULL,
-    checksum integer,
-    installed_by character varying(100) NOT NULL,
-    installed_on timestamp without time zone DEFAULT now() NOT NULL,
-    execution_time integer NOT NULL,
-    success boolean NOT NULL
-);
-
-
-ALTER TABLE expenses.flyway_schema_history OWNER TO keycloack;
-
---
--- Name: report; Type: TABLE; Schema: expenses; Owner: keycloack
---
-
-CREATE TABLE expenses.report (
-    id integer NOT NULL,
-    name character varying(100) NOT NULL,
-    created date,
-    tstamp timestamp without time zone DEFAULT now()
-);
-
-
-ALTER TABLE expenses.report OWNER TO keycloack;
 
 --
 -- Name: admin_event_entity; Type: TABLE; Schema: public; Owner: keycloack
@@ -1136,25 +1070,6 @@ CREATE TABLE public.federated_user (
 
 ALTER TABLE public.federated_user OWNER TO keycloack;
 
---
--- Name: flyway_schema_history; Type: TABLE; Schema: public; Owner: keycloack
---
-
-CREATE TABLE public.flyway_schema_history (
-    installed_rank integer NOT NULL,
-    version character varying(50),
-    description character varying(200) NOT NULL,
-    type character varying(20) NOT NULL,
-    script character varying(1000) NOT NULL,
-    checksum integer,
-    installed_by character varying(100) NOT NULL,
-    installed_on timestamp without time zone DEFAULT now() NOT NULL,
-    execution_time integer NOT NULL,
-    success boolean NOT NULL
-);
-
-
-ALTER TABLE public.flyway_schema_history OWNER TO keycloack;
 
 --
 -- Name: group_attribute; Type: TABLE; Schema: public; Owner: keycloack
@@ -1968,51 +1883,6 @@ CREATE TABLE public.web_origins (
 
 
 ALTER TABLE public.web_origins OWNER TO keycloack;
-
---
--- Name: expenses id; Type: DEFAULT; Schema: expenses; Owner: keycloack
---
-
-ALTER TABLE ONLY expenses.expenses ALTER COLUMN id SET DEFAULT nextval('expenses.expenses_id_seq'::regclass);
-
-
---
--- Data for Name: expenses; Type: TABLE DATA; Schema: expenses; Owner: keycloack
---
-
-INSERT INTO expenses.expenses VALUES (1, 'Lunch', 30.300000, '2019-07-30', '2020-10-06 15:20:13.817661', 1);
-INSERT INTO expenses.expenses VALUES (2, 'Lenovo Tablet', 149.000000, '2019-07-30', '2020-10-06 15:20:13.817661', 1);
-INSERT INTO expenses.expenses VALUES (3, 'Dinner', 30.300000, '2019-09-29', '2020-10-06 15:20:13.817661', 1);
-INSERT INTO expenses.expenses VALUES (4, 'Book', 28.190000, '2019-09-29', '2020-10-06 15:20:13.817661', 1);
-INSERT INTO expenses.expenses VALUES (5, 'TEST', 23.000000, '2020-10-06', '2020-10-06 15:39:46.905215', 1);
-
-
---
--- Name: expenses_id_seq; Type: SEQUENCE SET; Schema: expenses; Owner: keycloack
---
-
-SELECT pg_catalog.setval('expenses.expenses_id_seq', 5, true);
-
-
---
--- Data for Name: flyway_schema_history; Type: TABLE DATA; Schema: expenses; Owner: keycloack
---
-
-INSERT INTO expenses.flyway_schema_history VALUES (0, NULL, '<< Flyway Schema Creation >>', 'SCHEMA', '"expenses"', NULL, 'keycloack', '2020-10-06 15:20:13.775308', 0, true);
-INSERT INTO expenses.flyway_schema_history VALUES (1, '1.0.0', 'Quarkus', 'SQL', 'db/migration/V1.0.0__Quarkus.sql', 1558141439, 'keycloack', '2020-10-06 15:20:13.817661', 20, true);
-
-
---
--- Data for Name: report; Type: TABLE DATA; Schema: expenses; Owner: keycloack
---
-
-INSERT INTO expenses.report VALUES (1, 'Simple Report', '2019-07-30', '2020-10-06 15:20:13.817661');
-
-
---
--- Data for Name: admin_event_entity; Type: TABLE DATA; Schema: public; Owner: keycloack
---
-
 
 
 --
@@ -2890,12 +2760,6 @@ INSERT INTO public.default_client_scope VALUES ('basic', '3ee644de-d428-41e3-8a7
 
 
 
---
--- Data for Name: flyway_schema_history; Type: TABLE DATA; Schema: public; Owner: keycloack
---
-
-INSERT INTO public.flyway_schema_history VALUES (1, '1.0.0', '<< Flyway Baseline >>', 'BASELINE', '<< Flyway Baseline >>', NULL, 'null', '2020-10-06 13:18:48.552536', 0, true);
-
 
 --
 -- Data for Name: group_attribute; Type: TABLE DATA; Schema: public; Owner: keycloack
@@ -3772,28 +3636,6 @@ INSERT INTO public.web_origins VALUES ('3570f3bf-fdf4-4304-bdd6-dcb957c39e93', '
 INSERT INTO public.web_origins VALUES ('3a8404b9-3532-43de-8553-f015bdebfd2e', 'http://localhost:3000');
 
 
---
--- Name: expenses expenses_pkey; Type: CONSTRAINT; Schema: expenses; Owner: keycloack
---
-
-ALTER TABLE ONLY expenses.expenses
-    ADD CONSTRAINT expenses_pkey PRIMARY KEY (id);
-
-
---
--- Name: flyway_schema_history flyway_schema_history_pk; Type: CONSTRAINT; Schema: expenses; Owner: keycloack
---
-
-ALTER TABLE ONLY expenses.flyway_schema_history
-    ADD CONSTRAINT flyway_schema_history_pk PRIMARY KEY (installed_rank);
-
-
---
--- Name: report report_pkey; Type: CONSTRAINT; Schema: expenses; Owner: keycloack
---
-
-ALTER TABLE ONLY expenses.report
-    ADD CONSTRAINT report_pkey PRIMARY KEY (id);
 
 
 --
@@ -4492,13 +4334,6 @@ ALTER TABLE ONLY public.web_origins
     ADD CONSTRAINT constraint_web_origins PRIMARY KEY (client_id, value);
 
 
---
--- Name: flyway_schema_history flyway_schema_history_pk; Type: CONSTRAINT; Schema: public; Owner: keycloack
---
-
-ALTER TABLE ONLY public.flyway_schema_history
-    ADD CONSTRAINT flyway_schema_history_pk PRIMARY KEY (installed_rank);
-
 
 --
 -- Name: client_scope_attributes pk_cl_tmpl_attr; Type: CONSTRAINT; Schema: public; Owner: keycloack
@@ -4667,19 +4502,6 @@ ALTER TABLE ONLY public.realm
 ALTER TABLE ONLY public.user_entity
     ADD CONSTRAINT uk_ru8tt6t700s9v50bu18ws5ha6 UNIQUE (realm_id, username);
 
-
---
--- Name: flyway_schema_history_s_idx; Type: INDEX; Schema: expenses; Owner: keycloack
---
-
-CREATE INDEX flyway_schema_history_s_idx ON expenses.flyway_schema_history USING btree (success);
-
-
---
--- Name: flyway_schema_history_s_idx; Type: INDEX; Schema: public; Owner: keycloack
---
-
-CREATE INDEX flyway_schema_history_s_idx ON public.flyway_schema_history USING btree (success);
 
 
 --
@@ -5221,15 +5043,7 @@ CREATE INDEX idx_usr_fed_prv_realm ON public.user_federation_provider USING btre
 CREATE INDEX idx_web_orig_client ON public.web_origins USING btree (client_id);
 
 
---
--- Name: expenses expenses_fk_report_fkey; Type: FK CONSTRAINT; Schema: expenses; Owner: keycloack
---
 
-ALTER TABLE ONLY expenses.expenses
-    ADD CONSTRAINT expenses_fk_report_fkey FOREIGN KEY (fk_report) REFERENCES expenses.report(id);
-
-
---
 -- Name: client_session_auth_status auth_status_constraint; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
 --
 
