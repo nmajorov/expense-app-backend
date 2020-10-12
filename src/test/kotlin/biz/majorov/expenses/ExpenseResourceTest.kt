@@ -20,18 +20,28 @@ class ExpenseResourceTest : OAuthTest() {
 
     @Test
     fun `test get all expenses`() {
-        println("${object {}.javaClass.enclosingMethod.name} ")
-        given()
-                .`when`().get("/expenses")
-                .then()
-                .statusCode(200)
+        println("\n\n **** ${object {}.javaClass.enclosingMethod.name} ***** \n ")
+        println("\n use token:" + OAuthTest.TOKEN)
+        val result = given().contentType("application/json").body(1)
+                .header("Authorization","Bearer " + OAuthTest.TOKEN)
+                .`when`().get("/expenses").`as` (mutableListOf<HashMap<String?, String?>>()::class.java)
+
+        assertFalse(result.isEmpty())
+
     }
 
     @Test
     fun `test select one expense item`() {
-        println("${object {}.javaClass.enclosingMethod.name} ")
-        println("first get all expenses")
-        val response = given().get("/expenses").`as`(mutableListOf<HashMap<String?, String?>>()::class.java)
+        println("\n\n **** ${object {}.javaClass.enclosingMethod.name} ***** \n ")
+        println("\n use token:" + OAuthTest.TOKEN)
+        println("\n first get all expenses")
+        val response = given().contentType("application/json")
+                .header("Authorization","Bearer " + OAuthTest.TOKEN)
+                .body(1)
+                .`when`()
+                .get("/expenses")
+                .`as`(mutableListOf<HashMap<String?, String?>>()::class.java)
+
         assertFalse(response.isEmpty())
 
         val expenseFromRequest = Expense()
@@ -41,7 +51,10 @@ class ExpenseResourceTest : OAuthTest() {
         expenseFromRequest.amount = response.last()["amount"] as Double
         expenseFromRequest.createdAT = LocalDate.parse(response.last()["createdAT"] as String,DateTimeFormatter.ISO_DATE)
 
-        val response2 = given().get("/expenses/" + expenseFromRequest.id).`as` (hashMapOf<Any?, Any?>()::class.java)
+        val response2 = given()
+                .header("Authorization","Bearer " + OAuthTest.TOKEN)
+                .get("/expenses/" + expenseFromRequest.id)
+                .`as` (hashMapOf<Any?, Any?>()::class.java)
         println("get response:${response}")
         val id = response2["id"]
         println("got id from restful service call:$id")
@@ -62,9 +75,14 @@ class ExpenseResourceTest : OAuthTest() {
 
         println("step1 post item  $expense")
         given().contentType("application/json").body(expense)
+                .header("Authorization","Bearer " + OAuthTest.TOKEN)
                 .`when`().post("/expenses").then().statusCode(200)
 
-        val response = given().get("/expenses").`as`(mutableListOf<HashMap<String?, String?>>()::class.java)
+        val response = given()
+                .header("Authorization","Bearer " + OAuthTest.TOKEN)
+                .contentType("application/json")
+                .body(1)
+                .get("/expenses").`as`(mutableListOf<HashMap<String?, String?>>()::class.java)
         println("step2: got response:${response}")
         assertFalse(response.isEmpty())
 
@@ -84,10 +102,15 @@ class ExpenseResourceTest : OAuthTest() {
 
         println("step1 create item  $expense")
         given().contentType("application/json").body(expense)
+                .header("Authorization","Bearer " + OAuthTest.TOKEN)
                 .`when`().post("/expenses").then().statusCode(200)
 
         println("get all expenses")
-        var response = given().get("/expenses").`as`(mutableListOf<HashMap<String?, String?>>()::class.java)
+        var response = given()
+                .contentType("application/json")
+                .header("Authorization","Bearer " + OAuthTest.TOKEN)
+                .body(1)
+                .get("/expenses").`as`(mutableListOf<HashMap<String?, String?>>()::class.java)
         val allExpenseSizeBeforDelete = response.size
         println("get ${allExpenseSizeBeforDelete} expenses")
         println("get last expense from received list")
@@ -107,6 +130,7 @@ class ExpenseResourceTest : OAuthTest() {
 
         expenseFromRequest.amount=45.99
         given().contentType("application/json").body(expenseFromRequest)
+                .header("Authorization","Bearer " + OAuthTest.TOKEN)
                 .`when`().put("/expenses").then().statusCode(200)
         println ("get updated expense and check if it has a different amount")
         val responseStep2 = given().get("/expenses/" + expenseFromRequest.id).`as` (hashMapOf<Any?, Any?>()::class.java)
@@ -128,10 +152,14 @@ class ExpenseResourceTest : OAuthTest() {
 
         println("step1 create item  $expense")
         given().contentType("application/json").body(expense)
+                .header("Authorization","Bearer " + OAuthTest.TOKEN)
                 .`when`().post("/expenses").then().statusCode(200)
 
         println("get all expenses")
-        var response = given().get("/expenses").`as`(mutableListOf<HashMap<String?, String?>>()::class.java)
+        var response = given().contentType("application/json").body(1)
+                .header("Authorization","Bearer " + OAuthTest.TOKEN)
+                .get("/expenses")
+                .`as`(mutableListOf<HashMap<String?, String?>>()::class.java)
         val allExpenseSizeBeforDelete = response.size
         println("get ${allExpenseSizeBeforDelete} expenses")
         println("get last expense from received list")
@@ -149,16 +177,21 @@ class ExpenseResourceTest : OAuthTest() {
 
         println("step 3 delete expense with id ${expenseFromRequest.id}" )
         given().contentType("application/json")
-                .`when`().delete("/expenses/" + expenseFromRequest.id).then().statusCode(200)
+                .header("Authorization","Bearer " + OAuthTest.TOKEN)
+                .`when`().delete("/expenses/" + expenseFromRequest.id)
+                .then().statusCode(200)
 
-        response = given().get("/expenses").`as`(mutableListOf<HashMap<String?, String?>>()::class.java)
+        response = given().contentType("application/json")
+                .body(1)
+                .header("Authorization","Bearer " + OAuthTest.TOKEN)
+                .get("/expenses")
+                .`as`(mutableListOf<HashMap<String?, String?>>()::class.java)
+
         val allExpenseSizeAfterDelete = response.size
 
         assertTrue(allExpenseSizeAfterDelete < allExpenseSizeBeforDelete)
         assertEquals(allExpenseSizeAfterDelete,(allExpenseSizeBeforDelete -1))
 
-
     }
-
 
 }

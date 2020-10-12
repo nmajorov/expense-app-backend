@@ -13,8 +13,9 @@ import javax.enterprise.inject.Produces
 class Routes {
     @Produces
     fun myRoutes() = routes {
-        from("direct:select-all-expenses").to("sql:select * from EXPENSES ORDER BY ID")
+        from("direct:select-all-expenses").to("sql:select * from EXPENSES WHERE FK_REPORT = :#\${body}  ORDER BY ID")
                 .log("\${body}")
+
         from("direct:insert-expense")
                 .log("insert-expenses route body: \$simple{body.description},\$simple{body.amount}, \$simple{body.createdAT}")
         .to("sql:INSERT INTO EXPENSES (DESCRIPTION, AMOUNT ,CREATED,FK_REPORT) " +
@@ -41,7 +42,9 @@ class Routes {
                 .to("sql:select * from report where id = :#\${body}")
                 .log("\${body}")
 
-        from("direct:delete-report").to("sql:DELETE FROM report  WHERE report.id =:#\${body}")
+        from("direct:delete-report").log("delete report with id \${body} ")
+                .to("sql:DELETE FROM EXPENSES  WHERE FK_REPORT= :#\${body}")
+                .to("sql:DELETE FROM REPORT  WHERE report.id =:#\${body}")
 
         from("direct:insert-report").log("report to insert \$simple{body['report'].name}").to("sql:INSERT INTO REPORT (NAME, CREATED,fk_app_user) " +
               "VALUES ( :#\$simple{body['report'].name},(select  DATE(date) from CURRENT_TIMESTAMP as date)," +
