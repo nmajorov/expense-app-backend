@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
-echo "delete existing ui pipeline first "
-CUR_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+echo "delete existing pipelines and tasks first "
+
+#CUR_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+
 oc delete pipelineresources.tekton.dev backend-image --ignore-not-found=true
 
 oc delete tasks s2i-quarkus-maven deploy-test-containers backend-mvn  clean-up-backend --ignore-not-found
