@@ -41,7 +41,6 @@ interface ExpensesService {
     @GET
     @Path("/expenses")
     @Operation(description = "Get all expenses for report")
-    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @APIResponses(value = [
         APIResponse(responseCode = "200", description = "successful operation",
@@ -50,7 +49,8 @@ interface ExpensesService {
         )
     ])
     @Authenticated
-    fun findAll(@Parameter(description = "report id") reportID:Int): Response
+    fun findAll(@QueryParam("reportid") @Parameter(description = "id of report where expenses are attached", required = true,
+            schema = Schema(type = SchemaType.NUMBER)) reportID:Int): Response
 
     @DELETE
     @Path("/expenses/{id}")

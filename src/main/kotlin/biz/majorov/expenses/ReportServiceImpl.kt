@@ -5,6 +5,7 @@ import org.jboss.logging.Logger
 import java.sql.Date
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
+import javax.transaction.Status
 import javax.ws.rs.core.Context
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
@@ -31,7 +32,10 @@ class ReportServiceImpl: ReportService {
      * get all reports for user
      * user information will be taken from security context
      */
-    override fun findAll(@Context ctx: SecurityContext): Response {
+    override fun findAll(ctx: SecurityContext): Response {
+        if (ctx.userPrincipal == null){
+            return Response.status(Response.Status.UNAUTHORIZED).build()
+        }
         logger.debug("findAll report for user name: ${ctx.userPrincipal.name}")
         val user = userCheckService.checkUser(ctx.userPrincipal.name)
         val exchange = this.camelContext.createFluentProducerTemplate().
@@ -52,6 +56,9 @@ class ReportServiceImpl: ReportService {
      * get report by id
      */
     override fun find(ctx: SecurityContext, id: Long): Response {
+        if (ctx.userPrincipal == null){
+            return Response.status(Response.Status.UNAUTHORIZED).build()
+        }
         logger.debug("find  report with id: $id for user name: ${ctx.userPrincipal.name}")
         val exchange = this.camelContext.createFluentProducerTemplate().
         to("direct:select-report-by-id").withBody(id).send()

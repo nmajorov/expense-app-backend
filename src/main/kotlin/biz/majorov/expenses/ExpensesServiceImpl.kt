@@ -89,6 +89,11 @@ class ExpensesServiceImpl : ExpensesService {
      *
      */
     override fun findAll(reportID: Int): Response {
+        logger.debug("get all expenses for report $reportID")
+        if (reportID == 0 || reportID < 0  ){
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+
         val exchange = this.camelContext.createFluentProducerTemplate()
                 .to("direct:select-all-expenses")
                 .withBody(reportID).send()
