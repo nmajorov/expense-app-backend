@@ -2,6 +2,7 @@ package biz.majorov.expenses
 
 import org.apache.camel.CamelContext
 import org.jboss.logging.Logger
+import java.lang.RuntimeException
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 
@@ -33,11 +34,13 @@ class UserCheckService {
         logger.debug("got result: $camelResult")
 
         if (camelResult.isEmpty()){
-            //save user
+            logger.debug("start to check user with name $name")
            val result =  this.camelContext.createFluentProducerTemplate()
                     .to("direct:insert-user").withBody(name).send()
-                    .getIn().body as List<Map<String, Any>>
 
+            if(result.isFailed){
+                throw RuntimeException("error at persisting user")
+            }
             //reselect it to get id
             return checkUser(name);
 
