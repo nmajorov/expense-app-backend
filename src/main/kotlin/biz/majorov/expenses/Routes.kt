@@ -46,8 +46,8 @@ class Routes {
                 .to("sql:DELETE FROM EXPENSES  WHERE FK_REPORT= :#\${body}")
                 .to("sql:DELETE FROM REPORT  WHERE report.id =:#\${body}")
 
-        from("direct:insert-report").log("report to insert \$simple{body['report'].name}").to("sql:INSERT INTO REPORT (NAME, CREATED,fk_app_user) " +
-              "VALUES ( :#\$simple{body['report'].name},(select  DATE(date) from CURRENT_TIMESTAMP as date)," +
+        from("direct:insert-report").log("report to insert \$simple{body['report']}").to("sql:INSERT INTO REPORT (NAME, CREATED,fk_app_user) " +
+              "VALUES ( :#\$simple{body['report']},(select  DATE(date) from CURRENT_TIMESTAMP as date)," +
                 " :#\$simple{body['user'].id})");
 
         from("direct:update-report").log("report to update: \$simple{body['report']}")

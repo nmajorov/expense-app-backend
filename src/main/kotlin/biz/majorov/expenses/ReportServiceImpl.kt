@@ -94,10 +94,18 @@ class ReportServiceImpl: ReportService {
     }
 
 
-    override fun create( @Context ctx: SecurityContext, report: Report): Response {
-        logger.debug("create report: $report for user: ${ctx.userPrincipal.name}")
+    /**
+     * add report
+     * @param ctx current security context from authentication
+     * @param name the name of new report
+     */
+    override fun create( @Context ctx: SecurityContext, name: String): Response {
+        if (ctx.userPrincipal == null){
+            return Response.status(Response.Status.UNAUTHORIZED).build()
+        }
+        logger.debug("create report with: $name for user: ${ctx.userPrincipal.name}")
         val user = userCheckService.checkUser(ctx.userPrincipal.name)
-        val bodyMessage = mapOf<String,Any>("report" to report, "user" to user)
+        val bodyMessage = mapOf<String,Any>("report" to name, "user" to user)
         val exchange= this.camelContext.createFluentProducerTemplate()
                 .to("direct:insert-report").withBody(bodyMessage).send();
         if (exchange.isFailed) {
@@ -109,6 +117,9 @@ class ReportServiceImpl: ReportService {
     }
 
     override fun update(@Context ctx: SecurityContext,  report: Report): Response {
+        if (ctx.userPrincipal == null){
+            return Response.status(Response.Status.UNAUTHORIZED).build()
+        }
         val user = userCheckService.checkUser(ctx.userPrincipal.name)
         val bodyMessage = mapOf<String,Any>("report" to report, "user" to user)
         val exchange= this.camelContext.createFluentProducerTemplate()

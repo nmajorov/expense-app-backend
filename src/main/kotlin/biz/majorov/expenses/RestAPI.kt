@@ -157,9 +157,10 @@ interface ReportService {
 
     @POST
     @Path("/")
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Consumes(value = [MediaType.APPLICATION_JSON,
+        MediaType.APPLICATION_FORM_URLENCODED])
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(summary = "Add a new report item")
+    @Operation(summary = "Add a new report")
     @APIResponses(value = [
         APIResponse(responseCode = "200", description = "successful operation",
                 content = [Content(mediaType = "application/json",
@@ -167,7 +168,9 @@ interface ReportService {
         APIResponse(responseCode = "405", description = "invalid input")
     ])
     @Authenticated
-    fun create(@Context ctx: SecurityContext, report: Report) :Response
+    fun create(@Context ctx: SecurityContext,
+               @Parameter(description = "name of report",required = true) name: String) :Response
+
 
 
     @PUT

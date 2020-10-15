@@ -32,7 +32,7 @@ class ReportApiTest : OAuthTest() {
         print("use token:" + OAuthTest.TOKEN)
         val generatedReportName = "test-report-" + System.currentTimeMillis();
         val report = Report(name=generatedReportName)
-        given().contentType("application/json").body(report)
+        given().contentType("application/json").body(report.name)
                 .header("Authorization","Bearer " + OAuthTest.TOKEN)
                 .`when`().post("/reports")
                 .then()
@@ -44,9 +44,9 @@ class ReportApiTest : OAuthTest() {
         println("\n\n  **** ${object {}.javaClass.enclosingMethod.name} **** \n")
         println("use token:" + OAuthTest.TOKEN)
         val generatedReportName = "test-report-" + System.currentTimeMillis();
-        val report = Report(name=generatedReportName)
-        println("\n 1:  create report $report")
-        given().contentType("application/json").body(report)
+
+        println("\n 1:  create report with name $generatedReportName \n")
+        given().contentType("application/json").body(generatedReportName)
                 .header("Authorization","Bearer " + OAuthTest.TOKEN)
                 .`when`().post("/reports")
                 .then()

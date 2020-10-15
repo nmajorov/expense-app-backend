@@ -3,6 +3,7 @@ package biz.majorov.expenses
 
 
 import io.quarkus.test.junit.QuarkusTest
+import io.restassured.RestAssured
 import io.restassured.RestAssured.given
 import io.restassured.parsing.Parser
 import org.junit.jupiter.api.Assertions.*
@@ -22,7 +23,7 @@ class ExpenseResourceTest : OAuthTest() {
     fun `test get all expenses`() {
         println("\n\n **** ${object {}.javaClass.enclosingMethod.name} ***** \n ")
         println("\n use token:" + OAuthTest.TOKEN)
-        val result = given().contentType("application/json").body(1)
+        val result = given().contentType("application/json").param("reportid",1)
                 .header("Authorization","Bearer " + OAuthTest.TOKEN)
                 .`when`().get("/expenses").`as` (mutableListOf<HashMap<String?, String?>>()::class.java)
 
