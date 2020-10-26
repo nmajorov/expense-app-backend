@@ -90,7 +90,7 @@ class ExpenseApiTest : OAuthTest() {
 
     @Test
     fun testUpdateExpense(){
-        println("${object {}.javaClass.enclosingMethod.name} ")
+        println("\n\n =====${object {}.javaClass.enclosingMethod.name} ==== \n\n ")
         val expense = Expense()
         expense.amount=80.12
         expense.description ="train ticket"
@@ -101,11 +101,8 @@ class ExpenseApiTest : OAuthTest() {
                 .header("Authorization","Bearer " + TOKEN)
                 .`when`().post("/expenses").then().statusCode(200)
 
-        println("get all expenses")
+        println("\n get all expenses")
         val response = allExpense()
-        val allExpenseSizeBeforDelete = response.size
-        println("get ${allExpenseSizeBeforDelete} expenses")
-        println("get last expense from received list")
         val expenseFromRequest = Expense()
         expenseFromRequest.id = response.last()["id"] as Int
         expenseFromRequest.description = response.last()["description"] as String
@@ -117,15 +114,21 @@ class ExpenseApiTest : OAuthTest() {
         //be sure you take the same expense
         assertEquals(expenseFromRequest.amount , expense.amount)
 
-        println("change amount")
+        val newAmount = expenseFromRequest.amount + 10
+        println("\n change amount to $newAmount  \n ")
 
-        expenseFromRequest.amount=45.99
+        expenseFromRequest.amount= newAmount
+        println("\n run update \n ")
         given().contentType("application/json").body(expenseFromRequest)
-                .header("Authorization","Bearer " + TOKEN)
+                .header("Authorization", "Bearer $TOKEN")
                 .`when`().put("/expenses").then().statusCode(200)
-        println ("get updated expense and check if it has a different amount")
-        val responseStep2 = given().get("/expenses/" + expenseFromRequest.id).`as` (hashMapOf<Any?, Any?>()::class.java)
 
+        println ("\n get updated expense and check if it has a different amount \n")
+        val responseStep2 = given().header("Authorization", "Bearer $TOKEN")
+                .get("/expenses/" + expenseFromRequest.id)
+                .`as` (hashMapOf<Any?, Any?>()::class.java)
+
+        println("\n expense from database now: $responseStep2 \n ")
         assertEquals(expenseFromRequest.amount,responseStep2["amount"] as Double)
 
 
