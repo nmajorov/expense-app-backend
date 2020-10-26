@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package biz.majorov.expenses
 
 import org.apache.camel.CamelContext
@@ -35,10 +37,10 @@ class ExpensesServiceImpl : ExpensesService {
 
         logger.debug("create  expense: $expense  in report $reportID for user name: ${ctx.userPrincipal.name}")
 
-        val bodyMessage = mapOf<String,Any>("reportID" to reportID, "expense" to expense)
+        val bodyMessage = mapOf("reportID" to reportID, "expense" to expense)
         val template = camelContext.createFluentProducerTemplate()
 
-        val exchange=  template.to("direct:insert-expense").withBody(bodyMessage).send()
+        template.to("direct:insert-expense").withBody(bodyMessage).send()
 
         return Response.ok().build()
     }
@@ -80,7 +82,7 @@ class ExpensesServiceImpl : ExpensesService {
         if (camelResult.isNotEmpty()){
             logger.info("result is not empty")
             //convert sql result to the entities
-            camelResult.get(0).let{
+            camelResult[0].let{
                 val entity =convertRowToEntity(it)
 
                 return Response.ok(entity, MediaType.APPLICATION_JSON).build()
@@ -100,9 +102,7 @@ class ExpensesServiceImpl : ExpensesService {
      */
     override fun findAll(reportID: Int): Response {
         logger.debug("get all expenses for report $reportID")
-        if (reportID == 0 || reportID < 0  ){
-            return Response.status(Response.Status.BAD_REQUEST).build();
-        }
+        if (reportID == 0 || reportID < 0  ) return Response.status(Response.Status.BAD_REQUEST).build()
 
         val exchange = this.camelContext.createFluentProducerTemplate()
                 .to("direct:select-all-expenses")
@@ -138,17 +138,15 @@ class ExpensesServiceImpl : ExpensesService {
      *
      */
     private fun convertRowToEntity(row:Map<String,Any>):Expense {
-            var expense = Expense()
-            expense.id = row.get("id".toUpperCase()) as Int
-            expense.description = (row.get("description".toUpperCase()) as String)
-            var amountRaw = row.get("amount".toUpperCase())
-            when (amountRaw){
+            val expense = Expense()
+            expense.id = row["id".toUpperCase()] as Int
+            expense.description = (row["description".toUpperCase()] as String)
+        when (val amountRaw = row["amount".toUpperCase()]){
                 is Double -> expense.amount = amountRaw
                 is BigDecimal -> expense.amount = amountRaw.toDouble()
             }
-            expense.createdAT = (row.get("created".toUpperCase()) as Date).toLocalDate()
-            var timestampRaw = row.get("tstamp".toUpperCase())
-            when (timestampRaw) {
+            expense.createdAT = (row["created".toUpperCase()] as Date).toLocalDate()
+        when (val timestampRaw = row["tstamp".toUpperCase()]) {
                 is Timestamp -> expense.tstamp = timestampRaw.toLocalDateTime().toLocalDate()
                 is Date -> expense.tstamp = timestampRaw.toLocalDate()
             }

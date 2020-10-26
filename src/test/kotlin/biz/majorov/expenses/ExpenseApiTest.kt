@@ -21,15 +21,22 @@ import javax.ws.rs.core.Response
 @QuarkusTest
 class ExpenseApiTest : OAuthTest() {
 
+    // get all expenses labda
+    val allExpense:() -> (ArrayList<HashMap<String?, String?>>) = {
+
+        given().contentType("application/json")
+                .header("Authorization", "Bearer " + TOKEN)
+                .queryParam("reportid", 1)
+                .get("/expenses")
+                .`as`(ArrayList<HashMap<String?, String?>>()::class.java)
+    }
+
 
     @Test
     fun `test get all expenses`() {
         println("\n\n **** ${object {}.javaClass.enclosingMethod.name} ***** \n ")
         println("\n use token:$TOKEN")
-        val result = given().contentType("application/json").queryParam("reportid",1)
-                .header("Authorization","Bearer " + TOKEN)
-                .`when`().get("/expenses").`as` (mutableListOf<HashMap<String?, String?>>()::class.java)
-
+        val result = allExpense()
         assertFalse(result.isEmpty())
 
     }
@@ -39,12 +46,7 @@ class ExpenseApiTest : OAuthTest() {
         println("\n\n **** ${object {}.javaClass.enclosingMethod.name} ***** \n ")
         println("\n use token:$TOKEN")
         println("\n first get all expenses")
-        val response = given().contentType("application/json")
-                .header("Authorization", "Bearer $TOKEN")
-                .body(1)
-                .`when`()
-                .get("/expenses")
-                .`as`(mutableListOf<HashMap<String?, String?>>()::class.java)
+        val response = allExpense()
 
         assertFalse(response.isEmpty())
 
@@ -100,11 +102,7 @@ class ExpenseApiTest : OAuthTest() {
                 .`when`().post("/expenses").then().statusCode(200)
 
         println("get all expenses")
-        val response = given()
-                .contentType("application/json")
-                .header("Authorization","Bearer " + TOKEN)
-                .queryParam("reportid",1)
-                .get("/expenses").`as`(mutableListOf<HashMap<String?, String?>>()::class.java)
+        val response = allExpense()
         val allExpenseSizeBeforDelete = response.size
         println("get ${allExpenseSizeBeforDelete} expenses")
         println("get last expense from received list")
@@ -134,8 +132,8 @@ class ExpenseApiTest : OAuthTest() {
     }
 
     @Test
-    fun `test delete expense item`(){
-        println("${object {}.javaClass.enclosingMethod.name} ")
+    fun testDeleteExpense(){
+        println("\n \n ===== running test ${object {}.javaClass.enclosingMethod.name} ====== \n ")
 
         val expense = Expense()
         expense.amount=110.12
@@ -143,43 +141,37 @@ class ExpenseApiTest : OAuthTest() {
         expense.createdAT= LocalDate.now()
 
         println("step1 create item  $expense")
-        given().contentType("application/json").body(expense)
+        given().contentType("application/json").queryParam("reportid",1).body(expense)
                 .header("Authorization", "Bearer $TOKEN")
                 .`when`().post("/expenses").then().statusCode(200)
 
         println("get all expenses")
-        var response = given().contentType("application/json").body(1)
-                .header("Authorization","Bearer " + TOKEN)
-                .get("/expenses")
-                .`as`(mutableListOf<HashMap<String?, String?>>()::class.java)
-        val allExpenseSizeBeforDelete = response.size
+
+        val allExpensesBeforDelete =  allExpense()
+        val allExpenseSizeBeforDelete = allExpensesBeforDelete.size
         println("get $allExpenseSizeBeforDelete expenses")
         println("get last expense from received list")
         val expenseFromRequest = Expense()
-        expenseFromRequest.id = response.last()["id"] as Int
-        expenseFromRequest.description = response.last()["description"] as String
-        expenseFromRequest.amount = response.last()["amount"] as Double
+        expenseFromRequest.id = allExpensesBeforDelete.last()["id"] as Int
+        expenseFromRequest.description = allExpensesBeforDelete.last()["description"] as String
+        expenseFromRequest.amount = allExpensesBeforDelete.last()["amount"] as Double
 
-        val dt = LocalDate.parse(response.last()["createdAT"] as String,DateTimeFormatter.ISO_DATE)
+        val dt = LocalDate.parse(allExpensesBeforDelete.last()["createdAT"] as String,DateTimeFormatter.ISO_DATE)
         expenseFromRequest.createdAT = dt
 
         //be sure last expenses is inserted one
         assertEquals(expense.amount,expenseFromRequest.amount)
 
-        println("step 3 delete expense with id ${expenseFromRequest.id}" )
+        println("\n step 3,  delete expense with id ${expenseFromRequest.id}" )
         given().contentType("application/json")
-                .header("Authorization","Bearer " + TOKEN)
+                .header("Authorization", "Bearer $TOKEN")
                 .`when`().delete("/expenses/" + expenseFromRequest.id)
                 .then().statusCode(200)
 
-        response = given().contentType("application/json")
-                .body(1)
-                .header("Authorization", "Bearer $TOKEN")
-                .get("/expenses")
-                .`as`(mutableListOf<HashMap<String?, String?>>()::class.java)
+        val allExpensesAfterDelete = allExpense()
 
-        val allExpenseSizeAfterDelete = response.size
-
+        val allExpenseSizeAfterDelete = allExpensesAfterDelete.size
+        println("\n get all expences size after delete:  $allExpenseSizeAfterDelete \n ")
         assertTrue(allExpenseSizeAfterDelete < allExpenseSizeBeforDelete)
         assertEquals(allExpenseSizeAfterDelete,(allExpenseSizeBeforDelete -1))
 
