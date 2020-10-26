@@ -9,20 +9,19 @@ import org.apache.commons.logging.LogFactory
 import org.apache.commons.logging.Log
 
 /**
- * Custom cors filter  implementation.
- * Can't make quarkus default cors to work
+ * Custom CORS filter  implementation.
+ * Can't make quarkus default CORS configuration to work
  *
  */
 @Provider
 class CORSFilter : ContainerResponseFilter {
     @Throws(IOException::class)
     override fun filter(requestContext: ContainerRequestContext, responseContext: ContainerResponseContext) {
-        LOGGER.debug("Modifying response with CORSFIlter: " + responseContext.headers)
         val headers = responseContext.headers
         headers.putSingle("Access-Control-Allow-Origin", "*")
         headers.putSingle("Access-Control-Allow-Headers","*")
         headers.putSingle("Access-Control-Allow-Methods", "*")
-        LOGGER.debug("Modified headers: " + responseContext.headers)
+      //  LOGGER.debug("Modified headers: " + responseContext.headers)
     }
 
     companion object {

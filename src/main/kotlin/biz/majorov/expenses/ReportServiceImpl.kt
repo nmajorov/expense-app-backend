@@ -75,6 +75,10 @@ class ReportServiceImpl: ReportService {
             logger.error("found more then one report")
             return Response.serverError().build()
         }
+        if (entities.isEmpty()){
+            logger.error("report with id=$id  not found ")
+            return Response.status(Response.Status.NOT_FOUND).build()
+        }
         return Response.ok(entities.first(), MediaType.APPLICATION_JSON).build()
     }
 
@@ -83,6 +87,9 @@ class ReportServiceImpl: ReportService {
      * delete report by id
      */
     override fun delete(@Context ctx: SecurityContext ,id: Long): Response {
+        if (ctx.userPrincipal == null){
+            return Response.status(Response.Status.UNAUTHORIZED).build()
+        }
         logger.debug("delete report with id: $id for user name: ${ctx.userPrincipal.name}")
         val exchange = this.camelContext.createFluentProducerTemplate().
         to("direct:delete-report").withBody(id).send()
@@ -121,6 +128,7 @@ class ReportServiceImpl: ReportService {
             return Response.status(Response.Status.UNAUTHORIZED).build()
         }
         val user = userCheckService.checkUser(ctx.userPrincipal.name)
+        logger.debug("update  report: $report  for user: ${ctx.userPrincipal.name}")
         val bodyMessage = mapOf<String,Any>("report" to report, "user" to user)
         val exchange= this.camelContext.createFluentProducerTemplate()
                 .to("direct:update-report").withBody(bodyMessage).send();

@@ -28,12 +28,12 @@ class JacksonTest {
 
         expense= Expense(amount = 30.12,
                 createdAT = LocalDate.of(2019, 10, 1),
-                description = "Schloss Schoenbrunn entry fee",report = 1)
+                description = "Schloss Schoenbrunn entry fee")
 
         logger.info("************ json from initialized object: " + this.json.writeValueAsString(listOf(expense)).toString())
         val listExpenses = this.json.readerFor(Expense::class.java).readTree("[{\"amount\":30.12,\"id\":null," +
                 "\"description\":\"Schloss Schoenbrunn entry fee\",\"createdAT\":\"2019-10-01\",\"tstamp\":\"2019-10-01\"" +
-                ",\"report\":\"1\"}]")
+                "}]")
 
         assertTrue(expense.amount == listExpenses[0]["amount"].asDouble())
 

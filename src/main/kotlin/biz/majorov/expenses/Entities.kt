@@ -40,14 +40,12 @@ class Expense(
 		@JsonSerialize(using = LocalDateSerializer::class)
 		var tstamp: LocalDate? = LocalDate.now(),
 
-		@JsonProperty(value = "report")
-		var report:Int? = null
 
 ) {
     constructor() : this(null, "", null, 0.0)
 
     override fun toString(): String = """Expense[ id: ${id} | description: ${description} | amout: ${amount} |
-		| createAt: ${createdAT} | report id: ${report} ] """.trimMargin()
+		| createAt: ${createdAT} """.trimMargin()
 }
 
 @JsonIgnoreProperties(ignoreUnknown = true)

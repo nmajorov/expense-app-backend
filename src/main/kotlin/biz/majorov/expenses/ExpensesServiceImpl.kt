@@ -7,9 +7,10 @@ import java.sql.Date
 import java.sql.Timestamp
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
+import javax.ws.rs.core.Context
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
-
+import javax.ws.rs.core.SecurityContext
 
 
 /**
@@ -26,20 +27,30 @@ class ExpensesServiceImpl : ExpensesService {
     lateinit var camelContext:CamelContext
 
 
-    override fun create(expense: Expense): Response {
-        logger.debug("got expense to insert: $expense")
-        if (expense.report == null) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
+    override fun create(@Context ctx: SecurityContext ,reportID: Int, expense: Expense): Response {
+        if (ctx.userPrincipal == null){
+            logger.error("user is not authenticated or session expired")
+            return Response.status(Response.Status.UNAUTHORIZED).build()
         }
+
+        logger.debug("create  expense: $expense  in report $reportID for user name: ${ctx.userPrincipal.name}")
+
+        val bodyMessage = mapOf<String,Any>("reportID" to reportID, "expense" to expense)
         val template = camelContext.createFluentProducerTemplate()
-        template.to("direct:insert-expense").withBody(expense).send()
+
+        val exchange=  template.to("direct:insert-expense").withBody(bodyMessage).send()
 
         return Response.ok().build()
     }
 
 
 
-    override fun update(expense: Expense) :Response  {
+    override fun update(@Context ctx: SecurityContext ,expense: Expense) :Response  {
+        if (ctx.userPrincipal == null){
+            logger.error("user is not authenticated or session expired")
+            return Response.status(Response.Status.UNAUTHORIZED).build()
+        }
+
         logger.debug("call update expense: $expense")
         val template = this.camelContext.createFluentProducerTemplate()
         expense.id?.run {
@@ -109,8 +120,13 @@ class ExpensesServiceImpl : ExpensesService {
 
 
 
-    override fun delete(id: Long) : Response {
+    override fun delete(@Context ctx: SecurityContext ,id: Long) : Response {
         logger.info("got expense id to delete: $id")
+        if (ctx.userPrincipal == null){
+            return Response.status(Response.Status.UNAUTHORIZED).build()
+        }
+        logger.debug("delete report with id: $id for user name: ${ctx.userPrincipal.name}")
+
         this.camelContext.createFluentProducerTemplate().to("direct:delete-expense")
                 .withBody(id).send()
         return Response.ok().build()
@@ -136,7 +152,6 @@ class ExpensesServiceImpl : ExpensesService {
                 is Timestamp -> expense.tstamp = timestampRaw.toLocalDateTime().toLocalDate()
                 is Date -> expense.tstamp = timestampRaw.toLocalDate()
             }
-            expense.report = row["fk_report".toUpperCase()] as Int
 
             return expense
     }

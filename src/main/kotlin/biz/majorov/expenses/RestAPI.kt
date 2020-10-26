@@ -64,12 +64,13 @@ interface ExpensesService {
         APIResponse(responseCode = "404", description = "expense not found")
     ])
     @Authenticated
-    fun delete(@PathParam("id") @Parameter(description = "Expense id to delete", required = true,
+    fun delete(@Context ctx: SecurityContext , @PathParam("id") @Parameter(description = "Expense id to delete", required = true,
             schema = Schema(type = SchemaType.NUMBER)) id: Long) :Response
 
     @POST
     @Path("/expenses")
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Consumes(value = [MediaType.APPLICATION_JSON,
+        MediaType.APPLICATION_FORM_URLENCODED])
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Add a new expense")
     @APIResponses(value = [
@@ -79,19 +80,22 @@ interface ExpensesService {
         APIResponse(responseCode = "405", description = "invalid input")
     ])
     @Authenticated
-    fun create(expense: Expense) :Response
+    fun create(@Context ctx: SecurityContext,@QueryParam("reportid")
+    @Parameter(description = "id of report where expenses are attached", required = true,
+            schema = Schema(type = SchemaType.NUMBER)) reportID:Int, expense: Expense) :Response
 
 
     @PUT
     @Path("/expenses")
     @Operation(summary = "update an existing expense")
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Consumes(value = [MediaType.APPLICATION_JSON,
+        MediaType.APPLICATION_FORM_URLENCODED])
     @APIResponses(value = [
         APIResponse(responseCode = "200", description = "successful operation")
     ]
     )
     @Authenticated
-    fun update(expense: Expense):Response
+    fun update(@Context ctx: SecurityContext,expense: Expense):Response
 
 
     @GET

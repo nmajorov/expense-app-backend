@@ -32,7 +32,7 @@ run_gradle () {
 
     # find ~/.gradle -type f -name "*.lock" -delete
     # $SCRIPT_DIR/gradlew --info test --tests *ReportApiTest.testFindOneReport
-    # $SCRIPT_DIR/gradlew  test  --tests *ExpenseResourceTest
+    # $SCRIPT_DIR/gradlew  test  --tests *ExpenseApiTest.testUpdateExpense
     $SCRIPT_DIR/gradlew  test
     exit
 }
