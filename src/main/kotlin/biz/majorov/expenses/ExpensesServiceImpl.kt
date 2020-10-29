@@ -100,13 +100,17 @@ class ExpensesServiceImpl : ExpensesService {
      * get all expenses for report
      *
      */
-    override fun findAll(reportID: Int): Response {
-        logger.debug("get all expenses for report $reportID")
-        if (reportID == 0 || reportID < 0  ) return Response.status(Response.Status.BAD_REQUEST).build()
+    override fun findAll(reportID: Int, sortBy: String?): Response {
+        logger.debug("get all expenses for report $reportID sortby: $sortBy" )
+        var sortOrder = ExpenseSortBy.ID_ASC.orderStatement
 
+        if (reportID == 0 || reportID < 0  ) return Response.status(Response.Status.BAD_REQUEST).build()
+        if (sortBy !=null) sortOrder = ExpenseSortBy.valueOf(sortBy.toUpperCase()).orderStatement
+
+        val body = mapOf("reportID" to reportID, "sortOrder" to sortOrder)
         val exchange = this.camelContext.createFluentProducerTemplate()
                 .to("direct:select-all-expenses")
-                .withBody(reportID).send()
+                .withBody(body).send()
 
         @Suppress("UNCHECKED_CAST")
         val camelResult= exchange.getIn().body as List<Map<String, Any>>

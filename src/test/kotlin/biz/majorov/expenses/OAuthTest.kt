@@ -24,9 +24,7 @@ open class OAuthTest {
     @BeforeEach
     fun getAccessToken() {
 
-          if (OAuthTest.TOKEN.isNotEmpty()){
-            return
-        }
+          if (OAuthTest.TOKEN.isNotEmpty()) return
 
         //act as react application
         val clientID = "app-react"

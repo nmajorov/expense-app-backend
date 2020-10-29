@@ -93,3 +93,12 @@ class LocalDateSerializer : StdSerializer<LocalDate>(LocalDate::class.java) {
         gen.writeString(value.format(DateTimeFormatter.ISO_LOCAL_DATE));
     }
 }
+
+
+enum class 	ExpenseSortBy(val orderStatement: String){
+	ID_ASC("id ASC"),
+	ID_DESC("id DESC"),
+	CREATED_ASC("created ASC"),
+	CREATED_DESC("created DESC")
+
+}

@@ -50,7 +50,11 @@ interface ExpensesService {
     ])
     @Authenticated
     fun findAll(@QueryParam("reportid") @Parameter(description = "id of report where expenses are attached", required = true,
-            schema = Schema(type = SchemaType.NUMBER)) reportID:Int): Response
+            schema = Schema(type = SchemaType.NUMBER)) reportID:Int,
+                @QueryParam("sort_by")
+                @Parameter(description = "optional sort parameter for expenses", required = false,
+                        schema = Schema(type = SchemaType.STRING))
+                sortBy: String?): Response
 
     @DELETE
     @Path("/expenses/{id}")

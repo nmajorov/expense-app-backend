@@ -12,7 +12,8 @@ import javax.enterprise.inject.Produces
 class Routes {
     @Produces
     fun myRoutes() = routes {
-        from("direct:select-all-expenses").to("sql:select * from EXPENSES WHERE FK_REPORT = :#\${body}  ORDER BY ID")
+        from("direct:select-all-expenses").log(" reportID: \$simple{body['reportID']} sortorder: \$simple{body['sortOrder']}")
+                .to("sql:select * from EXPENSES WHERE FK_REPORT = :#\$simple{body['reportID']} ORDER BY :#\$simple{body['sortOrder']}")
                 .log("\${body}")
 
         from("direct:insert-expense")
