@@ -107,16 +107,20 @@ class ExpensesServiceImpl : ExpensesService {
         if (reportID == 0 || reportID < 0  ) return Response.status(Response.Status.BAD_REQUEST).build()
         if (sortBy !=null) sortOrder = ExpenseSortBy.valueOf(sortBy.toUpperCase()).orderStatement
 
-        val body = mapOf("reportID" to reportID, "sortOrder" to sortOrder)
+
+        val sql = "select * from EXPENSES  " +
+                " WHERE FK_REPORT =$reportID ORDER BY $sortOrder"
+
         val exchange = this.camelContext.createFluentProducerTemplate()
                 .to("direct:select-all-expenses")
-                .withBody(body).send()
+                .withBody(sql).send()
 
         @Suppress("UNCHECKED_CAST")
         val camelResult= exchange.getIn().body as List<Map<String, Any>>
         val entities = mutableListOf<Expense>()
         //convert sql result to the entities
         camelResult.forEach {
+            logger.debug("result: $it")
             entities.add(convertRowToEntity(it))
         }
         return Response.ok(entities, MediaType.APPLICATION_JSON).build()

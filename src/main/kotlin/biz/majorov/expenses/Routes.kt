@@ -12,8 +12,10 @@ import javax.enterprise.inject.Produces
 class Routes {
     @Produces
     fun myRoutes() = routes {
-        from("direct:select-all-expenses").log(" reportID: \$simple{body['reportID']} sortorder: \$simple{body['sortOrder']}")
-                .to("sql:select * from EXPENSES WHERE FK_REPORT = :#\$simple{body['reportID']} ORDER BY :#\$simple{body['sortOrder']}")
+        from("direct:select-all-expenses").log(" body sql : \$simple{body}")
+
+                .to("sql://query?useMessageBodyForSql=true")
+
                 .log("\${body}")
 
         from("direct:insert-expense")
