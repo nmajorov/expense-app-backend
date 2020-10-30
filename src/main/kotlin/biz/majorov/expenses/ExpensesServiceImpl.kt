@@ -102,12 +102,14 @@ class ExpensesServiceImpl : ExpensesService {
      */
     override fun findAll(reportID: Int, sortBy: String?): Response {
         logger.debug("get all expenses for report $reportID sortby: $sortBy" )
+        //set default order statement
         var sortOrder = ExpenseSortBy.ID_ASC.orderStatement
 
         if (reportID == 0 || reportID < 0  ) return Response.status(Response.Status.BAD_REQUEST).build()
+        //if sort order is not null set it
         if (sortBy !=null) sortOrder = ExpenseSortBy.valueOf(sortBy.toUpperCase()).orderStatement
 
-
+        //create sql
         val sql = "select * from EXPENSES  " +
                 " WHERE FK_REPORT =$reportID ORDER BY $sortOrder"
 
@@ -115,6 +117,7 @@ class ExpensesServiceImpl : ExpensesService {
                 .to("direct:select-all-expenses")
                 .withBody(sql).send()
 
+        //get result from exchange
         @Suppress("UNCHECKED_CAST")
         val camelResult= exchange.getIn().body as List<Map<String, Any>>
         val entities = mutableListOf<Expense>()
