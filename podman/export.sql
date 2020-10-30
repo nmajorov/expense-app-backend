@@ -182,7 +182,7 @@ DROP INDEX IF EXISTS public.idx_auth_exec_flow;
 DROP INDEX IF EXISTS public.idx_auth_config_realm;
 DROP INDEX IF EXISTS public.idx_assoc_pol_assoc_pol_id;
 DROP INDEX IF EXISTS public.flyway_schema_history_s_idx;
-DROP INDEX IF EXISTS expenses.flyway_schema_history_s_idx;
+
 ALTER TABLE IF EXISTS ONLY public.user_entity DROP CONSTRAINT IF EXISTS uk_ru8tt6t700s9v50bu18ws5ha6;
 ALTER TABLE IF EXISTS ONLY public.realm DROP CONSTRAINT IF EXISTS uk_orvsdmla56612eaefiq6wl5oi;
 ALTER TABLE IF EXISTS ONLY public.user_consent DROP CONSTRAINT IF EXISTS uk_jkuwuvd56ontgsuhogm8uewrt;
@@ -204,7 +204,6 @@ ALTER TABLE IF EXISTS ONLY public.resource_server DROP CONSTRAINT IF EXISTS pk_r
 ALTER TABLE IF EXISTS ONLY public.databasechangeloglock DROP CONSTRAINT IF EXISTS pk_databasechangeloglock;
 ALTER TABLE IF EXISTS ONLY public.client_scope DROP CONSTRAINT IF EXISTS pk_cli_template;
 ALTER TABLE IF EXISTS ONLY public.client_scope_attributes DROP CONSTRAINT IF EXISTS pk_cl_tmpl_attr;
-ALTER TABLE IF EXISTS ONLY public.flyway_schema_history DROP CONSTRAINT IF EXISTS flyway_schema_history_pk;
 ALTER TABLE IF EXISTS ONLY public.web_origins DROP CONSTRAINT IF EXISTS constraint_web_origins;
 ALTER TABLE IF EXISTS ONLY public.user_session_note DROP CONSTRAINT IF EXISTS constraint_usn_pk;
 ALTER TABLE IF EXISTS ONLY public.user_group_membership DROP CONSTRAINT IF EXISTS constraint_user_group;
@@ -292,10 +291,6 @@ ALTER TABLE IF EXISTS ONLY public.client_scope_client DROP CONSTRAINT IF EXISTS 
 ALTER TABLE IF EXISTS ONLY public.client_auth_flow_bindings DROP CONSTRAINT IF EXISTS c_cli_flow_bind;
 ALTER TABLE IF EXISTS ONLY public.keycloak_role DROP CONSTRAINT IF EXISTS "UK_J3RWUVD56ONTGSUHOGM184WW2-2";
 ALTER TABLE IF EXISTS ONLY public.username_login_failure DROP CONSTRAINT IF EXISTS "CONSTRAINT_17-2";
-ALTER TABLE IF EXISTS ONLY expenses.report DROP CONSTRAINT IF EXISTS report_pkey;
-ALTER TABLE IF EXISTS ONLY expenses.flyway_schema_history DROP CONSTRAINT IF EXISTS flyway_schema_history_pk;
-ALTER TABLE IF EXISTS ONLY expenses.expenses DROP CONSTRAINT IF EXISTS expenses_pkey;
-ALTER TABLE IF EXISTS expenses.expenses ALTER COLUMN id DROP DEFAULT;
 DROP TABLE IF EXISTS public.web_origins;
 DROP TABLE IF EXISTS public.username_login_failure;
 DROP TABLE IF EXISTS public.user_session_note;
@@ -394,17 +389,18 @@ DROP TABLE IF EXISTS expenses.report;
 DROP TABLE IF EXISTS expenses.flyway_schema_history;
 DROP SEQUENCE IF EXISTS expenses.expenses_id_seq;
 DROP TABLE IF EXISTS expenses.expenses;
+DROP TABLE IF EXISTS expenses.APP_USER;
 DROP EXTENSION IF EXISTS plpgsql;
 DROP SCHEMA IF EXISTS public;
 DROP SCHEMA IF EXISTS expenses;
 --
--- Name: expenses; Type: SCHEMA; Schema: -; Owner: keycloack
+-- Name: expenses; Type: SCHEMA; Schema: -; Owner: keycloak
 --
 
 CREATE SCHEMA expenses;
 
 
-ALTER SCHEMA expenses OWNER TO keycloack;
+ALTER SCHEMA expenses OWNER TO keycloak;
 
 --
 -- Name: public; Type: SCHEMA; Schema: -; Owner: postgres
@@ -446,7 +442,7 @@ SET default_with_oids = false;
 
 
 --
--- Name: admin_event_entity; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: admin_event_entity; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.admin_event_entity (
@@ -465,10 +461,10 @@ CREATE TABLE public.admin_event_entity (
 );
 
 
-ALTER TABLE public.admin_event_entity OWNER TO keycloack;
+ALTER TABLE public.admin_event_entity OWNER TO keycloak;
 
 --
--- Name: associated_policy; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: associated_policy; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.associated_policy (
@@ -477,10 +473,10 @@ CREATE TABLE public.associated_policy (
 );
 
 
-ALTER TABLE public.associated_policy OWNER TO keycloack;
+ALTER TABLE public.associated_policy OWNER TO keycloak;
 
 --
--- Name: authentication_execution; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: authentication_execution; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.authentication_execution (
@@ -497,10 +493,10 @@ CREATE TABLE public.authentication_execution (
 );
 
 
-ALTER TABLE public.authentication_execution OWNER TO keycloack;
+ALTER TABLE public.authentication_execution OWNER TO keycloak;
 
 --
--- Name: authentication_flow; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: authentication_flow; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.authentication_flow (
@@ -514,10 +510,10 @@ CREATE TABLE public.authentication_flow (
 );
 
 
-ALTER TABLE public.authentication_flow OWNER TO keycloack;
+ALTER TABLE public.authentication_flow OWNER TO keycloak;
 
 --
--- Name: authenticator_config; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: authenticator_config; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.authenticator_config (
@@ -527,10 +523,10 @@ CREATE TABLE public.authenticator_config (
 );
 
 
-ALTER TABLE public.authenticator_config OWNER TO keycloack;
+ALTER TABLE public.authenticator_config OWNER TO keycloak;
 
 --
--- Name: authenticator_config_entry; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: authenticator_config_entry; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.authenticator_config_entry (
@@ -540,10 +536,10 @@ CREATE TABLE public.authenticator_config_entry (
 );
 
 
-ALTER TABLE public.authenticator_config_entry OWNER TO keycloack;
+ALTER TABLE public.authenticator_config_entry OWNER TO keycloak;
 
 --
--- Name: broker_link; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: broker_link; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.broker_link (
@@ -557,10 +553,10 @@ CREATE TABLE public.broker_link (
 );
 
 
-ALTER TABLE public.broker_link OWNER TO keycloack;
+ALTER TABLE public.broker_link OWNER TO keycloak;
 
 --
--- Name: client; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: client; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.client (
@@ -593,10 +589,10 @@ CREATE TABLE public.client (
 );
 
 
-ALTER TABLE public.client OWNER TO keycloack;
+ALTER TABLE public.client OWNER TO keycloak;
 
 --
--- Name: client_attributes; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: client_attributes; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.client_attributes (
@@ -606,10 +602,10 @@ CREATE TABLE public.client_attributes (
 );
 
 
-ALTER TABLE public.client_attributes OWNER TO keycloack;
+ALTER TABLE public.client_attributes OWNER TO keycloak;
 
 --
--- Name: client_auth_flow_bindings; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: client_auth_flow_bindings; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.client_auth_flow_bindings (
@@ -619,10 +615,10 @@ CREATE TABLE public.client_auth_flow_bindings (
 );
 
 
-ALTER TABLE public.client_auth_flow_bindings OWNER TO keycloack;
+ALTER TABLE public.client_auth_flow_bindings OWNER TO keycloak;
 
 --
--- Name: client_default_roles; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: client_default_roles; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.client_default_roles (
@@ -631,10 +627,10 @@ CREATE TABLE public.client_default_roles (
 );
 
 
-ALTER TABLE public.client_default_roles OWNER TO keycloack;
+ALTER TABLE public.client_default_roles OWNER TO keycloak;
 
 --
--- Name: client_initial_access; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: client_initial_access; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.client_initial_access (
@@ -647,10 +643,10 @@ CREATE TABLE public.client_initial_access (
 );
 
 
-ALTER TABLE public.client_initial_access OWNER TO keycloack;
+ALTER TABLE public.client_initial_access OWNER TO keycloak;
 
 --
--- Name: client_node_registrations; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: client_node_registrations; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.client_node_registrations (
@@ -660,10 +656,10 @@ CREATE TABLE public.client_node_registrations (
 );
 
 
-ALTER TABLE public.client_node_registrations OWNER TO keycloack;
+ALTER TABLE public.client_node_registrations OWNER TO keycloak;
 
 --
--- Name: client_scope; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: client_scope; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.client_scope (
@@ -675,10 +671,10 @@ CREATE TABLE public.client_scope (
 );
 
 
-ALTER TABLE public.client_scope OWNER TO keycloack;
+ALTER TABLE public.client_scope OWNER TO keycloak;
 
 --
--- Name: client_scope_attributes; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: client_scope_attributes; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.client_scope_attributes (
@@ -688,10 +684,10 @@ CREATE TABLE public.client_scope_attributes (
 );
 
 
-ALTER TABLE public.client_scope_attributes OWNER TO keycloack;
+ALTER TABLE public.client_scope_attributes OWNER TO keycloak;
 
 --
--- Name: client_scope_client; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: client_scope_client; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.client_scope_client (
@@ -701,10 +697,10 @@ CREATE TABLE public.client_scope_client (
 );
 
 
-ALTER TABLE public.client_scope_client OWNER TO keycloack;
+ALTER TABLE public.client_scope_client OWNER TO keycloak;
 
 --
--- Name: client_scope_role_mapping; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: client_scope_role_mapping; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.client_scope_role_mapping (
@@ -713,10 +709,10 @@ CREATE TABLE public.client_scope_role_mapping (
 );
 
 
-ALTER TABLE public.client_scope_role_mapping OWNER TO keycloack;
+ALTER TABLE public.client_scope_role_mapping OWNER TO keycloak;
 
 --
--- Name: client_session; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: client_session; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.client_session (
@@ -733,10 +729,10 @@ CREATE TABLE public.client_session (
 );
 
 
-ALTER TABLE public.client_session OWNER TO keycloack;
+ALTER TABLE public.client_session OWNER TO keycloak;
 
 --
--- Name: client_session_auth_status; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: client_session_auth_status; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.client_session_auth_status (
@@ -746,10 +742,10 @@ CREATE TABLE public.client_session_auth_status (
 );
 
 
-ALTER TABLE public.client_session_auth_status OWNER TO keycloack;
+ALTER TABLE public.client_session_auth_status OWNER TO keycloak;
 
 --
--- Name: client_session_note; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: client_session_note; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.client_session_note (
@@ -759,10 +755,10 @@ CREATE TABLE public.client_session_note (
 );
 
 
-ALTER TABLE public.client_session_note OWNER TO keycloack;
+ALTER TABLE public.client_session_note OWNER TO keycloak;
 
 --
--- Name: client_session_prot_mapper; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: client_session_prot_mapper; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.client_session_prot_mapper (
@@ -771,10 +767,10 @@ CREATE TABLE public.client_session_prot_mapper (
 );
 
 
-ALTER TABLE public.client_session_prot_mapper OWNER TO keycloack;
+ALTER TABLE public.client_session_prot_mapper OWNER TO keycloak;
 
 --
--- Name: client_session_role; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: client_session_role; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.client_session_role (
@@ -783,10 +779,10 @@ CREATE TABLE public.client_session_role (
 );
 
 
-ALTER TABLE public.client_session_role OWNER TO keycloack;
+ALTER TABLE public.client_session_role OWNER TO keycloak;
 
 --
--- Name: client_user_session_note; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: client_user_session_note; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.client_user_session_note (
@@ -796,10 +792,10 @@ CREATE TABLE public.client_user_session_note (
 );
 
 
-ALTER TABLE public.client_user_session_note OWNER TO keycloack;
+ALTER TABLE public.client_user_session_note OWNER TO keycloak;
 
 --
--- Name: component; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: component; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.component (
@@ -813,10 +809,10 @@ CREATE TABLE public.component (
 );
 
 
-ALTER TABLE public.component OWNER TO keycloack;
+ALTER TABLE public.component OWNER TO keycloak;
 
 --
--- Name: component_config; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: component_config; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.component_config (
@@ -827,10 +823,10 @@ CREATE TABLE public.component_config (
 );
 
 
-ALTER TABLE public.component_config OWNER TO keycloack;
+ALTER TABLE public.component_config OWNER TO keycloak;
 
 --
--- Name: composite_role; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: composite_role; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.composite_role (
@@ -839,10 +835,10 @@ CREATE TABLE public.composite_role (
 );
 
 
-ALTER TABLE public.composite_role OWNER TO keycloack;
+ALTER TABLE public.composite_role OWNER TO keycloak;
 
 --
--- Name: credential; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: credential; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.credential (
@@ -858,10 +854,10 @@ CREATE TABLE public.credential (
 );
 
 
-ALTER TABLE public.credential OWNER TO keycloack;
+ALTER TABLE public.credential OWNER TO keycloak;
 
 --
--- Name: databasechangelog; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: databasechangelog; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.databasechangelog (
@@ -882,10 +878,10 @@ CREATE TABLE public.databasechangelog (
 );
 
 
-ALTER TABLE public.databasechangelog OWNER TO keycloack;
+ALTER TABLE public.databasechangelog OWNER TO keycloak;
 
 --
--- Name: databasechangeloglock; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: databasechangeloglock; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.databasechangeloglock (
@@ -896,10 +892,10 @@ CREATE TABLE public.databasechangeloglock (
 );
 
 
-ALTER TABLE public.databasechangeloglock OWNER TO keycloack;
+ALTER TABLE public.databasechangeloglock OWNER TO keycloak;
 
 --
--- Name: default_client_scope; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: default_client_scope; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.default_client_scope (
@@ -909,10 +905,10 @@ CREATE TABLE public.default_client_scope (
 );
 
 
-ALTER TABLE public.default_client_scope OWNER TO keycloack;
+ALTER TABLE public.default_client_scope OWNER TO keycloak;
 
 --
--- Name: event_entity; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: event_entity; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.event_entity (
@@ -929,10 +925,10 @@ CREATE TABLE public.event_entity (
 );
 
 
-ALTER TABLE public.event_entity OWNER TO keycloack;
+ALTER TABLE public.event_entity OWNER TO keycloak;
 
 --
--- Name: fed_user_attribute; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: fed_user_attribute; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.fed_user_attribute (
@@ -945,10 +941,10 @@ CREATE TABLE public.fed_user_attribute (
 );
 
 
-ALTER TABLE public.fed_user_attribute OWNER TO keycloack;
+ALTER TABLE public.fed_user_attribute OWNER TO keycloak;
 
 --
--- Name: fed_user_consent; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: fed_user_consent; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.fed_user_consent (
@@ -964,10 +960,10 @@ CREATE TABLE public.fed_user_consent (
 );
 
 
-ALTER TABLE public.fed_user_consent OWNER TO keycloack;
+ALTER TABLE public.fed_user_consent OWNER TO keycloak;
 
 --
--- Name: fed_user_consent_cl_scope; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: fed_user_consent_cl_scope; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.fed_user_consent_cl_scope (
@@ -976,10 +972,10 @@ CREATE TABLE public.fed_user_consent_cl_scope (
 );
 
 
-ALTER TABLE public.fed_user_consent_cl_scope OWNER TO keycloack;
+ALTER TABLE public.fed_user_consent_cl_scope OWNER TO keycloak;
 
 --
--- Name: fed_user_credential; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: fed_user_credential; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.fed_user_credential (
@@ -997,10 +993,10 @@ CREATE TABLE public.fed_user_credential (
 );
 
 
-ALTER TABLE public.fed_user_credential OWNER TO keycloack;
+ALTER TABLE public.fed_user_credential OWNER TO keycloak;
 
 --
--- Name: fed_user_group_membership; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: fed_user_group_membership; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.fed_user_group_membership (
@@ -1011,10 +1007,10 @@ CREATE TABLE public.fed_user_group_membership (
 );
 
 
-ALTER TABLE public.fed_user_group_membership OWNER TO keycloack;
+ALTER TABLE public.fed_user_group_membership OWNER TO keycloak;
 
 --
--- Name: fed_user_required_action; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: fed_user_required_action; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.fed_user_required_action (
@@ -1025,10 +1021,10 @@ CREATE TABLE public.fed_user_required_action (
 );
 
 
-ALTER TABLE public.fed_user_required_action OWNER TO keycloack;
+ALTER TABLE public.fed_user_required_action OWNER TO keycloak;
 
 --
--- Name: fed_user_role_mapping; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: fed_user_role_mapping; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.fed_user_role_mapping (
@@ -1039,10 +1035,10 @@ CREATE TABLE public.fed_user_role_mapping (
 );
 
 
-ALTER TABLE public.fed_user_role_mapping OWNER TO keycloack;
+ALTER TABLE public.fed_user_role_mapping OWNER TO keycloak;
 
 --
--- Name: federated_identity; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: federated_identity; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.federated_identity (
@@ -1055,10 +1051,10 @@ CREATE TABLE public.federated_identity (
 );
 
 
-ALTER TABLE public.federated_identity OWNER TO keycloack;
+ALTER TABLE public.federated_identity OWNER TO keycloak;
 
 --
--- Name: federated_user; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: federated_user; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.federated_user (
@@ -1068,11 +1064,11 @@ CREATE TABLE public.federated_user (
 );
 
 
-ALTER TABLE public.federated_user OWNER TO keycloack;
+ALTER TABLE public.federated_user OWNER TO keycloak;
 
 
 --
--- Name: group_attribute; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: group_attribute; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.group_attribute (
@@ -1083,10 +1079,10 @@ CREATE TABLE public.group_attribute (
 );
 
 
-ALTER TABLE public.group_attribute OWNER TO keycloack;
+ALTER TABLE public.group_attribute OWNER TO keycloak;
 
 --
--- Name: group_role_mapping; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: group_role_mapping; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.group_role_mapping (
@@ -1095,10 +1091,10 @@ CREATE TABLE public.group_role_mapping (
 );
 
 
-ALTER TABLE public.group_role_mapping OWNER TO keycloack;
+ALTER TABLE public.group_role_mapping OWNER TO keycloak;
 
 --
--- Name: identity_provider; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: identity_provider; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.identity_provider (
@@ -1118,10 +1114,10 @@ CREATE TABLE public.identity_provider (
 );
 
 
-ALTER TABLE public.identity_provider OWNER TO keycloack;
+ALTER TABLE public.identity_provider OWNER TO keycloak;
 
 --
--- Name: identity_provider_config; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: identity_provider_config; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.identity_provider_config (
@@ -1131,10 +1127,10 @@ CREATE TABLE public.identity_provider_config (
 );
 
 
-ALTER TABLE public.identity_provider_config OWNER TO keycloack;
+ALTER TABLE public.identity_provider_config OWNER TO keycloak;
 
 --
--- Name: identity_provider_mapper; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: identity_provider_mapper; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.identity_provider_mapper (
@@ -1146,10 +1142,10 @@ CREATE TABLE public.identity_provider_mapper (
 );
 
 
-ALTER TABLE public.identity_provider_mapper OWNER TO keycloack;
+ALTER TABLE public.identity_provider_mapper OWNER TO keycloak;
 
 --
--- Name: idp_mapper_config; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: idp_mapper_config; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.idp_mapper_config (
@@ -1159,10 +1155,10 @@ CREATE TABLE public.idp_mapper_config (
 );
 
 
-ALTER TABLE public.idp_mapper_config OWNER TO keycloack;
+ALTER TABLE public.idp_mapper_config OWNER TO keycloak;
 
 --
--- Name: keycloak_group; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: keycloak_group; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.keycloak_group (
@@ -1173,10 +1169,10 @@ CREATE TABLE public.keycloak_group (
 );
 
 
-ALTER TABLE public.keycloak_group OWNER TO keycloack;
+ALTER TABLE public.keycloak_group OWNER TO keycloak;
 
 --
--- Name: keycloak_role; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: keycloak_role; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.keycloak_role (
@@ -1191,10 +1187,10 @@ CREATE TABLE public.keycloak_role (
 );
 
 
-ALTER TABLE public.keycloak_role OWNER TO keycloack;
+ALTER TABLE public.keycloak_role OWNER TO keycloak;
 
 --
--- Name: migration_model; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: migration_model; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.migration_model (
@@ -1204,10 +1200,10 @@ CREATE TABLE public.migration_model (
 );
 
 
-ALTER TABLE public.migration_model OWNER TO keycloack;
+ALTER TABLE public.migration_model OWNER TO keycloak;
 
 --
--- Name: offline_client_session; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: offline_client_session; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.offline_client_session (
@@ -1221,10 +1217,10 @@ CREATE TABLE public.offline_client_session (
 );
 
 
-ALTER TABLE public.offline_client_session OWNER TO keycloack;
+ALTER TABLE public.offline_client_session OWNER TO keycloak;
 
 --
--- Name: offline_user_session; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: offline_user_session; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.offline_user_session (
@@ -1238,10 +1234,10 @@ CREATE TABLE public.offline_user_session (
 );
 
 
-ALTER TABLE public.offline_user_session OWNER TO keycloack;
+ALTER TABLE public.offline_user_session OWNER TO keycloak;
 
 --
--- Name: policy_config; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: policy_config; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.policy_config (
@@ -1251,10 +1247,10 @@ CREATE TABLE public.policy_config (
 );
 
 
-ALTER TABLE public.policy_config OWNER TO keycloack;
+ALTER TABLE public.policy_config OWNER TO keycloak;
 
 --
--- Name: protocol_mapper; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: protocol_mapper; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.protocol_mapper (
@@ -1267,10 +1263,10 @@ CREATE TABLE public.protocol_mapper (
 );
 
 
-ALTER TABLE public.protocol_mapper OWNER TO keycloack;
+ALTER TABLE public.protocol_mapper OWNER TO keycloak;
 
 --
--- Name: protocol_mapper_config; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: protocol_mapper_config; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.protocol_mapper_config (
@@ -1280,10 +1276,10 @@ CREATE TABLE public.protocol_mapper_config (
 );
 
 
-ALTER TABLE public.protocol_mapper_config OWNER TO keycloack;
+ALTER TABLE public.protocol_mapper_config OWNER TO keycloak;
 
 --
--- Name: realm; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: realm; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.realm (
@@ -1342,10 +1338,10 @@ CREATE TABLE public.realm (
 );
 
 
-ALTER TABLE public.realm OWNER TO keycloack;
+ALTER TABLE public.realm OWNER TO keycloak;
 
 --
--- Name: realm_attribute; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: realm_attribute; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.realm_attribute (
@@ -1355,10 +1351,10 @@ CREATE TABLE public.realm_attribute (
 );
 
 
-ALTER TABLE public.realm_attribute OWNER TO keycloack;
+ALTER TABLE public.realm_attribute OWNER TO keycloak;
 
 --
--- Name: realm_default_groups; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: realm_default_groups; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.realm_default_groups (
@@ -1367,10 +1363,10 @@ CREATE TABLE public.realm_default_groups (
 );
 
 
-ALTER TABLE public.realm_default_groups OWNER TO keycloack;
+ALTER TABLE public.realm_default_groups OWNER TO keycloak;
 
 --
--- Name: realm_default_roles; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: realm_default_roles; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.realm_default_roles (
@@ -1379,10 +1375,10 @@ CREATE TABLE public.realm_default_roles (
 );
 
 
-ALTER TABLE public.realm_default_roles OWNER TO keycloack;
+ALTER TABLE public.realm_default_roles OWNER TO keycloak;
 
 --
--- Name: realm_enabled_event_types; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: realm_enabled_event_types; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.realm_enabled_event_types (
@@ -1391,10 +1387,10 @@ CREATE TABLE public.realm_enabled_event_types (
 );
 
 
-ALTER TABLE public.realm_enabled_event_types OWNER TO keycloack;
+ALTER TABLE public.realm_enabled_event_types OWNER TO keycloak;
 
 --
--- Name: realm_events_listeners; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: realm_events_listeners; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.realm_events_listeners (
@@ -1403,10 +1399,10 @@ CREATE TABLE public.realm_events_listeners (
 );
 
 
-ALTER TABLE public.realm_events_listeners OWNER TO keycloack;
+ALTER TABLE public.realm_events_listeners OWNER TO keycloak;
 
 --
--- Name: realm_required_credential; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: realm_required_credential; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.realm_required_credential (
@@ -1418,10 +1414,10 @@ CREATE TABLE public.realm_required_credential (
 );
 
 
-ALTER TABLE public.realm_required_credential OWNER TO keycloack;
+ALTER TABLE public.realm_required_credential OWNER TO keycloak;
 
 --
--- Name: realm_smtp_config; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: realm_smtp_config; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.realm_smtp_config (
@@ -1431,10 +1427,10 @@ CREATE TABLE public.realm_smtp_config (
 );
 
 
-ALTER TABLE public.realm_smtp_config OWNER TO keycloack;
+ALTER TABLE public.realm_smtp_config OWNER TO keycloak;
 
 --
--- Name: realm_supported_locales; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: realm_supported_locales; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.realm_supported_locales (
@@ -1443,10 +1439,10 @@ CREATE TABLE public.realm_supported_locales (
 );
 
 
-ALTER TABLE public.realm_supported_locales OWNER TO keycloack;
+ALTER TABLE public.realm_supported_locales OWNER TO keycloak;
 
 --
--- Name: redirect_uris; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: redirect_uris; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.redirect_uris (
@@ -1455,10 +1451,10 @@ CREATE TABLE public.redirect_uris (
 );
 
 
-ALTER TABLE public.redirect_uris OWNER TO keycloack;
+ALTER TABLE public.redirect_uris OWNER TO keycloak;
 
 --
--- Name: required_action_config; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: required_action_config; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.required_action_config (
@@ -1468,10 +1464,10 @@ CREATE TABLE public.required_action_config (
 );
 
 
-ALTER TABLE public.required_action_config OWNER TO keycloack;
+ALTER TABLE public.required_action_config OWNER TO keycloak;
 
 --
--- Name: required_action_provider; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: required_action_provider; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.required_action_provider (
@@ -1486,10 +1482,10 @@ CREATE TABLE public.required_action_provider (
 );
 
 
-ALTER TABLE public.required_action_provider OWNER TO keycloack;
+ALTER TABLE public.required_action_provider OWNER TO keycloak;
 
 --
--- Name: resource_attribute; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: resource_attribute; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.resource_attribute (
@@ -1500,10 +1496,10 @@ CREATE TABLE public.resource_attribute (
 );
 
 
-ALTER TABLE public.resource_attribute OWNER TO keycloack;
+ALTER TABLE public.resource_attribute OWNER TO keycloak;
 
 --
--- Name: resource_policy; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: resource_policy; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.resource_policy (
@@ -1512,10 +1508,10 @@ CREATE TABLE public.resource_policy (
 );
 
 
-ALTER TABLE public.resource_policy OWNER TO keycloack;
+ALTER TABLE public.resource_policy OWNER TO keycloak;
 
 --
--- Name: resource_scope; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: resource_scope; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.resource_scope (
@@ -1524,10 +1520,10 @@ CREATE TABLE public.resource_scope (
 );
 
 
-ALTER TABLE public.resource_scope OWNER TO keycloack;
+ALTER TABLE public.resource_scope OWNER TO keycloak;
 
 --
--- Name: resource_server; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: resource_server; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.resource_server (
@@ -1538,10 +1534,10 @@ CREATE TABLE public.resource_server (
 );
 
 
-ALTER TABLE public.resource_server OWNER TO keycloack;
+ALTER TABLE public.resource_server OWNER TO keycloak;
 
 --
--- Name: resource_server_perm_ticket; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: resource_server_perm_ticket; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.resource_server_perm_ticket (
@@ -1557,10 +1553,10 @@ CREATE TABLE public.resource_server_perm_ticket (
 );
 
 
-ALTER TABLE public.resource_server_perm_ticket OWNER TO keycloack;
+ALTER TABLE public.resource_server_perm_ticket OWNER TO keycloak;
 
 --
--- Name: resource_server_policy; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: resource_server_policy; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.resource_server_policy (
@@ -1575,10 +1571,10 @@ CREATE TABLE public.resource_server_policy (
 );
 
 
-ALTER TABLE public.resource_server_policy OWNER TO keycloack;
+ALTER TABLE public.resource_server_policy OWNER TO keycloak;
 
 --
--- Name: resource_server_resource; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: resource_server_resource; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.resource_server_resource (
@@ -1593,10 +1589,10 @@ CREATE TABLE public.resource_server_resource (
 );
 
 
-ALTER TABLE public.resource_server_resource OWNER TO keycloack;
+ALTER TABLE public.resource_server_resource OWNER TO keycloak;
 
 --
--- Name: resource_server_scope; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: resource_server_scope; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.resource_server_scope (
@@ -1608,10 +1604,10 @@ CREATE TABLE public.resource_server_scope (
 );
 
 
-ALTER TABLE public.resource_server_scope OWNER TO keycloack;
+ALTER TABLE public.resource_server_scope OWNER TO keycloak;
 
 --
--- Name: resource_uris; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: resource_uris; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.resource_uris (
@@ -1620,10 +1616,10 @@ CREATE TABLE public.resource_uris (
 );
 
 
-ALTER TABLE public.resource_uris OWNER TO keycloack;
+ALTER TABLE public.resource_uris OWNER TO keycloak;
 
 --
--- Name: role_attribute; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: role_attribute; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.role_attribute (
@@ -1634,10 +1630,10 @@ CREATE TABLE public.role_attribute (
 );
 
 
-ALTER TABLE public.role_attribute OWNER TO keycloack;
+ALTER TABLE public.role_attribute OWNER TO keycloak;
 
 --
--- Name: scope_mapping; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: scope_mapping; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.scope_mapping (
@@ -1646,10 +1642,10 @@ CREATE TABLE public.scope_mapping (
 );
 
 
-ALTER TABLE public.scope_mapping OWNER TO keycloack;
+ALTER TABLE public.scope_mapping OWNER TO keycloak;
 
 --
--- Name: scope_policy; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: scope_policy; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.scope_policy (
@@ -1658,10 +1654,10 @@ CREATE TABLE public.scope_policy (
 );
 
 
-ALTER TABLE public.scope_policy OWNER TO keycloack;
+ALTER TABLE public.scope_policy OWNER TO keycloak;
 
 --
--- Name: user_attribute; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: user_attribute; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.user_attribute (
@@ -1672,10 +1668,10 @@ CREATE TABLE public.user_attribute (
 );
 
 
-ALTER TABLE public.user_attribute OWNER TO keycloack;
+ALTER TABLE public.user_attribute OWNER TO keycloak;
 
 --
--- Name: user_consent; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: user_consent; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.user_consent (
@@ -1689,10 +1685,10 @@ CREATE TABLE public.user_consent (
 );
 
 
-ALTER TABLE public.user_consent OWNER TO keycloack;
+ALTER TABLE public.user_consent OWNER TO keycloak;
 
 --
--- Name: user_consent_client_scope; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: user_consent_client_scope; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.user_consent_client_scope (
@@ -1701,10 +1697,10 @@ CREATE TABLE public.user_consent_client_scope (
 );
 
 
-ALTER TABLE public.user_consent_client_scope OWNER TO keycloack;
+ALTER TABLE public.user_consent_client_scope OWNER TO keycloak;
 
 --
--- Name: user_entity; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: user_entity; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.user_entity (
@@ -1724,10 +1720,10 @@ CREATE TABLE public.user_entity (
 );
 
 
-ALTER TABLE public.user_entity OWNER TO keycloack;
+ALTER TABLE public.user_entity OWNER TO keycloak;
 
 --
--- Name: user_federation_config; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: user_federation_config; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.user_federation_config (
@@ -1737,10 +1733,10 @@ CREATE TABLE public.user_federation_config (
 );
 
 
-ALTER TABLE public.user_federation_config OWNER TO keycloack;
+ALTER TABLE public.user_federation_config OWNER TO keycloak;
 
 --
--- Name: user_federation_mapper; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: user_federation_mapper; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.user_federation_mapper (
@@ -1752,10 +1748,10 @@ CREATE TABLE public.user_federation_mapper (
 );
 
 
-ALTER TABLE public.user_federation_mapper OWNER TO keycloack;
+ALTER TABLE public.user_federation_mapper OWNER TO keycloak;
 
 --
--- Name: user_federation_mapper_config; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: user_federation_mapper_config; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.user_federation_mapper_config (
@@ -1765,10 +1761,10 @@ CREATE TABLE public.user_federation_mapper_config (
 );
 
 
-ALTER TABLE public.user_federation_mapper_config OWNER TO keycloack;
+ALTER TABLE public.user_federation_mapper_config OWNER TO keycloak;
 
 --
--- Name: user_federation_provider; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: user_federation_provider; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.user_federation_provider (
@@ -1783,10 +1779,10 @@ CREATE TABLE public.user_federation_provider (
 );
 
 
-ALTER TABLE public.user_federation_provider OWNER TO keycloack;
+ALTER TABLE public.user_federation_provider OWNER TO keycloak;
 
 --
--- Name: user_group_membership; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: user_group_membership; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.user_group_membership (
@@ -1795,10 +1791,10 @@ CREATE TABLE public.user_group_membership (
 );
 
 
-ALTER TABLE public.user_group_membership OWNER TO keycloack;
+ALTER TABLE public.user_group_membership OWNER TO keycloak;
 
 --
--- Name: user_required_action; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: user_required_action; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.user_required_action (
@@ -1807,10 +1803,10 @@ CREATE TABLE public.user_required_action (
 );
 
 
-ALTER TABLE public.user_required_action OWNER TO keycloack;
+ALTER TABLE public.user_required_action OWNER TO keycloak;
 
 --
--- Name: user_role_mapping; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: user_role_mapping; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.user_role_mapping (
@@ -1819,10 +1815,10 @@ CREATE TABLE public.user_role_mapping (
 );
 
 
-ALTER TABLE public.user_role_mapping OWNER TO keycloack;
+ALTER TABLE public.user_role_mapping OWNER TO keycloak;
 
 --
--- Name: user_session; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: user_session; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.user_session (
@@ -1841,10 +1837,10 @@ CREATE TABLE public.user_session (
 );
 
 
-ALTER TABLE public.user_session OWNER TO keycloack;
+ALTER TABLE public.user_session OWNER TO keycloak;
 
 --
--- Name: user_session_note; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: user_session_note; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.user_session_note (
@@ -1854,10 +1850,10 @@ CREATE TABLE public.user_session_note (
 );
 
 
-ALTER TABLE public.user_session_note OWNER TO keycloack;
+ALTER TABLE public.user_session_note OWNER TO keycloak;
 
 --
--- Name: username_login_failure; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: username_login_failure; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.username_login_failure (
@@ -1870,10 +1866,10 @@ CREATE TABLE public.username_login_failure (
 );
 
 
-ALTER TABLE public.username_login_failure OWNER TO keycloack;
+ALTER TABLE public.username_login_failure OWNER TO keycloak;
 
 --
--- Name: web_origins; Type: TABLE; Schema: public; Owner: keycloack
+-- Name: web_origins; Type: TABLE; Schema: public; Owner: keycloak
 --
 
 CREATE TABLE public.web_origins (
@@ -1882,17 +1878,17 @@ CREATE TABLE public.web_origins (
 );
 
 
-ALTER TABLE public.web_origins OWNER TO keycloack;
+ALTER TABLE public.web_origins OWNER TO keycloak;
 
 
 --
--- Data for Name: associated_policy; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: associated_policy; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: authentication_execution; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: authentication_execution; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 INSERT INTO public.authentication_execution VALUES ('fb7c2788-03df-491e-bf4c-7d709cc7fa0b', NULL, 'auth-cookie', 'master', '33878def-a847-4f52-adae-a046ce0c6382', 2, 10, false, NULL, NULL);
@@ -1992,7 +1988,7 @@ INSERT INTO public.authentication_execution VALUES ('38c1bdbc-e5e2-4fe7-bc2b-733
 
 
 --
--- Data for Name: authentication_flow; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: authentication_flow; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 INSERT INTO public.authentication_flow VALUES ('33878def-a847-4f52-adae-a046ce0c6382', 'browser', 'browser based authentication', 'master', 'basic-flow', true, true);
@@ -2038,7 +2034,7 @@ INSERT INTO public.authentication_flow VALUES ('660a319b-32ce-47e5-aee4-8d2bee59
 
 
 --
--- Data for Name: authenticator_config; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: authenticator_config; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 INSERT INTO public.authenticator_config VALUES ('9f0424e5-7e39-40bf-9f14-18bd97abb636', 'review profile config', 'master');
@@ -2048,7 +2044,7 @@ INSERT INTO public.authenticator_config VALUES ('56f6727c-c418-494b-9104-da889ac
 
 
 --
--- Data for Name: authenticator_config_entry; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: authenticator_config_entry; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 INSERT INTO public.authenticator_config_entry VALUES ('9f0424e5-7e39-40bf-9f14-18bd97abb636', 'missing', 'update.profile.on.first.login');
@@ -2058,13 +2054,13 @@ INSERT INTO public.authenticator_config_entry VALUES ('56f6727c-c418-494b-9104-d
 
 
 --
--- Data for Name: broker_link; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: broker_link; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: client; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: client; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 INSERT INTO public.client VALUES ('a2d088c4-62f3-45db-a256-352d64eaaeb2', true, true, 'master-realm', 0, false, 'c48450b7-c6d4-4bcd-b946-2d92168ef5ad', NULL, true, NULL, false, 'master', NULL, 0, false, false, 'master Realm', false, 'client-secret', NULL, NULL, NULL, true, false, false, false);
@@ -2085,7 +2081,7 @@ INSERT INTO public.client VALUES ('b58b8848-e780-438e-ba0f-c2c512c9b7a8', true, 
 
 
 --
--- Data for Name: client_attributes; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: client_attributes; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 INSERT INTO public.client_attributes VALUES ('8d948212-8e06-4645-a938-6cd42d9451ca', 'S256', 'pkce.code.challenge.method');
@@ -2108,13 +2104,13 @@ INSERT INTO public.client_attributes VALUES ('b58b8848-e780-438e-ba0f-c2c512c9b7
 
 
 --
--- Data for Name: client_auth_flow_bindings; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: client_auth_flow_bindings; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: client_default_roles; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: client_default_roles; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 INSERT INTO public.client_default_roles VALUES ('fb19ff79-345b-4df2-a627-b9209fc0db3c', '456fccf5-c6b4-4533-bd33-c2ad328ca885');
@@ -2124,19 +2120,19 @@ INSERT INTO public.client_default_roles VALUES ('9641d4ab-65cc-4495-b1fc-b9c446d
 
 
 --
--- Data for Name: client_initial_access; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: client_initial_access; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: client_node_registrations; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: client_node_registrations; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: client_scope; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: client_scope; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 INSERT INTO public.client_scope VALUES ('8eeeae43-176b-47d2-afc0-bfb50051d5cb', 'offline_access', 'master', 'OpenID Connect built-in scope: offline_access', 'openid-connect');
@@ -2160,7 +2156,7 @@ INSERT INTO public.client_scope VALUES ('3ee644de-d428-41e3-8a78-94c75365d25f', 
 
 
 --
--- Data for Name: client_scope_attributes; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: client_scope_attributes; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 INSERT INTO public.client_scope_attributes VALUES ('8eeeae43-176b-47d2-afc0-bfb50051d5cb', 'true', 'display.on.consent.screen');
@@ -2214,7 +2210,7 @@ INSERT INTO public.client_scope_attributes VALUES ('3ee644de-d428-41e3-8a78-94c7
 
 
 --
--- Data for Name: client_scope_client; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: client_scope_client; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 INSERT INTO public.client_scope_client VALUES ('fb19ff79-345b-4df2-a627-b9209fc0db3c', 'e467318e-1417-40eb-bc71-77c5947bbb27', true);
@@ -2355,7 +2351,7 @@ INSERT INTO public.client_scope_client VALUES ('b58b8848-e780-438e-ba0f-c2c512c9
 
 
 --
--- Data for Name: client_scope_role_mapping; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: client_scope_role_mapping; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 INSERT INTO public.client_scope_role_mapping VALUES ('8eeeae43-176b-47d2-afc0-bfb50051d5cb', '26e11c5c-6b33-4670-a9b8-cca6acddcd0e');
@@ -2363,43 +2359,43 @@ INSERT INTO public.client_scope_role_mapping VALUES ('7e90f56f-1663-446e-beda-97
 
 
 --
--- Data for Name: client_session; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: client_session; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: client_session_auth_status; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: client_session_auth_status; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: client_session_note; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: client_session_note; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: client_session_prot_mapper; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: client_session_prot_mapper; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: client_session_role; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: client_session_role; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: client_user_session_note; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: client_user_session_note; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: component; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: component; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 INSERT INTO public.component VALUES ('5556f3d2-8c5e-4281-9e72-097daa02ccc9', 'Trusted Hosts', 'master', 'trusted-hosts', 'org.keycloak.services.clientregistration.policy.ClientRegistrationPolicy', 'master', 'anonymous');
@@ -2426,7 +2422,7 @@ INSERT INTO public.component VALUES ('d2cd6b13-858b-4a4d-a920-74b9f198414a', 'Al
 
 
 --
--- Data for Name: component_config; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: component_config; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 INSERT INTO public.component_config VALUES ('266fbae6-9f9f-4e5e-82b9-9423560c28e4', '5556f3d2-8c5e-4281-9e72-097daa02ccc9', 'client-uris-must-match', 'true');
@@ -2492,7 +2488,7 @@ INSERT INTO public.component_config VALUES ('ca21c9c6-b8e7-4079-af3e-db24f60636c
 
 
 --
--- Data for Name: composite_role; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: composite_role; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 INSERT INTO public.composite_role VALUES ('aa5f0d2a-f08c-4370-ab0b-04fb0745aa9a', '3505f20d-b931-4ac3-bad0-03c49a0dab0a');
@@ -2566,7 +2562,7 @@ INSERT INTO public.composite_role VALUES ('39f97e61-2b41-4058-8421-60e36b7f63c9'
 
 
 --
--- Data for Name: credential; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: credential; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 INSERT INTO public.credential VALUES ('424ec215-7499-4a09-a09e-eb87fa89d15e', NULL, 'password', '41267900-ef49-428f-aeab-876c8f3e5cf2', 1601980599537, NULL, '{"value":"eeDPvu0HAEqIVjpA3CgFoLo0zUPzEVjyaEZNS+P9XGiTEJpxCnPJOKhNH4+gy34MHurfkzYuyifJ0K2MQcHCkw==","salt":"iDNLF/aVB87ftGUJep0DgQ=="}', '{"hashIterations":27500,"algorithm":"pbkdf2-sha256"}', 10);
@@ -2576,7 +2572,7 @@ INSERT INTO public.credential VALUES ('ebfde77e-0b80-4b72-bb4a-0c4938f6c186', NU
 
 
 --
--- Data for Name: databasechangelog; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: databasechangelog; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 INSERT INTO public.databasechangelog VALUES ('1.0.0.Final-KEYCLOAK-5461', 'sthorger@redhat.com', 'META-INF/jpa-changelog-1.0.0.Final.xml', '2020-10-06 10:36:34.100035', 1, 'EXECUTED', '7:4e70412f24a3f382c82183742ec79317', 'createTable tableName=APPLICATION_DEFAULT_ROLES; createTable tableName=CLIENT; createTable tableName=CLIENT_SESSION; createTable tableName=CLIENT_SESSION_ROLE; createTable tableName=COMPOSITE_ROLE; createTable tableName=CREDENTIAL; createTable tab...', '', NULL, '3.5.4', NULL, NULL, '1980593874');
@@ -2668,7 +2664,7 @@ INSERT INTO public.databasechangelog VALUES ('map-remove-ri', 'keycloak', 'META-
 
 
 --
--- Data for Name: databasechangeloglock; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: databasechangeloglock; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 INSERT INTO public.databasechangeloglock VALUES (1, false, NULL, NULL);
@@ -2677,7 +2673,7 @@ INSERT INTO public.databasechangeloglock VALUES (1001, false, NULL, NULL);
 
 
 --
--- Data for Name: default_client_scope; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: default_client_scope; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 INSERT INTO public.default_client_scope VALUES ('master', '8eeeae43-176b-47d2-afc0-bfb50051d5cb', false);
@@ -2701,110 +2697,110 @@ INSERT INTO public.default_client_scope VALUES ('basic', '3ee644de-d428-41e3-8a7
 
 
 --
--- Data for Name: event_entity; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: event_entity; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: fed_user_attribute; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: fed_user_attribute; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: fed_user_consent; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: fed_user_consent; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: fed_user_consent_cl_scope; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: fed_user_consent_cl_scope; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: fed_user_credential; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: fed_user_credential; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: fed_user_group_membership; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: fed_user_group_membership; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: fed_user_required_action; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: fed_user_required_action; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: fed_user_role_mapping; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: fed_user_role_mapping; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: federated_identity; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: federated_identity; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: federated_user; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: federated_user; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 
 --
--- Data for Name: group_attribute; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: group_attribute; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: group_role_mapping; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: group_role_mapping; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: identity_provider; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: identity_provider; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: identity_provider_config; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: identity_provider_config; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: identity_provider_mapper; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: identity_provider_mapper; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: idp_mapper_config; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: idp_mapper_config; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: keycloak_group; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: keycloak_group; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: keycloak_role; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: keycloak_role; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 INSERT INTO public.keycloak_role VALUES ('aa5f0d2a-f08c-4370-ab0b-04fb0745aa9a', 'master', false, '${role_admin}', 'admin', 'master', NULL, 'master');
@@ -2885,32 +2881,32 @@ INSERT INTO public.keycloak_role VALUES ('3bcf380d-eea3-4e5c-abc0-3c86fb7b603c',
 
 
 --
--- Data for Name: migration_model; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: migration_model; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 INSERT INTO public.migration_model VALUES ('gstk0', '11.0.2', 1601980598);
 
 
 --
--- Data for Name: offline_client_session; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: offline_client_session; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: offline_user_session; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: offline_user_session; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: policy_config; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: policy_config; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: protocol_mapper; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: protocol_mapper; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 INSERT INTO public.protocol_mapper VALUES ('6ae425b1-fffa-4b7d-9b05-b9cf5d1409b4', 'audience resolve', 'openid-connect', 'oidc-audience-resolve-mapper', '8d948212-8e06-4645-a938-6cd42d9451ca', NULL);
@@ -2975,7 +2971,7 @@ INSERT INTO public.protocol_mapper VALUES ('760477ad-bb8a-4961-8aaf-c4828fb34f95
 
 
 --
--- Data for Name: protocol_mapper_config; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: protocol_mapper_config; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 INSERT INTO public.protocol_mapper_config VALUES ('5804709c-d94e-4733-8336-0063f710dbd0', 'true', 'userinfo.token.claim');
@@ -3286,7 +3282,7 @@ INSERT INTO public.protocol_mapper_config VALUES ('760477ad-bb8a-4961-8aaf-c4828
 
 
 --
--- Data for Name: realm; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: realm; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 INSERT INTO public.realm VALUES ('master', 60, 300, 60, NULL, NULL, NULL, true, false, 0, NULL, 'master', 0, NULL, false, false, false, false, 'EXTERNAL', 1800, 36000, false, false, 'a2d088c4-62f3-45db-a256-352d64eaaeb2', 1800, false, NULL, false, false, false, false, 0, 1, 30, 6, 'HmacSHA1', 'totp', '33878def-a847-4f52-adae-a046ce0c6382', 'c7d8856c-d93c-48cd-9da3-a5147e2c6cbd', 'd332e9bd-fe23-4387-9195-bf21432d934c', '3c2e4380-4ca7-4586-a310-0d3e670eafd6', '602aecff-2bbf-4d29-a324-90dbdcc9461c', 2592000, false, 900, true, false, 'b43ae151-9d33-4530-9f70-5a77bfe69b3c', 0, false, 0, 0);
@@ -3294,7 +3290,7 @@ INSERT INTO public.realm VALUES ('basic', 60, 300, 300, NULL, NULL, NULL, true, 
 
 
 --
--- Data for Name: realm_attribute; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: realm_attribute; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 INSERT INTO public.realm_attribute VALUES ('_browser_header.contentSecurityPolicyReportOnly', '', 'master');
@@ -3356,13 +3352,13 @@ INSERT INTO public.realm_attribute VALUES ('webAuthnPolicyAvoidSameAuthenticator
 
 
 --
--- Data for Name: realm_default_groups; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: realm_default_groups; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: realm_default_roles; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: realm_default_roles; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 INSERT INTO public.realm_default_roles VALUES ('master', '26e11c5c-6b33-4670-a9b8-cca6acddcd0e');
@@ -3372,13 +3368,13 @@ INSERT INTO public.realm_default_roles VALUES ('basic', '3bcf380d-eea3-4e5c-abc0
 
 
 --
--- Data for Name: realm_enabled_event_types; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: realm_enabled_event_types; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: realm_events_listeners; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: realm_events_listeners; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 INSERT INTO public.realm_events_listeners VALUES ('master', 'jboss-logging');
@@ -3386,7 +3382,7 @@ INSERT INTO public.realm_events_listeners VALUES ('basic', 'jboss-logging');
 
 
 --
--- Data for Name: realm_required_credential; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: realm_required_credential; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 INSERT INTO public.realm_required_credential VALUES ('password', 'password', true, true, 'master');
@@ -3394,19 +3390,19 @@ INSERT INTO public.realm_required_credential VALUES ('password', 'password', tru
 
 
 --
--- Data for Name: realm_smtp_config; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: realm_smtp_config; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: realm_supported_locales; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: realm_supported_locales; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: redirect_uris; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: redirect_uris; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 INSERT INTO public.redirect_uris VALUES ('fb19ff79-345b-4df2-a627-b9209fc0db3c', '/realms/master/account/*');
@@ -3419,13 +3415,13 @@ INSERT INTO public.redirect_uris VALUES ('3a8404b9-3532-43de-8553-f015bdebfd2e',
 
 
 --
--- Data for Name: required_action_config; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: required_action_config; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: required_action_provider; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: required_action_provider; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 INSERT INTO public.required_action_provider VALUES ('f8f44264-57e4-49c5-9fba-f44aac895143', 'VERIFY_EMAIL', 'Verify Email', 'master', true, false, 'VERIFY_EMAIL', 50);
@@ -3443,67 +3439,67 @@ INSERT INTO public.required_action_provider VALUES ('6f80844d-9547-4941-aa99-ae6
 
 
 --
--- Data for Name: resource_attribute; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: resource_attribute; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: resource_policy; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: resource_policy; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: resource_scope; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: resource_scope; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: resource_server; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: resource_server; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: resource_server_perm_ticket; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: resource_server_perm_ticket; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: resource_server_policy; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: resource_server_policy; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: resource_server_resource; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: resource_server_resource; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: resource_server_scope; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: resource_server_scope; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: resource_uris; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: resource_uris; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: role_attribute; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: role_attribute; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: scope_mapping; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: scope_mapping; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 INSERT INTO public.scope_mapping VALUES ('8d948212-8e06-4645-a938-6cd42d9451ca', '7ebb3989-fac5-4c07-82db-5b5811106821');
@@ -3511,31 +3507,31 @@ INSERT INTO public.scope_mapping VALUES ('21c7a827-4822-4707-9da4-e47acf42ea5a',
 
 
 --
--- Data for Name: scope_policy; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: scope_policy; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: user_attribute; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: user_attribute; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: user_consent; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: user_consent; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: user_consent_client_scope; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: user_consent_client_scope; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: user_entity; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: user_entity; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 INSERT INTO public.user_entity VALUES ('41267900-ef49-428f-aeab-876c8f3e5cf2', NULL, 'b19184f8-4ce1-4f84-9205-a71fe1501e57', false, true, NULL, NULL, NULL, 'master', 'admin', 1601980599400, NULL, 0);
@@ -3546,43 +3542,43 @@ INSERT INTO public.user_entity VALUES ('c5276a22-311c-46d7-916a-557f70168eaa', N
 
 
 --
--- Data for Name: user_federation_config; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: user_federation_config; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: user_federation_mapper; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: user_federation_mapper; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: user_federation_mapper_config; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: user_federation_mapper_config; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: user_federation_provider; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: user_federation_provider; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: user_group_membership; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: user_group_membership; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: user_required_action; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: user_required_action; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: user_role_mapping; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: user_role_mapping; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 INSERT INTO public.user_role_mapping VALUES ('26e11c5c-6b33-4670-a9b8-cca6acddcd0e', '41267900-ef49-428f-aeab-876c8f3e5cf2');
@@ -3610,25 +3606,25 @@ INSERT INTO public.user_role_mapping VALUES ('8087d3e2-e8ba-48f3-b795-df7150cc5d
 
 
 --
--- Data for Name: user_session; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: user_session; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: user_session_note; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: user_session_note; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: username_login_failure; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: username_login_failure; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 
 
 --
--- Data for Name: web_origins; Type: TABLE DATA; Schema: public; Owner: keycloack
+-- Data for Name: web_origins; Type: TABLE DATA; Schema: public; Owner: keycloak
 --
 
 INSERT INTO public.web_origins VALUES ('4d960123-869a-4294-a38b-5f61f7f9667d', '+');
@@ -3639,7 +3635,7 @@ INSERT INTO public.web_origins VALUES ('3a8404b9-3532-43de-8553-f015bdebfd2e', '
 
 
 --
--- Name: username_login_failure CONSTRAINT_17-2; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: username_login_failure CONSTRAINT_17-2; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.username_login_failure
@@ -3647,7 +3643,7 @@ ALTER TABLE ONLY public.username_login_failure
 
 
 --
--- Name: keycloak_role UK_J3RWUVD56ONTGSUHOGM184WW2-2; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: keycloak_role UK_J3RWUVD56ONTGSUHOGM184WW2-2; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.keycloak_role
@@ -3655,7 +3651,7 @@ ALTER TABLE ONLY public.keycloak_role
 
 
 --
--- Name: client_auth_flow_bindings c_cli_flow_bind; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: client_auth_flow_bindings c_cli_flow_bind; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.client_auth_flow_bindings
@@ -3663,7 +3659,7 @@ ALTER TABLE ONLY public.client_auth_flow_bindings
 
 
 --
--- Name: client_scope_client c_cli_scope_bind; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: client_scope_client c_cli_scope_bind; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.client_scope_client
@@ -3671,7 +3667,7 @@ ALTER TABLE ONLY public.client_scope_client
 
 
 --
--- Name: client_initial_access cnstr_client_init_acc_pk; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: client_initial_access cnstr_client_init_acc_pk; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.client_initial_access
@@ -3679,7 +3675,7 @@ ALTER TABLE ONLY public.client_initial_access
 
 
 --
--- Name: realm_default_groups con_group_id_def_groups; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: realm_default_groups con_group_id_def_groups; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.realm_default_groups
@@ -3687,7 +3683,7 @@ ALTER TABLE ONLY public.realm_default_groups
 
 
 --
--- Name: broker_link constr_broker_link_pk; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: broker_link constr_broker_link_pk; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.broker_link
@@ -3695,7 +3691,7 @@ ALTER TABLE ONLY public.broker_link
 
 
 --
--- Name: client_user_session_note constr_cl_usr_ses_note; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: client_user_session_note constr_cl_usr_ses_note; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.client_user_session_note
@@ -3703,7 +3699,7 @@ ALTER TABLE ONLY public.client_user_session_note
 
 
 --
--- Name: client_default_roles constr_client_default_roles; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: client_default_roles constr_client_default_roles; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.client_default_roles
@@ -3711,7 +3707,7 @@ ALTER TABLE ONLY public.client_default_roles
 
 
 --
--- Name: component_config constr_component_config_pk; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: component_config constr_component_config_pk; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.component_config
@@ -3719,7 +3715,7 @@ ALTER TABLE ONLY public.component_config
 
 
 --
--- Name: component constr_component_pk; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: component constr_component_pk; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.component
@@ -3727,7 +3723,7 @@ ALTER TABLE ONLY public.component
 
 
 --
--- Name: fed_user_required_action constr_fed_required_action; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: fed_user_required_action constr_fed_required_action; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.fed_user_required_action
@@ -3735,7 +3731,7 @@ ALTER TABLE ONLY public.fed_user_required_action
 
 
 --
--- Name: fed_user_attribute constr_fed_user_attr_pk; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: fed_user_attribute constr_fed_user_attr_pk; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.fed_user_attribute
@@ -3743,7 +3739,7 @@ ALTER TABLE ONLY public.fed_user_attribute
 
 
 --
--- Name: fed_user_consent constr_fed_user_consent_pk; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: fed_user_consent constr_fed_user_consent_pk; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.fed_user_consent
@@ -3751,7 +3747,7 @@ ALTER TABLE ONLY public.fed_user_consent
 
 
 --
--- Name: fed_user_credential constr_fed_user_cred_pk; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: fed_user_credential constr_fed_user_cred_pk; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.fed_user_credential
@@ -3759,7 +3755,7 @@ ALTER TABLE ONLY public.fed_user_credential
 
 
 --
--- Name: fed_user_group_membership constr_fed_user_group; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: fed_user_group_membership constr_fed_user_group; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.fed_user_group_membership
@@ -3767,7 +3763,7 @@ ALTER TABLE ONLY public.fed_user_group_membership
 
 
 --
--- Name: fed_user_role_mapping constr_fed_user_role; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: fed_user_role_mapping constr_fed_user_role; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.fed_user_role_mapping
@@ -3775,7 +3771,7 @@ ALTER TABLE ONLY public.fed_user_role_mapping
 
 
 --
--- Name: federated_user constr_federated_user; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: federated_user constr_federated_user; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.federated_user
@@ -3783,7 +3779,7 @@ ALTER TABLE ONLY public.federated_user
 
 
 --
--- Name: realm_default_groups constr_realm_default_groups; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: realm_default_groups constr_realm_default_groups; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.realm_default_groups
@@ -3791,7 +3787,7 @@ ALTER TABLE ONLY public.realm_default_groups
 
 
 --
--- Name: realm_enabled_event_types constr_realm_enabl_event_types; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: realm_enabled_event_types constr_realm_enabl_event_types; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.realm_enabled_event_types
@@ -3799,7 +3795,7 @@ ALTER TABLE ONLY public.realm_enabled_event_types
 
 
 --
--- Name: realm_events_listeners constr_realm_events_listeners; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: realm_events_listeners constr_realm_events_listeners; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.realm_events_listeners
@@ -3807,7 +3803,7 @@ ALTER TABLE ONLY public.realm_events_listeners
 
 
 --
--- Name: realm_supported_locales constr_realm_supported_locales; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: realm_supported_locales constr_realm_supported_locales; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.realm_supported_locales
@@ -3815,7 +3811,7 @@ ALTER TABLE ONLY public.realm_supported_locales
 
 
 --
--- Name: identity_provider constraint_2b; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: identity_provider constraint_2b; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.identity_provider
@@ -3823,7 +3819,7 @@ ALTER TABLE ONLY public.identity_provider
 
 
 --
--- Name: client_attributes constraint_3c; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: client_attributes constraint_3c; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.client_attributes
@@ -3831,7 +3827,7 @@ ALTER TABLE ONLY public.client_attributes
 
 
 --
--- Name: event_entity constraint_4; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: event_entity constraint_4; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.event_entity
@@ -3839,7 +3835,7 @@ ALTER TABLE ONLY public.event_entity
 
 
 --
--- Name: federated_identity constraint_40; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: federated_identity constraint_40; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.federated_identity
@@ -3847,7 +3843,7 @@ ALTER TABLE ONLY public.federated_identity
 
 
 --
--- Name: realm constraint_4a; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: realm constraint_4a; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.realm
@@ -3855,7 +3851,7 @@ ALTER TABLE ONLY public.realm
 
 
 --
--- Name: client_session_role constraint_5; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: client_session_role constraint_5; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.client_session_role
@@ -3863,7 +3859,7 @@ ALTER TABLE ONLY public.client_session_role
 
 
 --
--- Name: user_session constraint_57; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: user_session constraint_57; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.user_session
@@ -3871,7 +3867,7 @@ ALTER TABLE ONLY public.user_session
 
 
 --
--- Name: user_federation_provider constraint_5c; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: user_federation_provider constraint_5c; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.user_federation_provider
@@ -3879,7 +3875,7 @@ ALTER TABLE ONLY public.user_federation_provider
 
 
 --
--- Name: client_session_note constraint_5e; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: client_session_note constraint_5e; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.client_session_note
@@ -3887,7 +3883,7 @@ ALTER TABLE ONLY public.client_session_note
 
 
 --
--- Name: client constraint_7; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: client constraint_7; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.client
@@ -3895,7 +3891,7 @@ ALTER TABLE ONLY public.client
 
 
 --
--- Name: client_session constraint_8; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: client_session constraint_8; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.client_session
@@ -3903,7 +3899,7 @@ ALTER TABLE ONLY public.client_session
 
 
 --
--- Name: scope_mapping constraint_81; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: scope_mapping constraint_81; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.scope_mapping
@@ -3911,7 +3907,7 @@ ALTER TABLE ONLY public.scope_mapping
 
 
 --
--- Name: client_node_registrations constraint_84; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: client_node_registrations constraint_84; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.client_node_registrations
@@ -3919,7 +3915,7 @@ ALTER TABLE ONLY public.client_node_registrations
 
 
 --
--- Name: realm_attribute constraint_9; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: realm_attribute constraint_9; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.realm_attribute
@@ -3927,7 +3923,7 @@ ALTER TABLE ONLY public.realm_attribute
 
 
 --
--- Name: realm_required_credential constraint_92; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: realm_required_credential constraint_92; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.realm_required_credential
@@ -3935,7 +3931,7 @@ ALTER TABLE ONLY public.realm_required_credential
 
 
 --
--- Name: keycloak_role constraint_a; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: keycloak_role constraint_a; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.keycloak_role
@@ -3943,7 +3939,7 @@ ALTER TABLE ONLY public.keycloak_role
 
 
 --
--- Name: admin_event_entity constraint_admin_event_entity; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: admin_event_entity constraint_admin_event_entity; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.admin_event_entity
@@ -3951,7 +3947,7 @@ ALTER TABLE ONLY public.admin_event_entity
 
 
 --
--- Name: authenticator_config_entry constraint_auth_cfg_pk; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: authenticator_config_entry constraint_auth_cfg_pk; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.authenticator_config_entry
@@ -3959,7 +3955,7 @@ ALTER TABLE ONLY public.authenticator_config_entry
 
 
 --
--- Name: authentication_execution constraint_auth_exec_pk; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: authentication_execution constraint_auth_exec_pk; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.authentication_execution
@@ -3967,7 +3963,7 @@ ALTER TABLE ONLY public.authentication_execution
 
 
 --
--- Name: authentication_flow constraint_auth_flow_pk; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: authentication_flow constraint_auth_flow_pk; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.authentication_flow
@@ -3975,7 +3971,7 @@ ALTER TABLE ONLY public.authentication_flow
 
 
 --
--- Name: authenticator_config constraint_auth_pk; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: authenticator_config constraint_auth_pk; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.authenticator_config
@@ -3983,7 +3979,7 @@ ALTER TABLE ONLY public.authenticator_config
 
 
 --
--- Name: client_session_auth_status constraint_auth_status_pk; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: client_session_auth_status constraint_auth_status_pk; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.client_session_auth_status
@@ -3991,7 +3987,7 @@ ALTER TABLE ONLY public.client_session_auth_status
 
 
 --
--- Name: user_role_mapping constraint_c; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: user_role_mapping constraint_c; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.user_role_mapping
@@ -3999,7 +3995,7 @@ ALTER TABLE ONLY public.user_role_mapping
 
 
 --
--- Name: composite_role constraint_composite_role; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: composite_role constraint_composite_role; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.composite_role
@@ -4007,7 +4003,7 @@ ALTER TABLE ONLY public.composite_role
 
 
 --
--- Name: client_session_prot_mapper constraint_cs_pmp_pk; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: client_session_prot_mapper constraint_cs_pmp_pk; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.client_session_prot_mapper
@@ -4015,7 +4011,7 @@ ALTER TABLE ONLY public.client_session_prot_mapper
 
 
 --
--- Name: identity_provider_config constraint_d; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: identity_provider_config constraint_d; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.identity_provider_config
@@ -4023,7 +4019,7 @@ ALTER TABLE ONLY public.identity_provider_config
 
 
 --
--- Name: policy_config constraint_dpc; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: policy_config constraint_dpc; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.policy_config
@@ -4031,7 +4027,7 @@ ALTER TABLE ONLY public.policy_config
 
 
 --
--- Name: realm_smtp_config constraint_e; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: realm_smtp_config constraint_e; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.realm_smtp_config
@@ -4039,7 +4035,7 @@ ALTER TABLE ONLY public.realm_smtp_config
 
 
 --
--- Name: credential constraint_f; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: credential constraint_f; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.credential
@@ -4047,7 +4043,7 @@ ALTER TABLE ONLY public.credential
 
 
 --
--- Name: user_federation_config constraint_f9; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: user_federation_config constraint_f9; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.user_federation_config
@@ -4055,7 +4051,7 @@ ALTER TABLE ONLY public.user_federation_config
 
 
 --
--- Name: resource_server_perm_ticket constraint_fapmt; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: resource_server_perm_ticket constraint_fapmt; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.resource_server_perm_ticket
@@ -4063,7 +4059,7 @@ ALTER TABLE ONLY public.resource_server_perm_ticket
 
 
 --
--- Name: resource_server_resource constraint_farsr; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: resource_server_resource constraint_farsr; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.resource_server_resource
@@ -4071,7 +4067,7 @@ ALTER TABLE ONLY public.resource_server_resource
 
 
 --
--- Name: resource_server_policy constraint_farsrp; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: resource_server_policy constraint_farsrp; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.resource_server_policy
@@ -4079,7 +4075,7 @@ ALTER TABLE ONLY public.resource_server_policy
 
 
 --
--- Name: associated_policy constraint_farsrpap; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: associated_policy constraint_farsrpap; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.associated_policy
@@ -4087,7 +4083,7 @@ ALTER TABLE ONLY public.associated_policy
 
 
 --
--- Name: resource_policy constraint_farsrpp; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: resource_policy constraint_farsrpp; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.resource_policy
@@ -4095,7 +4091,7 @@ ALTER TABLE ONLY public.resource_policy
 
 
 --
--- Name: resource_server_scope constraint_farsrs; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: resource_server_scope constraint_farsrs; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.resource_server_scope
@@ -4103,7 +4099,7 @@ ALTER TABLE ONLY public.resource_server_scope
 
 
 --
--- Name: resource_scope constraint_farsrsp; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: resource_scope constraint_farsrsp; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.resource_scope
@@ -4111,7 +4107,7 @@ ALTER TABLE ONLY public.resource_scope
 
 
 --
--- Name: scope_policy constraint_farsrsps; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: scope_policy constraint_farsrsps; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.scope_policy
@@ -4119,7 +4115,7 @@ ALTER TABLE ONLY public.scope_policy
 
 
 --
--- Name: user_entity constraint_fb; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: user_entity constraint_fb; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.user_entity
@@ -4127,7 +4123,7 @@ ALTER TABLE ONLY public.user_entity
 
 
 --
--- Name: user_federation_mapper_config constraint_fedmapper_cfg_pm; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: user_federation_mapper_config constraint_fedmapper_cfg_pm; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.user_federation_mapper_config
@@ -4135,7 +4131,7 @@ ALTER TABLE ONLY public.user_federation_mapper_config
 
 
 --
--- Name: user_federation_mapper constraint_fedmapperpm; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: user_federation_mapper constraint_fedmapperpm; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.user_federation_mapper
@@ -4143,7 +4139,7 @@ ALTER TABLE ONLY public.user_federation_mapper
 
 
 --
--- Name: fed_user_consent_cl_scope constraint_fgrntcsnt_clsc_pm; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: fed_user_consent_cl_scope constraint_fgrntcsnt_clsc_pm; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.fed_user_consent_cl_scope
@@ -4151,7 +4147,7 @@ ALTER TABLE ONLY public.fed_user_consent_cl_scope
 
 
 --
--- Name: user_consent_client_scope constraint_grntcsnt_clsc_pm; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: user_consent_client_scope constraint_grntcsnt_clsc_pm; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.user_consent_client_scope
@@ -4159,7 +4155,7 @@ ALTER TABLE ONLY public.user_consent_client_scope
 
 
 --
--- Name: user_consent constraint_grntcsnt_pm; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: user_consent constraint_grntcsnt_pm; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.user_consent
@@ -4167,7 +4163,7 @@ ALTER TABLE ONLY public.user_consent
 
 
 --
--- Name: keycloak_group constraint_group; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: keycloak_group constraint_group; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.keycloak_group
@@ -4175,7 +4171,7 @@ ALTER TABLE ONLY public.keycloak_group
 
 
 --
--- Name: group_attribute constraint_group_attribute_pk; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: group_attribute constraint_group_attribute_pk; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.group_attribute
@@ -4183,7 +4179,7 @@ ALTER TABLE ONLY public.group_attribute
 
 
 --
--- Name: group_role_mapping constraint_group_role; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: group_role_mapping constraint_group_role; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.group_role_mapping
@@ -4191,7 +4187,7 @@ ALTER TABLE ONLY public.group_role_mapping
 
 
 --
--- Name: identity_provider_mapper constraint_idpm; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: identity_provider_mapper constraint_idpm; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.identity_provider_mapper
@@ -4199,7 +4195,7 @@ ALTER TABLE ONLY public.identity_provider_mapper
 
 
 --
--- Name: idp_mapper_config constraint_idpmconfig; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: idp_mapper_config constraint_idpmconfig; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.idp_mapper_config
@@ -4207,7 +4203,7 @@ ALTER TABLE ONLY public.idp_mapper_config
 
 
 --
--- Name: migration_model constraint_migmod; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: migration_model constraint_migmod; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.migration_model
@@ -4215,7 +4211,7 @@ ALTER TABLE ONLY public.migration_model
 
 
 --
--- Name: offline_client_session constraint_offl_cl_ses_pk3; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: offline_client_session constraint_offl_cl_ses_pk3; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.offline_client_session
@@ -4223,7 +4219,7 @@ ALTER TABLE ONLY public.offline_client_session
 
 
 --
--- Name: offline_user_session constraint_offl_us_ses_pk2; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: offline_user_session constraint_offl_us_ses_pk2; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.offline_user_session
@@ -4231,7 +4227,7 @@ ALTER TABLE ONLY public.offline_user_session
 
 
 --
--- Name: protocol_mapper constraint_pcm; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: protocol_mapper constraint_pcm; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.protocol_mapper
@@ -4239,7 +4235,7 @@ ALTER TABLE ONLY public.protocol_mapper
 
 
 --
--- Name: protocol_mapper_config constraint_pmconfig; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: protocol_mapper_config constraint_pmconfig; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.protocol_mapper_config
@@ -4247,7 +4243,7 @@ ALTER TABLE ONLY public.protocol_mapper_config
 
 
 --
--- Name: realm_default_roles constraint_realm_default_roles; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: realm_default_roles constraint_realm_default_roles; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.realm_default_roles
@@ -4255,7 +4251,7 @@ ALTER TABLE ONLY public.realm_default_roles
 
 
 --
--- Name: redirect_uris constraint_redirect_uris; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: redirect_uris constraint_redirect_uris; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.redirect_uris
@@ -4263,7 +4259,7 @@ ALTER TABLE ONLY public.redirect_uris
 
 
 --
--- Name: required_action_config constraint_req_act_cfg_pk; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: required_action_config constraint_req_act_cfg_pk; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.required_action_config
@@ -4271,7 +4267,7 @@ ALTER TABLE ONLY public.required_action_config
 
 
 --
--- Name: required_action_provider constraint_req_act_prv_pk; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: required_action_provider constraint_req_act_prv_pk; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.required_action_provider
@@ -4279,7 +4275,7 @@ ALTER TABLE ONLY public.required_action_provider
 
 
 --
--- Name: user_required_action constraint_required_action; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: user_required_action constraint_required_action; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.user_required_action
@@ -4287,7 +4283,7 @@ ALTER TABLE ONLY public.user_required_action
 
 
 --
--- Name: resource_uris constraint_resour_uris_pk; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: resource_uris constraint_resour_uris_pk; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.resource_uris
@@ -4295,7 +4291,7 @@ ALTER TABLE ONLY public.resource_uris
 
 
 --
--- Name: role_attribute constraint_role_attribute_pk; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: role_attribute constraint_role_attribute_pk; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.role_attribute
@@ -4303,7 +4299,7 @@ ALTER TABLE ONLY public.role_attribute
 
 
 --
--- Name: user_attribute constraint_user_attribute_pk; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: user_attribute constraint_user_attribute_pk; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.user_attribute
@@ -4311,7 +4307,7 @@ ALTER TABLE ONLY public.user_attribute
 
 
 --
--- Name: user_group_membership constraint_user_group; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: user_group_membership constraint_user_group; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.user_group_membership
@@ -4319,7 +4315,7 @@ ALTER TABLE ONLY public.user_group_membership
 
 
 --
--- Name: user_session_note constraint_usn_pk; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: user_session_note constraint_usn_pk; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.user_session_note
@@ -4327,7 +4323,7 @@ ALTER TABLE ONLY public.user_session_note
 
 
 --
--- Name: web_origins constraint_web_origins; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: web_origins constraint_web_origins; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.web_origins
@@ -4336,7 +4332,7 @@ ALTER TABLE ONLY public.web_origins
 
 
 --
--- Name: client_scope_attributes pk_cl_tmpl_attr; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: client_scope_attributes pk_cl_tmpl_attr; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.client_scope_attributes
@@ -4344,7 +4340,7 @@ ALTER TABLE ONLY public.client_scope_attributes
 
 
 --
--- Name: client_scope pk_cli_template; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: client_scope pk_cli_template; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.client_scope
@@ -4352,7 +4348,7 @@ ALTER TABLE ONLY public.client_scope
 
 
 --
--- Name: databasechangeloglock pk_databasechangeloglock; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: databasechangeloglock pk_databasechangeloglock; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.databasechangeloglock
@@ -4360,7 +4356,7 @@ ALTER TABLE ONLY public.databasechangeloglock
 
 
 --
--- Name: resource_server pk_resource_server; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: resource_server pk_resource_server; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.resource_server
@@ -4368,7 +4364,7 @@ ALTER TABLE ONLY public.resource_server
 
 
 --
--- Name: client_scope_role_mapping pk_template_scope; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: client_scope_role_mapping pk_template_scope; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.client_scope_role_mapping
@@ -4376,7 +4372,7 @@ ALTER TABLE ONLY public.client_scope_role_mapping
 
 
 --
--- Name: default_client_scope r_def_cli_scope_bind; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: default_client_scope r_def_cli_scope_bind; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.default_client_scope
@@ -4384,7 +4380,7 @@ ALTER TABLE ONLY public.default_client_scope
 
 
 --
--- Name: resource_attribute res_attr_pk; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: resource_attribute res_attr_pk; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.resource_attribute
@@ -4392,7 +4388,7 @@ ALTER TABLE ONLY public.resource_attribute
 
 
 --
--- Name: keycloak_group sibling_names; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: keycloak_group sibling_names; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.keycloak_group
@@ -4400,7 +4396,7 @@ ALTER TABLE ONLY public.keycloak_group
 
 
 --
--- Name: identity_provider uk_2daelwnibji49avxsrtuf6xj33; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: identity_provider uk_2daelwnibji49avxsrtuf6xj33; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.identity_provider
@@ -4408,7 +4404,7 @@ ALTER TABLE ONLY public.identity_provider
 
 
 --
--- Name: client_default_roles uk_8aelwnibji49avxsrtuf6xjow; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: client_default_roles uk_8aelwnibji49avxsrtuf6xjow; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.client_default_roles
@@ -4416,7 +4412,7 @@ ALTER TABLE ONLY public.client_default_roles
 
 
 --
--- Name: client uk_b71cjlbenv945rb6gcon438at; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: client uk_b71cjlbenv945rb6gcon438at; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.client
@@ -4424,7 +4420,7 @@ ALTER TABLE ONLY public.client
 
 
 --
--- Name: client_scope uk_cli_scope; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: client_scope uk_cli_scope; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.client_scope
@@ -4432,7 +4428,7 @@ ALTER TABLE ONLY public.client_scope
 
 
 --
--- Name: user_entity uk_dykn684sl8up1crfei6eckhd7; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: user_entity uk_dykn684sl8up1crfei6eckhd7; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.user_entity
@@ -4440,7 +4436,7 @@ ALTER TABLE ONLY public.user_entity
 
 
 --
--- Name: resource_server_resource uk_frsr6t700s9v50bu18ws5ha6; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: resource_server_resource uk_frsr6t700s9v50bu18ws5ha6; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.resource_server_resource
@@ -4448,7 +4444,7 @@ ALTER TABLE ONLY public.resource_server_resource
 
 
 --
--- Name: resource_server_perm_ticket uk_frsr6t700s9v50bu18ws5pmt; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: resource_server_perm_ticket uk_frsr6t700s9v50bu18ws5pmt; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.resource_server_perm_ticket
@@ -4456,7 +4452,7 @@ ALTER TABLE ONLY public.resource_server_perm_ticket
 
 
 --
--- Name: resource_server_policy uk_frsrpt700s9v50bu18ws5ha6; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: resource_server_policy uk_frsrpt700s9v50bu18ws5ha6; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.resource_server_policy
@@ -4464,7 +4460,7 @@ ALTER TABLE ONLY public.resource_server_policy
 
 
 --
--- Name: resource_server_scope uk_frsrst700s9v50bu18ws5ha6; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: resource_server_scope uk_frsrst700s9v50bu18ws5ha6; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.resource_server_scope
@@ -4472,7 +4468,7 @@ ALTER TABLE ONLY public.resource_server_scope
 
 
 --
--- Name: realm_default_roles uk_h4wpd7w4hsoolni3h0sw7btje; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: realm_default_roles uk_h4wpd7w4hsoolni3h0sw7btje; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.realm_default_roles
@@ -4480,7 +4476,7 @@ ALTER TABLE ONLY public.realm_default_roles
 
 
 --
--- Name: user_consent uk_jkuwuvd56ontgsuhogm8uewrt; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: user_consent uk_jkuwuvd56ontgsuhogm8uewrt; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.user_consent
@@ -4488,7 +4484,7 @@ ALTER TABLE ONLY public.user_consent
 
 
 --
--- Name: realm uk_orvsdmla56612eaefiq6wl5oi; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: realm uk_orvsdmla56612eaefiq6wl5oi; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.realm
@@ -4496,7 +4492,7 @@ ALTER TABLE ONLY public.realm
 
 
 --
--- Name: user_entity uk_ru8tt6t700s9v50bu18ws5ha6; Type: CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: user_entity uk_ru8tt6t700s9v50bu18ws5ha6; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.user_entity
@@ -4505,546 +4501,546 @@ ALTER TABLE ONLY public.user_entity
 
 
 --
--- Name: idx_assoc_pol_assoc_pol_id; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_assoc_pol_assoc_pol_id; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_assoc_pol_assoc_pol_id ON public.associated_policy USING btree (associated_policy_id);
 
 
 --
--- Name: idx_auth_config_realm; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_auth_config_realm; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_auth_config_realm ON public.authenticator_config USING btree (realm_id);
 
 
 --
--- Name: idx_auth_exec_flow; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_auth_exec_flow; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_auth_exec_flow ON public.authentication_execution USING btree (flow_id);
 
 
 --
--- Name: idx_auth_exec_realm_flow; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_auth_exec_realm_flow; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_auth_exec_realm_flow ON public.authentication_execution USING btree (realm_id, flow_id);
 
 
 --
--- Name: idx_auth_flow_realm; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_auth_flow_realm; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_auth_flow_realm ON public.authentication_flow USING btree (realm_id);
 
 
 --
--- Name: idx_cl_clscope; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_cl_clscope; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_cl_clscope ON public.client_scope_client USING btree (scope_id);
 
 
 --
--- Name: idx_client_def_roles_client; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_client_def_roles_client; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_client_def_roles_client ON public.client_default_roles USING btree (client_id);
 
 
 --
--- Name: idx_client_id; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_client_id; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_client_id ON public.client USING btree (client_id);
 
 
 --
--- Name: idx_client_init_acc_realm; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_client_init_acc_realm; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_client_init_acc_realm ON public.client_initial_access USING btree (realm_id);
 
 
 --
--- Name: idx_client_session_session; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_client_session_session; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_client_session_session ON public.client_session USING btree (session_id);
 
 
 --
--- Name: idx_clscope_attrs; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_clscope_attrs; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_clscope_attrs ON public.client_scope_attributes USING btree (scope_id);
 
 
 --
--- Name: idx_clscope_cl; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_clscope_cl; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_clscope_cl ON public.client_scope_client USING btree (client_id);
 
 
 --
--- Name: idx_clscope_protmap; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_clscope_protmap; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_clscope_protmap ON public.protocol_mapper USING btree (client_scope_id);
 
 
 --
--- Name: idx_clscope_role; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_clscope_role; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_clscope_role ON public.client_scope_role_mapping USING btree (scope_id);
 
 
 --
--- Name: idx_compo_config_compo; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_compo_config_compo; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_compo_config_compo ON public.component_config USING btree (component_id);
 
 
 --
--- Name: idx_component_provider_type; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_component_provider_type; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_component_provider_type ON public.component USING btree (provider_type);
 
 
 --
--- Name: idx_component_realm; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_component_realm; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_component_realm ON public.component USING btree (realm_id);
 
 
 --
--- Name: idx_composite; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_composite; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_composite ON public.composite_role USING btree (composite);
 
 
 --
--- Name: idx_composite_child; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_composite_child; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_composite_child ON public.composite_role USING btree (child_role);
 
 
 --
--- Name: idx_defcls_realm; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_defcls_realm; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_defcls_realm ON public.default_client_scope USING btree (realm_id);
 
 
 --
--- Name: idx_defcls_scope; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_defcls_scope; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_defcls_scope ON public.default_client_scope USING btree (scope_id);
 
 
 --
--- Name: idx_event_time; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_event_time; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_event_time ON public.event_entity USING btree (realm_id, event_time);
 
 
 --
--- Name: idx_fedidentity_feduser; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_fedidentity_feduser; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_fedidentity_feduser ON public.federated_identity USING btree (federated_user_id);
 
 
 --
--- Name: idx_fedidentity_user; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_fedidentity_user; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_fedidentity_user ON public.federated_identity USING btree (user_id);
 
 
 --
--- Name: idx_fu_attribute; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_fu_attribute; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_fu_attribute ON public.fed_user_attribute USING btree (user_id, realm_id, name);
 
 
 --
--- Name: idx_fu_cnsnt_ext; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_fu_cnsnt_ext; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_fu_cnsnt_ext ON public.fed_user_consent USING btree (user_id, client_storage_provider, external_client_id);
 
 
 --
--- Name: idx_fu_consent; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_fu_consent; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_fu_consent ON public.fed_user_consent USING btree (user_id, client_id);
 
 
 --
--- Name: idx_fu_consent_ru; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_fu_consent_ru; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_fu_consent_ru ON public.fed_user_consent USING btree (realm_id, user_id);
 
 
 --
--- Name: idx_fu_credential; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_fu_credential; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_fu_credential ON public.fed_user_credential USING btree (user_id, type);
 
 
 --
--- Name: idx_fu_credential_ru; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_fu_credential_ru; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_fu_credential_ru ON public.fed_user_credential USING btree (realm_id, user_id);
 
 
 --
--- Name: idx_fu_group_membership; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_fu_group_membership; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_fu_group_membership ON public.fed_user_group_membership USING btree (user_id, group_id);
 
 
 --
--- Name: idx_fu_group_membership_ru; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_fu_group_membership_ru; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_fu_group_membership_ru ON public.fed_user_group_membership USING btree (realm_id, user_id);
 
 
 --
--- Name: idx_fu_required_action; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_fu_required_action; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_fu_required_action ON public.fed_user_required_action USING btree (user_id, required_action);
 
 
 --
--- Name: idx_fu_required_action_ru; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_fu_required_action_ru; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_fu_required_action_ru ON public.fed_user_required_action USING btree (realm_id, user_id);
 
 
 --
--- Name: idx_fu_role_mapping; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_fu_role_mapping; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_fu_role_mapping ON public.fed_user_role_mapping USING btree (user_id, role_id);
 
 
 --
--- Name: idx_fu_role_mapping_ru; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_fu_role_mapping_ru; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_fu_role_mapping_ru ON public.fed_user_role_mapping USING btree (realm_id, user_id);
 
 
 --
--- Name: idx_group_attr_group; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_group_attr_group; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_group_attr_group ON public.group_attribute USING btree (group_id);
 
 
 --
--- Name: idx_group_role_mapp_group; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_group_role_mapp_group; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_group_role_mapp_group ON public.group_role_mapping USING btree (group_id);
 
 
 --
--- Name: idx_id_prov_mapp_realm; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_id_prov_mapp_realm; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_id_prov_mapp_realm ON public.identity_provider_mapper USING btree (realm_id);
 
 
 --
--- Name: idx_ident_prov_realm; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_ident_prov_realm; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_ident_prov_realm ON public.identity_provider USING btree (realm_id);
 
 
 --
--- Name: idx_keycloak_role_client; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_keycloak_role_client; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_keycloak_role_client ON public.keycloak_role USING btree (client);
 
 
 --
--- Name: idx_keycloak_role_realm; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_keycloak_role_realm; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_keycloak_role_realm ON public.keycloak_role USING btree (realm);
 
 
 --
--- Name: idx_offline_uss_createdon; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_offline_uss_createdon; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_offline_uss_createdon ON public.offline_user_session USING btree (created_on);
 
 
 --
--- Name: idx_protocol_mapper_client; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_protocol_mapper_client; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_protocol_mapper_client ON public.protocol_mapper USING btree (client_id);
 
 
 --
--- Name: idx_realm_attr_realm; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_realm_attr_realm; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_realm_attr_realm ON public.realm_attribute USING btree (realm_id);
 
 
 --
--- Name: idx_realm_clscope; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_realm_clscope; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_realm_clscope ON public.client_scope USING btree (realm_id);
 
 
 --
--- Name: idx_realm_def_grp_realm; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_realm_def_grp_realm; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_realm_def_grp_realm ON public.realm_default_groups USING btree (realm_id);
 
 
 --
--- Name: idx_realm_def_roles_realm; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_realm_def_roles_realm; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_realm_def_roles_realm ON public.realm_default_roles USING btree (realm_id);
 
 
 --
--- Name: idx_realm_evt_list_realm; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_realm_evt_list_realm; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_realm_evt_list_realm ON public.realm_events_listeners USING btree (realm_id);
 
 
 --
--- Name: idx_realm_evt_types_realm; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_realm_evt_types_realm; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_realm_evt_types_realm ON public.realm_enabled_event_types USING btree (realm_id);
 
 
 --
--- Name: idx_realm_master_adm_cli; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_realm_master_adm_cli; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_realm_master_adm_cli ON public.realm USING btree (master_admin_client);
 
 
 --
--- Name: idx_realm_supp_local_realm; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_realm_supp_local_realm; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_realm_supp_local_realm ON public.realm_supported_locales USING btree (realm_id);
 
 
 --
--- Name: idx_redir_uri_client; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_redir_uri_client; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_redir_uri_client ON public.redirect_uris USING btree (client_id);
 
 
 --
--- Name: idx_req_act_prov_realm; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_req_act_prov_realm; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_req_act_prov_realm ON public.required_action_provider USING btree (realm_id);
 
 
 --
--- Name: idx_res_policy_policy; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_res_policy_policy; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_res_policy_policy ON public.resource_policy USING btree (policy_id);
 
 
 --
--- Name: idx_res_scope_scope; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_res_scope_scope; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_res_scope_scope ON public.resource_scope USING btree (scope_id);
 
 
 --
--- Name: idx_res_serv_pol_res_serv; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_res_serv_pol_res_serv; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_res_serv_pol_res_serv ON public.resource_server_policy USING btree (resource_server_id);
 
 
 --
--- Name: idx_res_srv_res_res_srv; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_res_srv_res_res_srv; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_res_srv_res_res_srv ON public.resource_server_resource USING btree (resource_server_id);
 
 
 --
--- Name: idx_res_srv_scope_res_srv; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_res_srv_scope_res_srv; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_res_srv_scope_res_srv ON public.resource_server_scope USING btree (resource_server_id);
 
 
 --
--- Name: idx_role_attribute; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_role_attribute; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_role_attribute ON public.role_attribute USING btree (role_id);
 
 
 --
--- Name: idx_role_clscope; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_role_clscope; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_role_clscope ON public.client_scope_role_mapping USING btree (role_id);
 
 
 --
--- Name: idx_scope_mapping_role; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_scope_mapping_role; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_scope_mapping_role ON public.scope_mapping USING btree (role_id);
 
 
 --
--- Name: idx_scope_policy_policy; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_scope_policy_policy; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_scope_policy_policy ON public.scope_policy USING btree (policy_id);
 
 
 --
--- Name: idx_update_time; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_update_time; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_update_time ON public.migration_model USING btree (update_time);
 
 
 --
--- Name: idx_us_sess_id_on_cl_sess; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_us_sess_id_on_cl_sess; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_us_sess_id_on_cl_sess ON public.offline_client_session USING btree (user_session_id);
 
 
 --
--- Name: idx_usconsent_clscope; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_usconsent_clscope; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_usconsent_clscope ON public.user_consent_client_scope USING btree (user_consent_id);
 
 
 --
--- Name: idx_user_attribute; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_user_attribute; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_user_attribute ON public.user_attribute USING btree (user_id);
 
 
 --
--- Name: idx_user_consent; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_user_consent; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_user_consent ON public.user_consent USING btree (user_id);
 
 
 --
--- Name: idx_user_credential; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_user_credential; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_user_credential ON public.credential USING btree (user_id);
 
 
 --
--- Name: idx_user_email; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_user_email; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_user_email ON public.user_entity USING btree (email);
 
 
 --
--- Name: idx_user_group_mapping; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_user_group_mapping; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_user_group_mapping ON public.user_group_membership USING btree (user_id);
 
 
 --
--- Name: idx_user_reqactions; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_user_reqactions; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_user_reqactions ON public.user_required_action USING btree (user_id);
 
 
 --
--- Name: idx_user_role_mapping; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_user_role_mapping; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_user_role_mapping ON public.user_role_mapping USING btree (user_id);
 
 
 --
--- Name: idx_usr_fed_map_fed_prv; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_usr_fed_map_fed_prv; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_usr_fed_map_fed_prv ON public.user_federation_mapper USING btree (federation_provider_id);
 
 
 --
--- Name: idx_usr_fed_map_realm; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_usr_fed_map_realm; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_usr_fed_map_realm ON public.user_federation_mapper USING btree (realm_id);
 
 
 --
--- Name: idx_usr_fed_prv_realm; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_usr_fed_prv_realm; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_usr_fed_prv_realm ON public.user_federation_provider USING btree (realm_id);
 
 
 --
--- Name: idx_web_orig_client; Type: INDEX; Schema: public; Owner: keycloack
+-- Name: idx_web_orig_client; Type: INDEX; Schema: public; Owner: keycloak
 --
 
 CREATE INDEX idx_web_orig_client ON public.web_origins USING btree (client_id);
 
 
 
--- Name: client_session_auth_status auth_status_constraint; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: client_session_auth_status auth_status_constraint; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.client_session_auth_status
@@ -5052,7 +5048,7 @@ ALTER TABLE ONLY public.client_session_auth_status
 
 
 --
--- Name: identity_provider fk2b4ebc52ae5c3b34; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: identity_provider fk2b4ebc52ae5c3b34; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.identity_provider
@@ -5060,7 +5056,7 @@ ALTER TABLE ONLY public.identity_provider
 
 
 --
--- Name: client_attributes fk3c47c64beacca966; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: client_attributes fk3c47c64beacca966; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.client_attributes
@@ -5068,7 +5064,7 @@ ALTER TABLE ONLY public.client_attributes
 
 
 --
--- Name: federated_identity fk404288b92ef007a6; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: federated_identity fk404288b92ef007a6; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.federated_identity
@@ -5076,7 +5072,7 @@ ALTER TABLE ONLY public.federated_identity
 
 
 --
--- Name: client_node_registrations fk4129723ba992f594; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: client_node_registrations fk4129723ba992f594; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.client_node_registrations
@@ -5084,7 +5080,7 @@ ALTER TABLE ONLY public.client_node_registrations
 
 
 --
--- Name: client_session_note fk5edfb00ff51c2736; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: client_session_note fk5edfb00ff51c2736; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.client_session_note
@@ -5092,7 +5088,7 @@ ALTER TABLE ONLY public.client_session_note
 
 
 --
--- Name: user_session_note fk5edfb00ff51d3472; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: user_session_note fk5edfb00ff51d3472; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.user_session_note
@@ -5100,7 +5096,7 @@ ALTER TABLE ONLY public.user_session_note
 
 
 --
--- Name: client_session_role fk_11b7sgqw18i532811v7o2dv76; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: client_session_role fk_11b7sgqw18i532811v7o2dv76; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.client_session_role
@@ -5108,7 +5104,7 @@ ALTER TABLE ONLY public.client_session_role
 
 
 --
--- Name: redirect_uris fk_1burs8pb4ouj97h5wuppahv9f; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: redirect_uris fk_1burs8pb4ouj97h5wuppahv9f; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.redirect_uris
@@ -5116,7 +5112,7 @@ ALTER TABLE ONLY public.redirect_uris
 
 
 --
--- Name: user_federation_provider fk_1fj32f6ptolw2qy60cd8n01e8; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: user_federation_provider fk_1fj32f6ptolw2qy60cd8n01e8; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.user_federation_provider
@@ -5124,7 +5120,7 @@ ALTER TABLE ONLY public.user_federation_provider
 
 
 --
--- Name: client_session_prot_mapper fk_33a8sgqw18i532811v7o2dk89; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: client_session_prot_mapper fk_33a8sgqw18i532811v7o2dk89; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.client_session_prot_mapper
@@ -5132,7 +5128,7 @@ ALTER TABLE ONLY public.client_session_prot_mapper
 
 
 --
--- Name: realm_required_credential fk_5hg65lybevavkqfki3kponh9v; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: realm_required_credential fk_5hg65lybevavkqfki3kponh9v; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.realm_required_credential
@@ -5140,7 +5136,7 @@ ALTER TABLE ONLY public.realm_required_credential
 
 
 --
--- Name: resource_attribute fk_5hrm2vlf9ql5fu022kqepovbr; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: resource_attribute fk_5hrm2vlf9ql5fu022kqepovbr; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.resource_attribute
@@ -5148,7 +5144,7 @@ ALTER TABLE ONLY public.resource_attribute
 
 
 --
--- Name: user_attribute fk_5hrm2vlf9ql5fu043kqepovbr; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: user_attribute fk_5hrm2vlf9ql5fu043kqepovbr; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.user_attribute
@@ -5156,7 +5152,7 @@ ALTER TABLE ONLY public.user_attribute
 
 
 --
--- Name: user_required_action fk_6qj3w1jw9cvafhe19bwsiuvmd; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: user_required_action fk_6qj3w1jw9cvafhe19bwsiuvmd; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.user_required_action
@@ -5164,7 +5160,7 @@ ALTER TABLE ONLY public.user_required_action
 
 
 --
--- Name: keycloak_role fk_6vyqfe4cn4wlq8r6kt5vdsj5c; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: keycloak_role fk_6vyqfe4cn4wlq8r6kt5vdsj5c; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.keycloak_role
@@ -5172,7 +5168,7 @@ ALTER TABLE ONLY public.keycloak_role
 
 
 --
--- Name: realm_smtp_config fk_70ej8xdxgxd0b9hh6180irr0o; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: realm_smtp_config fk_70ej8xdxgxd0b9hh6180irr0o; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.realm_smtp_config
@@ -5180,7 +5176,7 @@ ALTER TABLE ONLY public.realm_smtp_config
 
 
 --
--- Name: client_default_roles fk_8aelwnibji49avxsrtuf6xjow; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: client_default_roles fk_8aelwnibji49avxsrtuf6xjow; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.client_default_roles
@@ -5188,7 +5184,7 @@ ALTER TABLE ONLY public.client_default_roles
 
 
 --
--- Name: realm_attribute fk_8shxd6l3e9atqukacxgpffptw; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: realm_attribute fk_8shxd6l3e9atqukacxgpffptw; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.realm_attribute
@@ -5196,7 +5192,7 @@ ALTER TABLE ONLY public.realm_attribute
 
 
 --
--- Name: composite_role fk_a63wvekftu8jo1pnj81e7mce2; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: composite_role fk_a63wvekftu8jo1pnj81e7mce2; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.composite_role
@@ -5204,7 +5200,7 @@ ALTER TABLE ONLY public.composite_role
 
 
 --
--- Name: authentication_execution fk_auth_exec_flow; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: authentication_execution fk_auth_exec_flow; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.authentication_execution
@@ -5212,7 +5208,7 @@ ALTER TABLE ONLY public.authentication_execution
 
 
 --
--- Name: authentication_execution fk_auth_exec_realm; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: authentication_execution fk_auth_exec_realm; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.authentication_execution
@@ -5220,7 +5216,7 @@ ALTER TABLE ONLY public.authentication_execution
 
 
 --
--- Name: authentication_flow fk_auth_flow_realm; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: authentication_flow fk_auth_flow_realm; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.authentication_flow
@@ -5228,7 +5224,7 @@ ALTER TABLE ONLY public.authentication_flow
 
 
 --
--- Name: authenticator_config fk_auth_realm; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: authenticator_config fk_auth_realm; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.authenticator_config
@@ -5236,7 +5232,7 @@ ALTER TABLE ONLY public.authenticator_config
 
 
 --
--- Name: client_session fk_b4ao2vcvat6ukau74wbwtfqo1; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: client_session fk_b4ao2vcvat6ukau74wbwtfqo1; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.client_session
@@ -5244,7 +5240,7 @@ ALTER TABLE ONLY public.client_session
 
 
 --
--- Name: user_role_mapping fk_c4fqv34p1mbylloxang7b1q3l; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: user_role_mapping fk_c4fqv34p1mbylloxang7b1q3l; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.user_role_mapping
@@ -5252,7 +5248,7 @@ ALTER TABLE ONLY public.user_role_mapping
 
 
 --
--- Name: client_scope_client fk_c_cli_scope_client; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: client_scope_client fk_c_cli_scope_client; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.client_scope_client
@@ -5260,7 +5256,7 @@ ALTER TABLE ONLY public.client_scope_client
 
 
 --
--- Name: client_scope_client fk_c_cli_scope_scope; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: client_scope_client fk_c_cli_scope_scope; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.client_scope_client
@@ -5268,7 +5264,7 @@ ALTER TABLE ONLY public.client_scope_client
 
 
 --
--- Name: client_scope_attributes fk_cl_scope_attr_scope; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: client_scope_attributes fk_cl_scope_attr_scope; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.client_scope_attributes
@@ -5276,7 +5272,7 @@ ALTER TABLE ONLY public.client_scope_attributes
 
 
 --
--- Name: client_scope_role_mapping fk_cl_scope_rm_role; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: client_scope_role_mapping fk_cl_scope_rm_role; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.client_scope_role_mapping
@@ -5284,7 +5280,7 @@ ALTER TABLE ONLY public.client_scope_role_mapping
 
 
 --
--- Name: client_scope_role_mapping fk_cl_scope_rm_scope; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: client_scope_role_mapping fk_cl_scope_rm_scope; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.client_scope_role_mapping
@@ -5292,7 +5288,7 @@ ALTER TABLE ONLY public.client_scope_role_mapping
 
 
 --
--- Name: client_user_session_note fk_cl_usr_ses_note; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: client_user_session_note fk_cl_usr_ses_note; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.client_user_session_note
@@ -5300,7 +5296,7 @@ ALTER TABLE ONLY public.client_user_session_note
 
 
 --
--- Name: protocol_mapper fk_cli_scope_mapper; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: protocol_mapper fk_cli_scope_mapper; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.protocol_mapper
@@ -5308,7 +5304,7 @@ ALTER TABLE ONLY public.protocol_mapper
 
 
 --
--- Name: client_initial_access fk_client_init_acc_realm; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: client_initial_access fk_client_init_acc_realm; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.client_initial_access
@@ -5316,7 +5312,7 @@ ALTER TABLE ONLY public.client_initial_access
 
 
 --
--- Name: component_config fk_component_config; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: component_config fk_component_config; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.component_config
@@ -5324,7 +5320,7 @@ ALTER TABLE ONLY public.component_config
 
 
 --
--- Name: component fk_component_realm; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: component fk_component_realm; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.component
@@ -5332,7 +5328,7 @@ ALTER TABLE ONLY public.component
 
 
 --
--- Name: realm_default_groups fk_def_groups_group; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: realm_default_groups fk_def_groups_group; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.realm_default_groups
@@ -5340,7 +5336,7 @@ ALTER TABLE ONLY public.realm_default_groups
 
 
 --
--- Name: realm_default_groups fk_def_groups_realm; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: realm_default_groups fk_def_groups_realm; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.realm_default_groups
@@ -5348,7 +5344,7 @@ ALTER TABLE ONLY public.realm_default_groups
 
 
 --
--- Name: realm_default_roles fk_evudb1ppw84oxfax2drs03icc; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: realm_default_roles fk_evudb1ppw84oxfax2drs03icc; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.realm_default_roles
@@ -5356,7 +5352,7 @@ ALTER TABLE ONLY public.realm_default_roles
 
 
 --
--- Name: user_federation_mapper_config fk_fedmapper_cfg; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: user_federation_mapper_config fk_fedmapper_cfg; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.user_federation_mapper_config
@@ -5364,7 +5360,7 @@ ALTER TABLE ONLY public.user_federation_mapper_config
 
 
 --
--- Name: user_federation_mapper fk_fedmapperpm_fedprv; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: user_federation_mapper fk_fedmapperpm_fedprv; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.user_federation_mapper
@@ -5372,7 +5368,7 @@ ALTER TABLE ONLY public.user_federation_mapper
 
 
 --
--- Name: user_federation_mapper fk_fedmapperpm_realm; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: user_federation_mapper fk_fedmapperpm_realm; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.user_federation_mapper
@@ -5380,7 +5376,7 @@ ALTER TABLE ONLY public.user_federation_mapper
 
 
 --
--- Name: associated_policy fk_frsr5s213xcx4wnkog82ssrfy; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: associated_policy fk_frsr5s213xcx4wnkog82ssrfy; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.associated_policy
@@ -5388,7 +5384,7 @@ ALTER TABLE ONLY public.associated_policy
 
 
 --
--- Name: scope_policy fk_frsrasp13xcx4wnkog82ssrfy; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: scope_policy fk_frsrasp13xcx4wnkog82ssrfy; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.scope_policy
@@ -5396,7 +5392,7 @@ ALTER TABLE ONLY public.scope_policy
 
 
 --
--- Name: resource_server_perm_ticket fk_frsrho213xcx4wnkog82sspmt; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: resource_server_perm_ticket fk_frsrho213xcx4wnkog82sspmt; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.resource_server_perm_ticket
@@ -5404,7 +5400,7 @@ ALTER TABLE ONLY public.resource_server_perm_ticket
 
 
 --
--- Name: resource_server_resource fk_frsrho213xcx4wnkog82ssrfy; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: resource_server_resource fk_frsrho213xcx4wnkog82ssrfy; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.resource_server_resource
@@ -5412,7 +5408,7 @@ ALTER TABLE ONLY public.resource_server_resource
 
 
 --
--- Name: resource_server_perm_ticket fk_frsrho213xcx4wnkog83sspmt; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: resource_server_perm_ticket fk_frsrho213xcx4wnkog83sspmt; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.resource_server_perm_ticket
@@ -5420,7 +5416,7 @@ ALTER TABLE ONLY public.resource_server_perm_ticket
 
 
 --
--- Name: resource_server_perm_ticket fk_frsrho213xcx4wnkog84sspmt; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: resource_server_perm_ticket fk_frsrho213xcx4wnkog84sspmt; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.resource_server_perm_ticket
@@ -5428,7 +5424,7 @@ ALTER TABLE ONLY public.resource_server_perm_ticket
 
 
 --
--- Name: associated_policy fk_frsrpas14xcx4wnkog82ssrfy; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: associated_policy fk_frsrpas14xcx4wnkog82ssrfy; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.associated_policy
@@ -5436,7 +5432,7 @@ ALTER TABLE ONLY public.associated_policy
 
 
 --
--- Name: scope_policy fk_frsrpass3xcx4wnkog82ssrfy; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: scope_policy fk_frsrpass3xcx4wnkog82ssrfy; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.scope_policy
@@ -5444,7 +5440,7 @@ ALTER TABLE ONLY public.scope_policy
 
 
 --
--- Name: resource_server_perm_ticket fk_frsrpo2128cx4wnkog82ssrfy; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: resource_server_perm_ticket fk_frsrpo2128cx4wnkog82ssrfy; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.resource_server_perm_ticket
@@ -5452,7 +5448,7 @@ ALTER TABLE ONLY public.resource_server_perm_ticket
 
 
 --
--- Name: resource_server_policy fk_frsrpo213xcx4wnkog82ssrfy; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: resource_server_policy fk_frsrpo213xcx4wnkog82ssrfy; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.resource_server_policy
@@ -5460,7 +5456,7 @@ ALTER TABLE ONLY public.resource_server_policy
 
 
 --
--- Name: resource_scope fk_frsrpos13xcx4wnkog82ssrfy; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: resource_scope fk_frsrpos13xcx4wnkog82ssrfy; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.resource_scope
@@ -5468,7 +5464,7 @@ ALTER TABLE ONLY public.resource_scope
 
 
 --
--- Name: resource_policy fk_frsrpos53xcx4wnkog82ssrfy; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: resource_policy fk_frsrpos53xcx4wnkog82ssrfy; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.resource_policy
@@ -5476,7 +5472,7 @@ ALTER TABLE ONLY public.resource_policy
 
 
 --
--- Name: resource_policy fk_frsrpp213xcx4wnkog82ssrfy; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: resource_policy fk_frsrpp213xcx4wnkog82ssrfy; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.resource_policy
@@ -5484,7 +5480,7 @@ ALTER TABLE ONLY public.resource_policy
 
 
 --
--- Name: resource_scope fk_frsrps213xcx4wnkog82ssrfy; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: resource_scope fk_frsrps213xcx4wnkog82ssrfy; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.resource_scope
@@ -5492,7 +5488,7 @@ ALTER TABLE ONLY public.resource_scope
 
 
 --
--- Name: resource_server_scope fk_frsrso213xcx4wnkog82ssrfy; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: resource_server_scope fk_frsrso213xcx4wnkog82ssrfy; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.resource_server_scope
@@ -5500,7 +5496,7 @@ ALTER TABLE ONLY public.resource_server_scope
 
 
 --
--- Name: composite_role fk_gr7thllb9lu8q4vqa4524jjy8; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: composite_role fk_gr7thllb9lu8q4vqa4524jjy8; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.composite_role
@@ -5508,7 +5504,7 @@ ALTER TABLE ONLY public.composite_role
 
 
 --
--- Name: user_consent_client_scope fk_grntcsnt_clsc_usc; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: user_consent_client_scope fk_grntcsnt_clsc_usc; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.user_consent_client_scope
@@ -5516,7 +5512,7 @@ ALTER TABLE ONLY public.user_consent_client_scope
 
 
 --
--- Name: user_consent fk_grntcsnt_user; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: user_consent fk_grntcsnt_user; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.user_consent
@@ -5524,7 +5520,7 @@ ALTER TABLE ONLY public.user_consent
 
 
 --
--- Name: group_attribute fk_group_attribute_group; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: group_attribute fk_group_attribute_group; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.group_attribute
@@ -5532,7 +5528,7 @@ ALTER TABLE ONLY public.group_attribute
 
 
 --
--- Name: keycloak_group fk_group_realm; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: keycloak_group fk_group_realm; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.keycloak_group
@@ -5540,7 +5536,7 @@ ALTER TABLE ONLY public.keycloak_group
 
 
 --
--- Name: group_role_mapping fk_group_role_group; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: group_role_mapping fk_group_role_group; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.group_role_mapping
@@ -5548,7 +5544,7 @@ ALTER TABLE ONLY public.group_role_mapping
 
 
 --
--- Name: group_role_mapping fk_group_role_role; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: group_role_mapping fk_group_role_role; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.group_role_mapping
@@ -5556,7 +5552,7 @@ ALTER TABLE ONLY public.group_role_mapping
 
 
 --
--- Name: realm_default_roles fk_h4wpd7w4hsoolni3h0sw7btje; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: realm_default_roles fk_h4wpd7w4hsoolni3h0sw7btje; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.realm_default_roles
@@ -5564,7 +5560,7 @@ ALTER TABLE ONLY public.realm_default_roles
 
 
 --
--- Name: realm_enabled_event_types fk_h846o4h0w8epx5nwedrf5y69j; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: realm_enabled_event_types fk_h846o4h0w8epx5nwedrf5y69j; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.realm_enabled_event_types
@@ -5572,7 +5568,7 @@ ALTER TABLE ONLY public.realm_enabled_event_types
 
 
 --
--- Name: realm_events_listeners fk_h846o4h0w8epx5nxev9f5y69j; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: realm_events_listeners fk_h846o4h0w8epx5nxev9f5y69j; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.realm_events_listeners
@@ -5580,7 +5576,7 @@ ALTER TABLE ONLY public.realm_events_listeners
 
 
 --
--- Name: identity_provider_mapper fk_idpm_realm; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: identity_provider_mapper fk_idpm_realm; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.identity_provider_mapper
@@ -5588,7 +5584,7 @@ ALTER TABLE ONLY public.identity_provider_mapper
 
 
 --
--- Name: idp_mapper_config fk_idpmconfig; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: idp_mapper_config fk_idpmconfig; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.idp_mapper_config
@@ -5596,7 +5592,7 @@ ALTER TABLE ONLY public.idp_mapper_config
 
 
 --
--- Name: web_origins fk_lojpho213xcx4wnkog82ssrfy; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: web_origins fk_lojpho213xcx4wnkog82ssrfy; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.web_origins
@@ -5604,7 +5600,7 @@ ALTER TABLE ONLY public.web_origins
 
 
 --
--- Name: client_default_roles fk_nuilts7klwqw2h8m2b5joytky; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: client_default_roles fk_nuilts7klwqw2h8m2b5joytky; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.client_default_roles
@@ -5612,7 +5608,7 @@ ALTER TABLE ONLY public.client_default_roles
 
 
 --
--- Name: scope_mapping fk_ouse064plmlr732lxjcn1q5f1; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: scope_mapping fk_ouse064plmlr732lxjcn1q5f1; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.scope_mapping
@@ -5620,7 +5616,7 @@ ALTER TABLE ONLY public.scope_mapping
 
 
 --
--- Name: scope_mapping fk_p3rh9grku11kqfrs4fltt7rnq; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: scope_mapping fk_p3rh9grku11kqfrs4fltt7rnq; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.scope_mapping
@@ -5628,7 +5624,7 @@ ALTER TABLE ONLY public.scope_mapping
 
 
 --
--- Name: client fk_p56ctinxxb9gsk57fo49f9tac; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: client fk_p56ctinxxb9gsk57fo49f9tac; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.client
@@ -5636,7 +5632,7 @@ ALTER TABLE ONLY public.client
 
 
 --
--- Name: protocol_mapper fk_pcm_realm; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: protocol_mapper fk_pcm_realm; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.protocol_mapper
@@ -5644,7 +5640,7 @@ ALTER TABLE ONLY public.protocol_mapper
 
 
 --
--- Name: credential fk_pfyr0glasqyl0dei3kl69r6v0; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: credential fk_pfyr0glasqyl0dei3kl69r6v0; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.credential
@@ -5652,7 +5648,7 @@ ALTER TABLE ONLY public.credential
 
 
 --
--- Name: protocol_mapper_config fk_pmconfig; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: protocol_mapper_config fk_pmconfig; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.protocol_mapper_config
@@ -5660,7 +5656,7 @@ ALTER TABLE ONLY public.protocol_mapper_config
 
 
 --
--- Name: default_client_scope fk_r_def_cli_scope_realm; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: default_client_scope fk_r_def_cli_scope_realm; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.default_client_scope
@@ -5668,7 +5664,7 @@ ALTER TABLE ONLY public.default_client_scope
 
 
 --
--- Name: default_client_scope fk_r_def_cli_scope_scope; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: default_client_scope fk_r_def_cli_scope_scope; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.default_client_scope
@@ -5676,7 +5672,7 @@ ALTER TABLE ONLY public.default_client_scope
 
 
 --
--- Name: client_scope fk_realm_cli_scope; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: client_scope fk_realm_cli_scope; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.client_scope
@@ -5684,7 +5680,7 @@ ALTER TABLE ONLY public.client_scope
 
 
 --
--- Name: required_action_provider fk_req_act_realm; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: required_action_provider fk_req_act_realm; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.required_action_provider
@@ -5692,7 +5688,7 @@ ALTER TABLE ONLY public.required_action_provider
 
 
 --
--- Name: resource_uris fk_resource_server_uris; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: resource_uris fk_resource_server_uris; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.resource_uris
@@ -5700,7 +5696,7 @@ ALTER TABLE ONLY public.resource_uris
 
 
 --
--- Name: role_attribute fk_role_attribute_id; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: role_attribute fk_role_attribute_id; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.role_attribute
@@ -5708,7 +5704,7 @@ ALTER TABLE ONLY public.role_attribute
 
 
 --
--- Name: realm_supported_locales fk_supported_locales_realm; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: realm_supported_locales fk_supported_locales_realm; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.realm_supported_locales
@@ -5716,7 +5712,7 @@ ALTER TABLE ONLY public.realm_supported_locales
 
 
 --
--- Name: user_federation_config fk_t13hpu1j94r2ebpekr39x5eu5; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: user_federation_config fk_t13hpu1j94r2ebpekr39x5eu5; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.user_federation_config
@@ -5724,7 +5720,7 @@ ALTER TABLE ONLY public.user_federation_config
 
 
 --
--- Name: user_group_membership fk_user_group_user; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: user_group_membership fk_user_group_user; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.user_group_membership
@@ -5732,7 +5728,7 @@ ALTER TABLE ONLY public.user_group_membership
 
 
 --
--- Name: policy_config fkdc34197cf864c4e43; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: policy_config fkdc34197cf864c4e43; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.policy_config
@@ -5740,7 +5736,7 @@ ALTER TABLE ONLY public.policy_config
 
 
 --
--- Name: identity_provider_config fkdc4897cf864c4e43; Type: FK CONSTRAINT; Schema: public; Owner: keycloack
+-- Name: identity_provider_config fkdc4897cf864c4e43; Type: FK CONSTRAINT; Schema: public; Owner: keycloak
 --
 
 ALTER TABLE ONLY public.identity_provider_config

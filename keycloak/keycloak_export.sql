@@ -400,6 +400,7 @@ DROP TABLE IF EXISTS expenses.report;
 DROP TABLE IF EXISTS expenses.flyway_schema_history;
 DROP SEQUENCE IF EXISTS expenses.expenses_id_seq;
 DROP TABLE IF EXISTS expenses.expenses;
+DROP TABLE IF EXISTS expenses.APP_USER;
 DROP EXTENSION IF EXISTS plpgsql;
 DROP SCHEMA IF EXISTS public;
 DROP SCHEMA IF EXISTS expenses;
@@ -445,79 +446,6 @@ COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 SET default_tablespace = '';
 
 SET default_with_oids = false;
-
---
--- Name: expenses; Type: TABLE; Schema: expenses; Owner: keycloak
---
-
-CREATE TABLE expenses.expenses (
-    id integer NOT NULL,
-    description character varying(250) NOT NULL,
-    amount numeric(15,6),
-    created date,
-    tstamp timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
-    fk_report integer
-);
-
-
-ALTER TABLE expenses.expenses OWNER TO keycloak;
-
---
--- Name: expenses_id_seq; Type: SEQUENCE; Schema: expenses; Owner: keycloak
---
-
-CREATE SEQUENCE expenses.expenses_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE expenses.expenses_id_seq OWNER TO keycloak;
-
---
--- Name: expenses_id_seq; Type: SEQUENCE OWNED BY; Schema: expenses; Owner: keycloak
---
-
-ALTER SEQUENCE expenses.expenses_id_seq OWNED BY expenses.expenses.id;
-
-
---
--- Name: flyway_schema_history; Type: TABLE; Schema: expenses; Owner: keycloak
---
-
-CREATE TABLE expenses.flyway_schema_history (
-    installed_rank integer NOT NULL,
-    version character varying(50),
-    description character varying(200) NOT NULL,
-    type character varying(20) NOT NULL,
-    script character varying(1000) NOT NULL,
-    checksum integer,
-    installed_by character varying(100) NOT NULL,
-    installed_on timestamp without time zone DEFAULT now() NOT NULL,
-    execution_time integer NOT NULL,
-    success boolean NOT NULL
-);
-
-
-ALTER TABLE expenses.flyway_schema_history OWNER TO keycloak;
-
---
--- Name: report; Type: TABLE; Schema: expenses; Owner: keycloak
---
-
-CREATE TABLE expenses.report (
-    id integer NOT NULL,
-    name character varying(100) NOT NULL,
-    created date,
-    tstamp timestamp without time zone DEFAULT CURRENT_TIMESTAMP
-);
-
-
-ALTER TABLE expenses.report OWNER TO keycloak;
-
 --
 -- Name: admin_event_entity; Type: TABLE; Schema: public; Owner: keycloak
 --
@@ -2001,38 +1929,6 @@ CREATE TABLE public.web_origins (
 
 ALTER TABLE public.web_origins OWNER TO keycloak;
 
---
--- Name: expenses id; Type: DEFAULT; Schema: expenses; Owner: keycloak
---
-
-ALTER TABLE ONLY expenses.expenses ALTER COLUMN id SET DEFAULT nextval('expenses.expenses_id_seq'::regclass);
-
-
---
--- Data for Name: expenses; Type: TABLE DATA; Schema: expenses; Owner: keycloak
---
-
-INSERT INTO expenses.expenses VALUES (1, 'Lunch', 30.300000, '2019-07-30', '2020-10-07 09:02:45.624008', 1);
-INSERT INTO expenses.expenses VALUES (2, 'Lenovo Tablet', 149.000000, '2019-07-30', '2020-10-07 09:02:45.624008', 1);
-INSERT INTO expenses.expenses VALUES (3, 'Dinner', 30.300000, '2019-09-29', '2020-10-07 09:02:45.624008', 1);
-INSERT INTO expenses.expenses VALUES (4, 'Book', 28.190000, '2019-09-29', '2020-10-07 09:02:45.624008', 1);
-INSERT INTO expenses.expenses VALUES (5, 'train ticket', 10.120000, '2020-10-07', '2020-10-07 09:02:48.874697', 1);
-INSERT INTO expenses.expenses VALUES (7, 'train ticket', 45.990000, '2020-10-07', '2020-10-07 09:02:49.407413', 1);
-
-
---
--- Data for Name: flyway_schema_history; Type: TABLE DATA; Schema: expenses; Owner: keycloak
---
-
-INSERT INTO expenses.flyway_schema_history VALUES (0, NULL, '<< Flyway Schema Creation >>', 'SCHEMA', '"expenses"', NULL, 'keycloak', '2020-10-07 09:02:45.586512', 0, true);
-INSERT INTO expenses.flyway_schema_history VALUES (1, '1.0.0', 'Quarkus', 'SQL', 'db/migration/V1.0.0__Quarkus.sql', 1558141439, 'keycloak', '2020-10-07 09:02:45.624008', 40, true);
-
-
---
--- Data for Name: report; Type: TABLE DATA; Schema: expenses; Owner: keycloak
---
-
-INSERT INTO expenses.report VALUES (1, 'Simple Report', '2019-07-30', '2020-10-07 09:02:45.624008');
 
 
 --
@@ -4375,37 +4271,6 @@ INSERT INTO public.web_origins VALUES ('b9383891-8e16-4b4b-9259-12f206ec6141', '
 
 
 --
--- Name: expenses_id_seq; Type: SEQUENCE SET; Schema: expenses; Owner: keycloak
---
-
-SELECT pg_catalog.setval('expenses.expenses_id_seq', 7, true);
-
-
---
--- Name: expenses expenses_pkey; Type: CONSTRAINT; Schema: expenses; Owner: keycloak
---
-
-ALTER TABLE ONLY expenses.expenses
-    ADD CONSTRAINT expenses_pkey PRIMARY KEY (id);
-
-
---
--- Name: flyway_schema_history flyway_schema_history_pk; Type: CONSTRAINT; Schema: expenses; Owner: keycloak
---
-
-ALTER TABLE ONLY expenses.flyway_schema_history
-    ADD CONSTRAINT flyway_schema_history_pk PRIMARY KEY (installed_rank);
-
-
---
--- Name: report report_pkey; Type: CONSTRAINT; Schema: expenses; Owner: keycloak
---
-
-ALTER TABLE ONLY expenses.report
-    ADD CONSTRAINT report_pkey PRIMARY KEY (id);
-
-
---
 -- Name: username_login_failure CONSTRAINT_17-2; Type: CONSTRAINT; Schema: public; Owner: keycloak
 --
 
@@ -5294,13 +5159,6 @@ ALTER TABLE ONLY public.user_entity
 
 
 --
--- Name: flyway_schema_history_s_idx; Type: INDEX; Schema: expenses; Owner: keycloak
---
-
-CREATE INDEX flyway_schema_history_s_idx ON expenses.flyway_schema_history USING btree (success);
-
-
---
 -- Name: idx_assoc_pol_assoc_pol_id; Type: INDEX; Schema: public; Owner: keycloak
 --
 
@@ -5837,14 +5695,6 @@ CREATE INDEX idx_usr_fed_prv_realm ON public.user_federation_provider USING btre
 --
 
 CREATE INDEX idx_web_orig_client ON public.web_origins USING btree (client_id);
-
-
---
--- Name: expenses expenses_fk_report_fkey; Type: FK CONSTRAINT; Schema: expenses; Owner: keycloak
---
-
-ALTER TABLE ONLY expenses.expenses
-    ADD CONSTRAINT expenses_fk_report_fkey FOREIGN KEY (fk_report) REFERENCES expenses.report(id);
 
 
 --

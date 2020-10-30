@@ -17,11 +17,11 @@ if [ -z "$1" ]
  else
     echo "pod name is to join  is $1"
     if [ "x$POSTGRESQL_USER" = "x" ];then
-              POSTGRESQL_USER="keycloack"
+              POSTGRESQL_USER="keycloak"
     fi
 
     if [ "x$POSTGRESQL_PASSWORD" = "x" ]; then
-              POSTGRESQL_PASSWORD="keycloack"
+              POSTGRESQL_PASSWORD="keycloak"
     fi
 
     if [ "x$POSTGRESQL_DATABASE" = "x" ]; then

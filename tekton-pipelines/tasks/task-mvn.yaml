@@ -67,7 +67,7 @@ spec:
         export KEYCLOAK_CLIENT_ID="backend"
         export KEYCLOAK_SECRET="16c3384b-725d-410d-8107-df3319165f70"
 
-        echo "repare maven local repo to seed up tasks"
+        echo "repare maven local repo to speed up tasks"
         mkdir -vp $PWD/mvnrepo
 
         echo "run GOALS: $(inputs.params.GOALS)"

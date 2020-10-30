@@ -4,12 +4,12 @@ echo "run podman pod with mysql and keycloak"
  
 # set database user name and password
 if [ "x$POSTGRESQL_USER" = "x" ];then
- export POSTGRESQL_USER="keycloack"
+ export POSTGRESQL_USER="keycloak"
 fi
 
 
 if [ "x$POSTGRESQL_PASSWORD" = "x" ]; then
-  export POSTGRESQL_PASSWORD="keycloack"
+  export POSTGRESQL_PASSWORD="keycloak"
 fi
 
 
