@@ -70,3 +70,13 @@ spec:
       workspaces:
         - name: input
           workspace: shared-workspace
+
+    - name: deploy-quarkus-native
+      taskRef:
+        name:  deploy-native-backend
+      runAfter:
+          - build-quarkus-native
+      workspaces:
+        - name: input
+          workspace: shared-workspace
+
