@@ -24,7 +24,7 @@ spec:
       taskRef:
         name: deploy-test-containers
       runAfter:
-        - clean-workspace
+        - fetch-repository 
       workspaces:
         - name: input
           workspace: shared-workspace
@@ -53,7 +53,7 @@ spec:
       taskRef:
         name: backend-mvn
       runAfter:
-        - fetch-repository
+        - deploy-test-containers
       workspaces:
         - name: input
           workspace: shared-workspace

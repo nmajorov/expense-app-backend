@@ -106,7 +106,6 @@ ALTER TABLE IF EXISTS ONLY public.federated_identity DROP CONSTRAINT IF EXISTS f
 ALTER TABLE IF EXISTS ONLY public.client_attributes DROP CONSTRAINT IF EXISTS fk3c47c64beacca966;
 ALTER TABLE IF EXISTS ONLY public.identity_provider DROP CONSTRAINT IF EXISTS fk2b4ebc52ae5c3b34;
 ALTER TABLE IF EXISTS ONLY public.client_session_auth_status DROP CONSTRAINT IF EXISTS auth_status_constraint;
-ALTER TABLE IF EXISTS ONLY expenses.expenses DROP CONSTRAINT IF EXISTS expenses_fk_report_fkey;
 DROP INDEX IF EXISTS public.idx_web_orig_client;
 DROP INDEX IF EXISTS public.idx_usr_fed_prv_realm;
 DROP INDEX IF EXISTS public.idx_usr_fed_map_realm;
@@ -184,7 +183,6 @@ DROP INDEX IF EXISTS public.idx_auth_exec_realm_flow;
 DROP INDEX IF EXISTS public.idx_auth_exec_flow;
 DROP INDEX IF EXISTS public.idx_auth_config_realm;
 DROP INDEX IF EXISTS public.idx_assoc_pol_assoc_pol_id;
-DROP INDEX IF EXISTS expenses.flyway_schema_history_s_idx;
 ALTER TABLE IF EXISTS ONLY public.user_entity DROP CONSTRAINT IF EXISTS uk_ru8tt6t700s9v50bu18ws5ha6;
 ALTER TABLE IF EXISTS ONLY public.realm DROP CONSTRAINT IF EXISTS uk_orvsdmla56612eaefiq6wl5oi;
 ALTER TABLE IF EXISTS ONLY public.user_consent DROP CONSTRAINT IF EXISTS uk_jkuwuvd56ontgsuhogm8uewrt;
@@ -296,10 +294,6 @@ ALTER TABLE IF EXISTS ONLY public.client_scope_client DROP CONSTRAINT IF EXISTS 
 ALTER TABLE IF EXISTS ONLY public.client_auth_flow_bindings DROP CONSTRAINT IF EXISTS c_cli_flow_bind;
 ALTER TABLE IF EXISTS ONLY public.keycloak_role DROP CONSTRAINT IF EXISTS "UK_J3RWUVD56ONTGSUHOGM184WW2-2";
 ALTER TABLE IF EXISTS ONLY public.username_login_failure DROP CONSTRAINT IF EXISTS "CONSTRAINT_17-2";
-ALTER TABLE IF EXISTS ONLY expenses.report DROP CONSTRAINT IF EXISTS report_pkey;
-ALTER TABLE IF EXISTS ONLY expenses.flyway_schema_history DROP CONSTRAINT IF EXISTS flyway_schema_history_pk;
-ALTER TABLE IF EXISTS ONLY expenses.expenses DROP CONSTRAINT IF EXISTS expenses_pkey;
-ALTER TABLE IF EXISTS expenses.expenses ALTER COLUMN id DROP DEFAULT;
 DROP TABLE IF EXISTS public.web_origins;
 DROP TABLE IF EXISTS public.username_login_failure;
 DROP TABLE IF EXISTS public.user_session_note;
