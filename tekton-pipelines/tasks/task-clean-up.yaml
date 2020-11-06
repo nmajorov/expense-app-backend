@@ -19,17 +19,17 @@ spec:
       workingDir: /workspace/output
       script: |
         #!/usr/bin/env bash
-        set -xe
+        set -x
 
         pwd
 
         if [ "$(params.keep-repo)" == "true" ] ; then
             echo "remove existing checkout sources but keep repo"
 
-            find .  -not -path "./mvnrepo*"  -exec rm -rf {} 2> /dev/null \;
+            find .  -not -path "./mvnrepo*"  -exec rm -rf {}  \;
 
         else
-             find . -exec rm -rf  {} 2> /dev/null \;
+             find . -exec rm -rf  {} 2>  \;
         fi
 
 
