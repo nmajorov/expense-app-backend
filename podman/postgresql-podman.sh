@@ -66,7 +66,12 @@ podman exec  postgresql-database pg_isready
 
 
 
-podman cp $SCRIPT_DIR/export.sql postgresql-database:/tmp
+#podman cp $SCRIPT_DIR/export.sql postgresql-database:/tmp
 
+cd $SCRIPT_DIR/..
+pwd
+ls  ./keycloak/keycloak_export.sql
+
+podman cp  ./keycloak/keycloak_export.sql  postgresql-database:/tmp/export.sql
 echo "run sql import"
 podman exec postgresql-database bash -c "psql root  < /tmp/export.sql"
