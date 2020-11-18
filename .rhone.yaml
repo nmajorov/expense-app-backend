@@ -15,6 +15,6 @@ env:
   - KEYCLOAK_SECRET="16c3384b-725d-410d-8107-df3319165f70"
 scripts:
   pre_install:
-    - $PWD/podman/run-full-pod.sh
+    - ./podman/run-full-pod.sh
   post_install:
-    - $PWD/podman/podman/delete-pod.sh
+    - ./podman/delete-pod.sh
