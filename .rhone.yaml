@@ -11,7 +11,7 @@ env:
   - POSTGRESQL_DATABASE=root
   
   - KEYCLOAK_URL="http://niko-linux:7080/auth/realms/basic" 
-  - KEYCLOAK_INTROSPECT_URL="$KEYCLOAK_URL/protocol/openid-connect/token/introspect"
+  - KEYCLOAK_INTROSPECT_URL="http://niko-linux:7080/auth/realms/basic/protocol/openid-connect/token/introspect"
   - KEYCLOAK_CLIENT_ID="backend"
   - KEYCLOAK_SECRET="16c3384b-725d-410d-8107-df3319165f70"
 scripts:
