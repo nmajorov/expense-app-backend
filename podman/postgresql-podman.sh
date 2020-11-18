@@ -13,8 +13,8 @@ IMAGE="registry.redhat.io/rhscl/postgresql-10-rhel7"
 uid=$(id -u)
 USER_ID=uid
 
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-
+#SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+SCRIPT_DIR=`dirname "$0"`
 
 if [ "x$POSTGRESQL_USER" = "x" ];then
   POSTGRESQL_USER="keycloak"
