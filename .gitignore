@@ -30,7 +30,7 @@ nb-configuration.xml
 
 # Gradle
 build/
-.gradle/checksums/
+.gradle
 *.lock
 *.bin
 .gradle/buildOutputCleanup

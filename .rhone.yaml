@@ -1,12 +1,20 @@
 ---
-apiVersion: build.rhone.io/v1
+apiVersion: build.rhone.io/v2
 language: java
 interpreter-version: 3-jdk-11
 name: expences-backend-quarkus
 version: 1.0-SNAPSHOT
-  - preBuild: |
-           podman run --rm -d --name  postgresql-database -e POSTGRESQL_USER=fuse -e POSTGRESQL_PASSWORD=fuse
-           -e POSTGRESQL_DATABASE=fuse
-           -p 127.0.0.1:5432:5432 centos/postgresql-96-centos7
-
-  - postBuild: podman stop postgresql-database
+env:
+  - POSTGRESQL_SERVICE_NAME=niko-linux
+  - POSTGRESQL_USER=keycloak
+  - POSTGRESQL_PASSWORD=keycloak
+  - POSTGRESQL_DATABASE=root
+  - KEYCLOAK_URL="http://niko-linux:7080/auth/realms/basic"
+  - KEYCLOAK_INTROSPECT_URL="http://niko-linux:7080/auth/realms/basic/protocol/openid-connect/token/introspect"
+  - KEYCLOAK_CLIENT_ID="backend"
+  - KEYCLOAK_SECRET="16c3384b-725d-410d-8107-df3319165f70"
+scripts:
+  pre_install:
+    - ./podman/run-full-pod.sh
+  post_install:
+    - ./podman/podman/delete-pod.sh
