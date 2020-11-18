@@ -9,12 +9,12 @@ env:
   - POSTGRESQL_USER=keycloak
   - POSTGRESQL_PASSWORD=keycloak
   - POSTGRESQL_DATABASE=root
-  - KEYCLOAK_URL="http://niko-linux:7080/auth/realms/basic"
-  - KEYCLOAK_INTROSPECT_URL="http://niko-linux:7080/auth/realms/basic/protocol/openid-connect/token/introspect"
-  - KEYCLOAK_CLIENT_ID="backend"
+  - KEYCLOAK_URL=http://niko-linux:7080/auth/realms/basic
+  - KEYCLOAK_INTROSPECT_URL=http://niko-linux:7080/auth/realms/basic/protocol/openid-connect/token/introspect
+  - KEYCLOAK_CLIENT_ID="backend
   - KEYCLOAK_SECRET="16c3384b-725d-410d-8107-df3319165f70"
 scripts:
   pre_install:
-    - ./podman/run-full-pod.sh
+    - $PWD/podman/run-full-pod.sh
   post_install:
-    - ./podman/podman/delete-pod.sh
+    - $PWD/podman/podman/delete-pod.sh
