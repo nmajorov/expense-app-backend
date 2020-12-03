@@ -5,7 +5,7 @@ interpreter-version: 3-jdk-11
 name: expences-backend-quarkus
 version: 1.0-SNAPSHOT
 env:
-  - POSTGRESQL_SERVICE_NAME={{rhone_server_hostname}}
+  - POSTGRESQL_SERVICE_NAME=localhost
   - POSTGRESQL_USER=keycloak
   - POSTGRESQL_PASSWORD=keycloak
   - POSTGRESQL_DATABASE=root
