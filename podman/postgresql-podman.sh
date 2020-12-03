@@ -64,7 +64,7 @@ sleep 15
 echo "check connection"
 podman exec  postgresql-database pg_isready
 
-
+echo "current script dir: $SCRIPT_DIR"
 
 podman cp $SCRIPT_DIR/export.sql postgresql-database:/tmp/export.sql
 
