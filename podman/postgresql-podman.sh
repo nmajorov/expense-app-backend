@@ -66,7 +66,7 @@ podman exec  postgresql-database pg_isready
 
 echo "current script dir: $SCRIPT_DIR"
 
-podman cp $SCRIPT_DIR/export.sql postgresql-database:/tmp/export.sql
+podman cp --pause=false  $SCRIPT_DIR/export.sql postgresql-database:/tmp/export.sql
 
 #cd $SCRIPT_DIR/..
 #pwd
