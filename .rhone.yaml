@@ -5,13 +5,13 @@ interpreter-version: 3-jdk-11
 name: expences-backend-quarkus
 version: 1.0-SNAPSHOT
 env:
-  - POSTGRESQL_SERVICE_NAME=niko-linux
+  - POSTGRESQL_SERVICE_NAME=localhost
   - POSTGRESQL_USER=keycloak
   - POSTGRESQL_PASSWORD=keycloak
   - POSTGRESQL_DATABASE=root
   
-  - KEYCLOAK_URL="http://niko-linux:7080/auth/realms/basic" 
-  - KEYCLOAK_INTROSPECT_URL="http://niko-linux:7080/auth/realms/basic/protocol/openid-connect/token/introspect"
+  - KEYCLOAK_URL="http://localhost:7080/auth/realms/basic" 
+  - KEYCLOAK_INTROSPECT_URL="http://localhost:7080/auth/realms/basic/protocol/openid-connect/token/introspect"
   - KEYCLOAK_CLIENT_ID="backend"
   - KEYCLOAK_SECRET="16c3384b-725d-410d-8107-df3319165f70"
 scripts:
