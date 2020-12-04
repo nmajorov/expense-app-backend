@@ -24,7 +24,7 @@ POD=sso
 #DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 DIR=`dirname "$0"`                                               
 echo "create pod"                        
-podman pod create -l $POD --name $POD -p 7080:8080 -p 8443:8443 -p 127.0.0.1:5432:5432
+podman pod create -l $POD --name $POD -p 7080:8080 -p 8443:8443 -p 5432:5432
 
 echo "add database to pod"
 $DIR/postgresql-podman.sh $POD

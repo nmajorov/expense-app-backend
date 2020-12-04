@@ -44,7 +44,7 @@ if [ -z "$1" ]
     podman run --rm -d -u $uid  --name  postgresql-database \
      -e POSTGRESQL_USER=$POSTGRESQL_USER -e POSTGRESQL_PASSWORD=$POSTGRESQL_PASSWORD \
      -e POSTGRESQL_DATABASE=$POSTGRESQL_DATABASE \
-     -p 127.0.0.1:5432:5432 \
+     -p 5432:5432 \
      $IMAGE
 
  else
