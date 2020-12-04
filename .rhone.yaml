@@ -12,8 +12,8 @@ env:
   
   - KEYCLOAK_URL=http://{{rhone_server_hostname}}:7080/auth/realms/basic 
   - KEYCLOAK_INTROSPECT_URL=http://{{rhone_server_hostname}}:7080/auth/realms/basic/protocol/openid-connect/token/introspect
-  - KEYCLOAK_CLIENT_ID="backend"
-  - KEYCLOAK_SECRET="16c3384b-725d-410d-8107-df3319165f70"
+  - KEYCLOAK_CLIENT_ID=backend
+  - KEYCLOAK_SECRET=16c3384b-725d-410d-8107-df3319165f70
 
 build_podman_params:
     - --add-host "{{ rhone_server_hostname }}:{{rhone_server_ip}}"
