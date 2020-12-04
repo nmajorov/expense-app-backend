@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-echo "run podman pod with mysql and keycloak"
+echo "run podman pod with postgresql  and keycloak"
  
 # set database user name and password
 if [ "x$POSTGRESQL_USER" = "x" ];then
