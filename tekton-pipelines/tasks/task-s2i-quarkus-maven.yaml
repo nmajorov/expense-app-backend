@@ -42,7 +42,15 @@ spec:
     - name: generate
       image: quay.io/openshift-pipeline/s2i
       workingdir: /workspace/source
-      command: ['s2i', 'build' ,'-e USE_MAVEN=true', '$(inputs.params.PATH_CONTEXT)', 'quay.io/quarkus/ubi-quarkus-native-s2i:$(inputs.params.VERSION)', '--as-dockerfile', '/gen-source/Dockerfile.gen']
+      script: |
+        #!/usr/bin/env bash
+        [[ $PWD == /workspace/source ]]
+        echo "working dir now $PWD"
+        cd /workspace/source
+        s2i build -e USE_MAVEN=true $(inputs.params.PATH_CONTEXT) \
+            -e MAVEN_OPTS=-Dmaven.repo.local="$PWD/mvnrepo" \
+            quay.io/quarkus/ubi-quarkus-native-s2i:$(inputs.params.VERSION) --as-dockerfile /gen-source/Dockerfile.gen
+
       volumeMounts:
         - name: gen-source
           mountPath: /gen-source

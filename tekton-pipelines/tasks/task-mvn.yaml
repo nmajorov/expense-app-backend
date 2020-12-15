@@ -30,9 +30,9 @@ spec:
       - name: database-service-name
         type: string
         default: sso-test-postgresql
-      - name: KEYCLOAK_URL
+      - name: keycloak_url
         type: string
-        default: "http://sso-test-nm-demo.apps.ocp-cluster-1.rhlab.ch/auth/realms/basic"
+        #default: "http://sso-test-nm-demo.apps.ocp-cluster-1.rhlab.ch"
   steps:
     - name: mvn
       image:  "quay.io/quarkus/centos-quarkus-maven:$(inputs.params.VERSION)"
@@ -54,15 +54,24 @@ spec:
         echo $(env | grep POSTGRESQL)
 
 
+        echo
+        echo
 
-
-        export KEYCLOAK_URL="$(inputs.params.KEYCLOAK_URL)"
+        export KEYCLOAK_URL="$(inputs.params.keycloak_url)/auth/realms/basic"
 
         export KEYCLOAK_INTROSPECT_URL="$KEYCLOAK_URL/protocol/openid-connect/token/introspect"
         export KEYCLOAK_CLIENT_ID="backend"
         export KEYCLOAK_SECRET="16c3384b-725d-410d-8107-df3319165f70"
 
-        echo $(env | grep KEYCLOAK)
+        echo $KEYCLOAK_URL
+        echo $KEYCLOAK_INTROSPECT_URL
+
+        echo
+        echo
+
+        curl -v -XGET $KEYCLOAK_URL
+        echo
+        echo
 
         echo "repare maven local repo to speed up tasks"
         mkdir -vp $PWD/mvnrepo

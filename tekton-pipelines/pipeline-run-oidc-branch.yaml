@@ -6,6 +6,9 @@ spec:
   params:
     - name: git-revision
       value: "oidc"
+    - name: keycloak_url
+      value: "http://sso-test-nm-demo.apps.ocp-cluster-1.rhlab.ch"
+
   pipelineRef:
     name: build-and-deploy-backend
   workspaces:

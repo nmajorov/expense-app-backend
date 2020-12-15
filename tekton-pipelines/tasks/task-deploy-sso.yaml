@@ -1,33 +1,35 @@
 ---
 
-# deploy for each pipeline run posgresql for camel tests only
-# and destroy it after
+# deploy SSO and postgresql database
+# expenses app server and client using SSO for users authorisation/authentications
 apiVersion: tekton.dev/v1alpha1
 kind: Task
 metadata:
-  name: deploy-test-containers
+  name: deploy-sso
 spec:
   inputs:
     params:
+
       - name: postgresql-image
         type: string
         description: The postgresql image to deploy
         default: registry.redhat.io/rhel8/postgresql-10
+
       - name: postgesql-user
         type: string
         description: login for postgresql database
         default: keycloak
+
       - name: postgresql-password
         type: string
         description: password for postgresql database
         default: keycloak
+
       - name: postresql-database
         type: string
         default: root
         description: default database
-      - name: database-service-name
-        type: string
-        default: sso-test-postgresql
+
       - name: app-name
         type: string
         default: sso-test
@@ -104,7 +106,7 @@ spec:
         - |-
           ls -lisa
           echo "import test sql data"
-          PGPASSWORD=$(inputs.params.postgresql-password) psql --host=$(inputs.params.database-service-name) \
+          PGPASSWORD=$(inputs.params.postgresql-password) psql --host=$(inputs.params.app-name)-postgresql \
             --username=$(inputs.params.postgesql-user) \
             --dbname=$(inputs.params.postresql-database) < ./keycloak/keycloak_export.sql
 

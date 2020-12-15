@@ -10,7 +10,6 @@ oc delete tasks s2i-quarkus-maven deploy-test-containers backend-mvn  clean-up-b
 
 oc delete pipelines.tekton.dev build-and-deploy-backend --ignore-not-found=true
 
-
 echo "deploy resources"
 oc create -f resources/
 
