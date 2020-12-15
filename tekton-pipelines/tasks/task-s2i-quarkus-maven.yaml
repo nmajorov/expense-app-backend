@@ -44,20 +44,35 @@ spec:
       workingdir: /workspace/source
       script: |
         #!/usr/bin/env bash
-        [[ $PWD == /workspace/source ]]
-        echo "working dir now $PWD"
-        cd /workspace/source
+        # point maven repo to dir in workspace
+        # this will speed up maven native build
+
         s2i build -e USE_MAVEN=true $(inputs.params.PATH_CONTEXT) \
-            -e MAVEN_OPTS=-Dmaven.repo.local="$PWD/mvnrepo" \
+            -e MAVEN_OPTS=-Dmaven.repo.local="/tmp/src/mvnrepo" \
             quay.io/quarkus/ubi-quarkus-native-s2i:$(inputs.params.VERSION) --as-dockerfile /gen-source/Dockerfile.gen
 
       volumeMounts:
         - name: gen-source
           mountPath: /gen-source
+
+
     - name: build
       image: quay.io/buildah/stable
       workingdir: /gen-source
-      command: ['buildah', 'bud', '--tls-verify=$(inputs.params.TLSVERIFY)', '--layers', '-f', '/gen-source/Dockerfile.gen', '-t', '$(outputs.resources.image.url)', '.']
+      script: |
+        #!/usr/bin/env bash
+
+        ls /workspace/source/mvnrepo
+
+        echo "working dir:  $PWD"
+        cat /gen-source/Dockerfile.gen
+
+        echo
+        echo "run buildah "
+        echo
+        buildah bud  --tls-verify=$(inputs.params.TLSVERIFY) \
+          --layers -f /gen-source/Dockerfile.gen  -t  $(outputs.resources.image.url) .
+
       volumeMounts:
         - name: varlibcontainers
           mountPath: /var/lib/containers
@@ -65,6 +80,8 @@ spec:
           mountPath: /gen-source
       securityContext:
         privileged: true
+
+
     - name: push
       image: quay.io/buildah/stable
       command: ['buildah', 'push', '--tls-verify=$(inputs.params.TLSVERIFY)', '$(outputs.resources.image.url)', 'docker://$(outputs.resources.image.url)']

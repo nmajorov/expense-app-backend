@@ -6,7 +6,7 @@ echo "delete existing pipelines and tasks first "
 
 oc delete pipelineresources.tekton.dev backend-image --ignore-not-found=true
 
-oc delete tasks s2i-quarkus-maven deploy-test-containers backend-mvn  clean-up-backend deploy-native-backend --ignore-not-found
+oc delete tasks s2i-quarkus-maven deploy-test-containers backend-mvn deploy-sso clean-up-backend deploy-native-backend --ignore-not-found
 
 oc delete pipelines.tekton.dev build-and-deploy-backend --ignore-not-found=true
 
