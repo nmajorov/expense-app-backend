@@ -110,9 +110,10 @@ class ReportServiceImpl: ReportService {
         if (ctx.userPrincipal == null){
             return Response.status(Response.Status.UNAUTHORIZED).build()
         }
-        logger.debug("create report with: $name for user: ${ctx.userPrincipal.name}")
         val user = userCheckService.checkUser(ctx.userPrincipal.name)
-        val bodyMessage = mapOf<String,Any>("report" to name, "user" to user)
+        logger.info("create report with name: $name for user: $user")
+
+        val bodyMessage = mapOf<String,Any?>("report" to name, "user-id" to user.id)
         val exchange= this.camelContext.createFluentProducerTemplate()
                 .to("direct:insert-report").withBody(bodyMessage).send();
         if (exchange.isFailed) {
@@ -129,7 +130,11 @@ class ReportServiceImpl: ReportService {
         }
         val user = userCheckService.checkUser(ctx.userPrincipal.name)
         logger.debug("update  report: $report  for user: ${ctx.userPrincipal.name}")
-        val bodyMessage = mapOf<String,Any>("report" to report, "user" to user)
+        val bodyMessage = mapOf<String,Any?>("report-name" to report.name,
+            "report-id" to report.id,
+            "report-date" to report.createdAT.toString(),
+            "report-name" to report.name,
+            "user" to user.id)
         val exchange= this.camelContext.createFluentProducerTemplate()
                 .to("direct:update-report").withBody(bodyMessage).send();
         if (exchange.isFailed) {

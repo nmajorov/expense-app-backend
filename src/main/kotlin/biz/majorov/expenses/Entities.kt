@@ -66,6 +66,7 @@ class Report(
 	override fun toString(): String = """Report[ id: ${id} | name: $name | createAt: ${createdAT} ] """
 }
 
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 class User(
 		@JsonProperty(value = "id")

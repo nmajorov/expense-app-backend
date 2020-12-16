@@ -48,7 +48,7 @@ class UserCheckService {
             user.id = camelResult.get(0).get("ID") as  Int
             user.name = camelResult.get(0).get("NAME") as String
         }
-
+        logger.debug("user checked: $user" )
         return user
     }
 
