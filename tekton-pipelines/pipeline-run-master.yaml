@@ -6,6 +6,8 @@ spec:
   params:
     - name: git-revision
       value: "master"
+    - name: keycloak_url
+      value: "sso-test"
   pipelineRef:
     name: build-and-deploy-backend
   workspaces:
