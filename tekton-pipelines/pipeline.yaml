@@ -16,15 +16,23 @@ spec:
     - name: git-revision
       type: string
       default: "master"
+    - name: keycloak_url
+      type: string
+    - name: sso-service-name
+      type: string
+      default: "sso-test"
   resources:
     - name: backend-image
       type: image
   tasks:
-    - name: deploy-test-containers
+    - name: deploy-sso
       taskRef:
-        name: deploy-test-containers
+        name: deploy-sso
+      params:
+        - name: app-name
+          value: $(params.sso-service-name)
       runAfter:
-        - clean-workspace
+        - fetch-repository 
       workspaces:
         - name: input
           workspace: shared-workspace
@@ -52,8 +60,11 @@ spec:
     - name: test
       taskRef:
         name: backend-mvn
+      params:
+        - name: keycloak_url
+          value: "http://$(params.sso-service-name):8080"
       runAfter:
-        - fetch-repository
+        - deploy-sso
       workspaces:
         - name: input
           workspace: shared-workspace
@@ -76,6 +87,9 @@ spec:
         name:  deploy-native-backend
       runAfter:
           - build-quarkus-native
+      params:
+        - name: keycloak_url
+          value: "$(params.keycloak_url)"
       workspaces:
         - name: input
           workspace: shared-workspace

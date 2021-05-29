@@ -14,7 +14,9 @@ export access_token=$(\
 
 echo "access_token: $access_token"
 
+curl -v -X GET http://localhost:3000/api/reports -H "Authorization: Bearer "$access_token
 
+exit 0
 
 curl -v -X GET \
   http://localhost:8080/reports \

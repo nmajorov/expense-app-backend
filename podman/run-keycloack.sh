@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-
+#SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+SCRIPT_DIR=`dirname "$0"`
 echo "run keycloak server"
 
 IMAGE="docker.io/jboss/keycloak:11.0.2"

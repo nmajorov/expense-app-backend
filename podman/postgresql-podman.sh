@@ -15,8 +15,8 @@ IMAGE="quay.io/centos7/postgresql-10-centos7:latest"
 uid=$(id -u)
 USER_ID=uid
 
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-
+#SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+SCRIPT_DIR=`dirname "$0"`
 
 if [ "x$POSTGRESQL_USER" = "x" ];then
   POSTGRESQL_USER="keycloak"
@@ -46,7 +46,7 @@ if [ -z "$1" ]
     podman run --rm -d -u $uid  --name  postgresql-database \
      -e POSTGRESQL_USER=$POSTGRESQL_USER -e POSTGRESQL_PASSWORD=$POSTGRESQL_PASSWORD \
      -e POSTGRESQL_DATABASE=$POSTGRESQL_DATABASE \
-     -p 127.0.0.1:5432:5432 \
+     -p 5432:5432 \
      $IMAGE
 
  else
@@ -67,6 +67,10 @@ sleep 15
 echo "check connection"
 podman exec  postgresql-database pg_isready
 
+
+
+
+
 run_keycloak_imports() {
 	
 	echo "run keycloak imports"
@@ -77,8 +81,8 @@ run_keycloak_imports() {
 
 }
 
-if [ -z $1 ];then
-echo
-else
-   run_keycloak_imports
-fi
+
+
+
+run_keycloak_imports
+

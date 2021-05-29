@@ -37,7 +37,11 @@ class ExpensesServiceImpl : ExpensesService {
 
         logger.debug("create  expense: $expense  in report $reportID for user name: ${ctx.userPrincipal.name}")
 
-        val bodyMessage = mapOf("reportID" to reportID, "expense" to expense)
+        val bodyMessage =mapOf<String,Any?>("reportID" to reportID,
+            "expense-amount" to expense.amount,
+            "expense-description" to expense.description,
+            "expense-date" to expense.createdAT.toString()
+            )
         val template = camelContext.createFluentProducerTemplate()
 
         template.to("direct:insert-expense").withBody(bodyMessage).send()
@@ -56,8 +60,13 @@ class ExpensesServiceImpl : ExpensesService {
         logger.debug("call update expense: $expense")
         val template = this.camelContext.createFluentProducerTemplate()
         expense.id?.run {
-            //id is not null do update and return ok
-            template.to("direct:update-expense").withBody(expense).send()
+            //id is not null ->  do update and return ok
+            val bodyMessage =mapOf<String,Any?>("expense-id" to expense.id,
+                "expense-amount" to expense.amount,
+                "expense-description" to expense.description,
+                "expense-date" to expense.createdAT.toString()
+            )
+            template.to("direct:update-expense").withBody(bodyMessage).send()
             return Response.ok().build()
         }
 
@@ -101,7 +110,8 @@ class ExpensesServiceImpl : ExpensesService {
      *
      */
     override fun findAll(reportID: Int, sortBy: String?): Response {
-        logger.debug("get all expenses for report $reportID sortby: $sortBy" )
+
+        logger.debug("get all expenses for report $reportID sortby: ${sortBy ?: "nosort" }" )
         //set default order statement
         var sortOrder = ExpenseSortBy.ID_ASC.orderStatement
 

@@ -30,6 +30,9 @@ spec:
       - name: database-service-name
         type: string
         default: sso-test-postgresql
+      - name: keycloak_url
+        type: string
+        #default: "http://sso-test-nm-demo.apps.ocp-cluster-1.rhlab.ch"
   steps:
     - name: mvn
       image:  "quay.io/quarkus/centos-quarkus-maven:$(inputs.params.VERSION)"
@@ -50,22 +53,25 @@ spec:
 
         echo $(env | grep POSTGRESQL)
 
-        if [ "x$SSO_TEST_SERVICE_PORT" = "x" ]; then
-                export KEYCLOAK_PORT=8080
-        else
-                export KEYCLOAK_PORT=$SSO_TEST_SERVICE_PORT
-        fi
 
+        echo
+        echo
 
-        if [ "x$SSO_TEST_SERVICE_HOST" = "x" ]; then
-          export KEYCLOAK_URL="http://sso-test:$KEYCLOAK_PORT/auth/realms/basic"
-        else
-          export KEYCLOAK_URL=http://$SSO_TEST_SERVICE_HOST:$KEYCLOAK_PORT/auth/realms/basic
-        fi
+        export KEYCLOAK_URL="$(inputs.params.keycloak_url)/auth/realms/basic"
 
         export KEYCLOAK_INTROSPECT_URL="$KEYCLOAK_URL/protocol/openid-connect/token/introspect"
         export KEYCLOAK_CLIENT_ID="backend"
         export KEYCLOAK_SECRET="16c3384b-725d-410d-8107-df3319165f70"
+
+        echo $KEYCLOAK_URL
+        echo $KEYCLOAK_INTROSPECT_URL
+
+        echo
+        echo
+
+        curl -v -XGET $KEYCLOAK_URL
+        echo
+        echo
 
         echo "repare maven local repo to speed up tasks"
         mkdir -vp $PWD/mvnrepo

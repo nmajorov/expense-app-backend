@@ -21,13 +21,18 @@ class Routes {
         from("direct:insert-expense")
                 .log("insert-expenses  body expense: \$simple{body}")
         .to("sql:INSERT INTO EXPENSES (DESCRIPTION, AMOUNT ,CREATED,FK_REPORT) " +
-                "VALUES (:#\$simple{body['expense'].description},:#\$simple{body['expense'].amount}," +
-                "to_date(:#\$simple{body['expense'].createdAT.toString},'YYYY-MM-DD'), "
+                "VALUES (:#\$simple{body['expense-description']},:#\$simple{body['expense-amount']}," +
+                "to_date(:#\$simple{body['expense-date']},'YYYY-MM-DD'), "
                 +":#\$simple{body['reportID']})")
+
         from("direct:select-one-expense").to("sql:select * from EXPENSES WHERE ID=:#\${body}").log("\${body}")
-        from("direct:update-expense").to("sql:UPDATE EXPENSES SET AMOUNT = :#\$simple{body.amount} , DESCRIPTION=:#\$simple{body.description}," +
-                "  CREATED = to_date(:#\$simple{body.createdAT.toString},'YYYY-MM-DD'),  TSTAMP = now()" +
-                " WHERE ID= :#\$simple{body.id}")
+
+        from("direct:update-expense").to("sql:UPDATE EXPENSES SET AMOUNT = :#\$simple{body['expense-amount']} , " +
+                "DESCRIPTION=:#\$simple{body['expense-description']}," +
+                "  CREATED = to_date(:#\$simple{body['expense-date']},'YYYY-MM-DD'), " +
+                " TSTAMP = now()" +
+                " WHERE ID= :#\$simple{body['expense-id']}")
+
         from("direct:delete-expense").to("sql:DELETE FROM EXPENSES  WHERE EXPENSES.ID =:#\${body}")
         //user operations
         // the user coming from sso so we have to save it before run other operations
@@ -49,15 +54,16 @@ class Routes {
                 .to("sql:DELETE FROM EXPENSES  WHERE FK_REPORT= :#\${body}")
                 .to("sql:DELETE FROM REPORT  WHERE report.id =:#\${body}")
 
-        from("direct:insert-report").log("report to insert \$simple{body['report']}").to("sql:INSERT INTO REPORT (NAME, CREATED,fk_app_user) " +
+        from("direct:insert-report").log("report to insert \$simple{body['report']}")
+             .to("sql:INSERT INTO REPORT (NAME, CREATED,fk_app_user) " +
               "VALUES ( :#\$simple{body['report']},(select  DATE(date) from CURRENT_TIMESTAMP as date)," +
-                " :#\$simple{body['user'].id})")
+                " :#\$simple{body['user-id']})")
 
-        from("direct:update-report").log("report to update: \$simple{body['report']}")
-                .to("sql:UPDATE REPORT SET NAME = :#\$simple{body['report'].name} " +
-                ", CREATED = to_date(:#\$simple{body['report'].createdAT.toString},'YYYY-MM-DD') , TSTAMP = now() " +
+        from("direct:update-report").log("report to update: \$simple{body['report-id']}")
+                .to("sql:UPDATE REPORT SET NAME = :#\$simple{body['report-name']} " +
+                ", CREATED = to_date(:#\$simple{body['report-date']},'YYYY-MM-DD') , TSTAMP = now() " +
                         "WHERE fk_app_user =" +
-                " :#\$simple{body['user'].id} AND ID = :#\$simple{body['report'].id}")
+                " :#\$simple{body['user']} AND ID = :#\$simple{body['report-id']}")
 
     }
 
