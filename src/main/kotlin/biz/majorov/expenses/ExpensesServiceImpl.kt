@@ -146,7 +146,7 @@ class ExpensesServiceImpl : ExpensesService {
         if (ctx.userPrincipal == null){
             return Response.status(Response.Status.UNAUTHORIZED).build()
         }
-        logger.debug("delete report with id: $id for user name: ${ctx.userPrincipal.name}")
+        logger.debug("delete expense  with id: $id for user name: ${ctx.userPrincipal.name}")
 
         this.camelContext.createFluentProducerTemplate().to("direct:delete-expense")
                 .withBody(id).send()

@@ -23,7 +23,7 @@ class Routes {
         .to("sql:INSERT INTO EXPENSES (DESCRIPTION, AMOUNT ,CREATED,FK_REPORT) " +
                 "VALUES (:#\$simple{body['expense-description']},:#\$simple{body['expense-amount']}," +
                 "to_date(:#\$simple{body['expense-date']},'YYYY-MM-DD'), "
-                +":#\$simple{body['reportID']})")
+                +":#\$simple{body['reportID']})").to("sql:commit")
 
         from("direct:select-one-expense").to("sql:select * from EXPENSES WHERE ID=:#\${body}").log("\${body}")
 
@@ -33,7 +33,7 @@ class Routes {
                 " TSTAMP = now()" +
                 " WHERE ID= :#\$simple{body['expense-id']}")
 
-        from("direct:delete-expense").to("sql:DELETE FROM EXPENSES  WHERE EXPENSES.ID =:#\${body}")
+        from("direct:delete-expense").to("sql:DELETE FROM EXPENSES  WHERE EXPENSES.ID =:#\${body}").to("sql:commit")
         //user operations
         // the user coming from sso so we have to save it before run other operations
         from("direct:select-user-by-name").to("sql:SELECT  ID, NAME  FROM  app_user WHERE NAME LIKE :#\${body}").log("rows: \${body}")
