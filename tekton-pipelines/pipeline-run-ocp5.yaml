@@ -7,7 +7,7 @@ spec:
     - name: git-revision
       value: "pg-fix"
     - name: keycloak_url
-      value: "sso-test-expenses.apps.ocp5.stormshift.coe.muc.redhat.com"
+      value: "http://sso-test-expenses.apps.ocp5.stormshift.coe.muc.redhat.com"
     - name: sso-service-name
       value: sso-test
 
