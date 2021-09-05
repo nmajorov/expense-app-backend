@@ -73,8 +73,10 @@ spec:
         echo
         echo
 
-        echo "repare maven local repo to speed up tasks"
+        echo "prepare maven local repo to speed up tasks"
         mkdir -vp $PWD/mvnrepo
+        echo "copy custom  settings.xml file to repo"
+        cp -v $PWD/settings.xml $PWD/mvnrepo
 
         echo "run GOALS: $(inputs.params.GOALS)"
 
