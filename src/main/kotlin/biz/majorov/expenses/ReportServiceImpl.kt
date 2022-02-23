@@ -151,9 +151,9 @@ class ReportServiceImpl: ReportService {
      */
     private fun convertRowToEntity(row: Map<String, Any>):Report {
         var report = Report()
-        report.id = row.get("id".toUpperCase()) as Int
-        report.name = (row.get("name".toUpperCase()) as String)
-        report.createdAT = (row.get("created".toUpperCase()) as Date).toLocalDate()
+        report.id = row.get("id".uppercase()) as Int
+        report.name = (row.get("name".uppercase()) as String)
+        report.createdAT = (row.get("created".uppercase()) as Date).toLocalDate()
 
         return report
     }

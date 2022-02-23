@@ -117,7 +117,7 @@ class ExpensesServiceImpl : ExpensesService {
 
         if (reportID == 0 || reportID < 0  ) return Response.status(Response.Status.BAD_REQUEST).build()
         //if sort order is not null set it
-        if (sortBy !=null) sortOrder = ExpenseSortBy.valueOf(sortBy.toUpperCase()).orderStatement
+        if (sortBy !=null) sortOrder = ExpenseSortBy.valueOf(sortBy.uppercase()).orderStatement
 
         //create sql
         val sql = "select * from EXPENSES  " +
@@ -160,14 +160,14 @@ class ExpensesServiceImpl : ExpensesService {
      */
     private fun convertRowToEntity(row:Map<String,Any>):Expense {
             val expense = Expense()
-            expense.id = row["id".toUpperCase()] as Int
+            expense.id = row["id".uppercase()] as Int
             expense.description = (row["description".toUpperCase()] as String)
-        when (val amountRaw = row["amount".toUpperCase()]){
+        when (val amountRaw = row["amount".uppercase()]){
                 is Double -> expense.amount = amountRaw
                 is BigDecimal -> expense.amount = amountRaw.toDouble()
             }
-            expense.createdAT = (row["created".toUpperCase()] as Date).toLocalDate()
-        when (val timestampRaw = row["tstamp".toUpperCase()]) {
+            expense.createdAT = (row["created".uppercase()] as Date).toLocalDate()
+        when (val timestampRaw = row["tstamp".uppercase()]) {
                 is Timestamp -> expense.tstamp = timestampRaw.toLocalDateTime().toLocalDate()
                 is Date -> expense.tstamp = timestampRaw.toLocalDate()
             }
