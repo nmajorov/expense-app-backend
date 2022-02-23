@@ -161,7 +161,7 @@ class ExpensesServiceImpl : ExpensesService {
     private fun convertRowToEntity(row:Map<String,Any>):Expense {
             val expense = Expense()
             expense.id = row["id".uppercase()] as Int
-            expense.description = (row["description".toUpperCase()] as String)
+            expense.description = (row["description".uppercase()] as String)
         when (val amountRaw = row["amount".uppercase()]){
                 is Double -> expense.amount = amountRaw
                 is BigDecimal -> expense.amount = amountRaw.toDouble()
