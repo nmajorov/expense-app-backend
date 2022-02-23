@@ -5,7 +5,7 @@ set -x
 #get current script dir
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-cd $SCRIPT_DIR
+cd "$SCRIPT_DIR" || exit
 
 echo "run with postgresql"
 export POSTGRESQL_SERVICE_NAME=127.0.0.1
@@ -15,6 +15,7 @@ export POSTGRESQL_PASSWORD=keycloak
 export POSTGRESQL_DATABASE=root
 
 
+# shellcheck disable=SC2005
 echo $(env | grep POSTGRESQL)
 
 # keycloak properties
@@ -38,15 +39,14 @@ run_gradle () {
     exit
 }
 
-    case "$1" in
-      gradle)
-          run_gradle
-          ;;
-      mvn)
-         run_maven
-          ;;
-      *)
-         run_maven
+case "$1" in
+  gradle)
+      run_gradle
       ;;
-     esac
-done
+  mvn)
+     run_maven
+      ;;
+  *)
+     run_maven
+  ;;
+esac
