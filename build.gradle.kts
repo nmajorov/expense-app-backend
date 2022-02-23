@@ -1,24 +1,35 @@
 import org.jetbrains.kotlin.backend.wasm.lower.excludeDeclarationsFromCodegen
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-plugins {
+val quarkusPlatformGroupId: String by project
+val quarkusPlatformArtifactId: String by project
+val quarkusPlatformVersion: String by project
+val quarkusKotlinVersion: String by project
+
+
+
+plugins{
     java
     id("io.quarkus")
-    kotlin("jvm") version "1.4.10"
+    kotlin("jvm")
 }
+
+
+
 
 repositories {
     mavenLocal()
     mavenCentral()
 }
 
-val quarkusPlatformGroupId: String by project
-val quarkusPlatformArtifactId: String by project
-val quarkusPlatformVersion: String by project
+
+
+
 
 dependencies {
 
     implementation(enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")  as ModuleDependency){
+    implementation(enforcedPlatform("${quarkusPlatformGroupId}:quarkus-camel-bom:${quarkusPlatformVersion}"))
 
         // exclude old kotlin 1.3.x implementation form classpath to avoid any issues
         // we use only latest at the moment kotlin jvm 1.4.x
@@ -28,8 +39,7 @@ dependencies {
         exclude(group="org.jetbrains.kotlin" , module="kotlin-stdlib")
     }
 
-    // use  latest at the moment kotlin jvm 1.4.x
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.4.10"){
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:${quarkusKotlinVersion}"){
         // exclude old kotlin 1.3.x dependencies
         exclude(group = "org.jetbrains.kotlin", module = "kotlin-stdlib-jdk7")
         exclude(group = "org.jetbrains.kotlin", module = "kotlin-stdlib-common")
@@ -55,8 +65,6 @@ dependencies {
 
     testImplementation("io.quarkus:quarkus-junit5")
     testImplementation("io.rest-assured:kotlin-extensions"){
-        // exclude old kotlin 1.3.x implementation form classpath to avoid any issues
-        // we use only latest at the moment kotlin jvm 1.4.x
         exclude(group = "org.jetbrains.kotlin", module = "kotlin-stdlib-jdk8")
         exclude(group = "org.jetbrains.kotlin", module = "kotlin-stdlib-jdk7")
         exclude(group = "org.jetbrains.kotlin", module = "kotlin-stdlib-common")

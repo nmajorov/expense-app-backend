@@ -27,6 +27,7 @@ export KEYCLOAK_SECRET="16c3384b-725d-410d-8107-df3319165f70"
 #export KEYCLOAK_SECRET="b530c9d1-45f0-4f30-87d2-471530534c4a"
 
 
+# shellcheck disable=SC2068
 $SCRIPT_DIR/target/expences-backend-quarkus-1.0.0-SNAPSHOT-runner $@
 
 
