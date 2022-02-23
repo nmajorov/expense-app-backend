@@ -46,10 +46,10 @@
       <groupId>org.jetbrains.kotlin</groupId>
       <artifactId>kotlin-stdlib</artifactId>
       <exclusions>
-      	<exclusion>
-      		<groupId>org.jetbrains.kotlin</groupId>
-      		<artifactId>kotlin-stdlib-common</artifactId>
-      	</exclusion>
+        <exclusion>
+          <artifactId>kotlin-stdlib-common</artifactId>
+          <groupId>org.jetbrains.kotlin</groupId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -57,28 +57,25 @@
       <artifactId>quarkus-junit5</artifactId>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>io.rest-assured</groupId>
       <artifactId>kotlin-extensions</artifactId>
+      <scope>test</scope>
       <exclusions>
         <exclusion>
-          <groupId>org.jetbrains.kotlin</groupId>
           <artifactId>kotlin-stdlib-jdk8</artifactId>
+          <groupId>org.jetbrains.kotlin</groupId>
         </exclusion>
         <exclusion>
-          <groupId>org.jetbrains.kotlin</groupId>
           <artifactId>kotlin-stdlib-jdk7</artifactId>
+          <groupId>org.jetbrains.kotlin</groupId>
         </exclusion>
         <exclusion>
-          <groupId>org.jetbrains.kotlin</groupId>
           <artifactId>kotlin-stdlib-common</artifactId>
+          <groupId>org.jetbrains.kotlin</groupId>
         </exclusion>
-
       </exclusions>
-      <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>org.apache.camel.quarkus</groupId>
       <artifactId>camel-quarkus-core</artifactId>
@@ -88,8 +85,8 @@
       <artifactId>camel-quarkus-kotlin</artifactId>
       <exclusions>
         <exclusion>
-          <groupId>org.jetbrains.kotlin</groupId>
           <artifactId>kotlin-stdlib-jdk8</artifactId>
+          <groupId>org.jetbrains.kotlin</groupId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -137,6 +134,10 @@
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-container-image-s2i</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-container-image-jib</artifactId>
     </dependency>
   </dependencies>
   <build>
