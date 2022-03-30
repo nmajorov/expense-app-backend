@@ -2,7 +2,7 @@
 apiVersion: tekton.dev/v1alpha1
 kind: Task
 metadata:
-  name: s2i-quarkus-maven
+  name: push-image
 spec:
   inputs:
    # resources:
@@ -26,52 +26,20 @@ spec:
       - name: image
         type: image
   steps:
-    - name: list-dir
-      image: quay.io/openshift-pipeline/s2i
-      workingdir: /workspace/source
-      command: [ "/bin/bash", "-c" ]
-      args:
-        - |-
-          ls -lisa
-          find /workspace/source
-          ls  /gen-source
-      volumeMounts:
-        - name: gen-source
-          mountPath: /gen-source
-
-    - name: generate
-      image: quay.io/openshift-pipeline/s2i
-      workingdir: /workspace/source
-      script: |
-        #!/usr/bin/env bash
-        # point maven repo to dir in workspace
-        # this will speed up maven native build
-
-        s2i build -e USE_MAVEN=true $(inputs.params.PATH_CONTEXT) \
-            -e MAVEN_OPTS=-Dmaven.repo.local="/tmp/src/mvnrepo" \
-            quay.io/quarkus/ubi-quarkus-native-s2i:$(inputs.params.VERSION) --as-dockerfile /gen-source/Dockerfile.gen
-
-      volumeMounts:
-        - name: gen-source
-          mountPath: /gen-source
-
-
     - name: build
       image: quay.io/buildah/stable
-      workingdir: /gen-source
+      workingdir: /workspace/source
       script: |
         #!/usr/bin/env bash
 
-        ls /workspace/source/mvnrepo
-
         echo "working dir:  $PWD"
-        cat /gen-source/Dockerfile.gen
+        cat src/main/docker/Dockerfile.native
 
         echo
         echo "run buildah "
         echo
         buildah bud  --tls-verify=$(inputs.params.TLSVERIFY) \
-          --layers -f /gen-source/Dockerfile.gen  -t  $(outputs.resources.image.url) .
+          --layers -f src/main/docker/Dockerfile.native -t  $(outputs.resources.image.url) .
 
       volumeMounts:
         - name: varlibcontainers
@@ -98,5 +66,3 @@ spec:
   workspaces:
     - name: input
       mountPath: /workspace/source
-
-
