@@ -35,7 +35,6 @@ spec:
   steps:
     - name: deploy-app
       image: quay.io/openshift/origin-cli:latest
-      workingDir: /workspace/source
       script: |
           #!/usr/bin/env bash
 
@@ -55,10 +54,3 @@ spec:
           echo "expose service"
           echo
           oc expose svc/expenses-backend-quarkus
-
-
-
-
-  workspaces:
-    - name: input
-      mountPath: /workspace/source

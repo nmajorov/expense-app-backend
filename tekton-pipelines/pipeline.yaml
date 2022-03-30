@@ -32,7 +32,7 @@ spec:
         - name: app-name
           value: $(params.sso-service-name)
       runAfter:
-        - fetch-repository 
+        - fetch-repository
       workspaces:
         - name: input
           workspace: shared-workspace
@@ -71,9 +71,23 @@ spec:
 
     - name: build-quarkus-native
       taskRef:
-        name: s2i-quarkus-maven
+        name: backend-mvn
+      params:
+        - name: GOALS
+          value: "clean package -Pnative -e -B -DskipTests -Dmaven.javadoc.skip=true -Dmaven.site.skip=true -Dmaven.source.skip=true -Djacoco.skip=true -Dcheckstyle.skip=true -Dfindbugs.skip=true -Dpmd.skip=true -Dfabric8.skip=true"
+        - name: keycloak_url
+          value: "$(params.keycloak_url)"
       runAfter:
         - test
+      workspaces:
+        - name: input
+          workspace: shared-workspace
+
+    - name: push-image
+      taskRef:
+        name: push-image
+      runAfter:
+        - build-quarkus-native
       resources:
         outputs:
           - name: image
@@ -84,13 +98,9 @@ spec:
 
     - name: deploy-quarkus-native
       taskRef:
-        name:  deploy-native-backend
+        name: deploy-native-backend
       runAfter:
-          - build-quarkus-native
+        - push-image
       params:
         - name: keycloak_url
           value: "$(params.keycloak_url)"
-      workspaces:
-        - name: input
-          workspace: shared-workspace
-

@@ -75,6 +75,7 @@ spec:
         #!/usr/bin/env bash
         # check for 3 minute if container is ready
 
+        sleep 1m
         containerReady="False"
 
         for i in {1..3}

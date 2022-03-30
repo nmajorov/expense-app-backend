@@ -1,10 +1,24 @@
-#!/usr/bin/env bash 
+#!/usr/bin/env bash
 
-PROJECT=$(oc  project -q)
+
+
+
+PROJECT=nm-demo
+
+oc new-project $PROJECT
 
 DIRNAME=`dirname "$0"`
 
 echo "deploy pipelines in project $PROJECT"
+
+
+echo "add policy for pipeline"
+# oc create serviceaccount pipeline
+# oc adm policy add-scc-to-user privileged -z pipeline
+# oc adm policy add-role-to-user edit -z pipeline
+
+oc policy add-role-to-user admin system:serviceaccount:$PROJECT:pipeline -n $PROJECT
+
 
 
 echo "delete existing pipelines and tasks first if exists in project already"
@@ -14,6 +28,8 @@ echo "delete existing pipelines and tasks first if exists in project already"
 oc delete pipelineresources.tekton.dev backend-image --ignore-not-found=true
 
 oc delete tasks s2i-quarkus-maven deploy-test-containers backend-mvn deploy-sso clean-up-backend deploy-native-backend --ignore-not-found
+
+oc delete tasks push-image --ignore-not-found
 
 oc delete pipelines.tekton.dev build-and-deploy-backend --ignore-not-found=true
 
@@ -31,5 +47,3 @@ oc create -f tasks/
 
 echo "deploy pipeline"
 oc create -f pipeline.yaml
-
-
