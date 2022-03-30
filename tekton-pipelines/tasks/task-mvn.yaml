@@ -80,7 +80,7 @@ spec:
 
         echo "run GOALS: $(inputs.params.GOALS)"
 
-        $PWD/mvnw  -Dmaven.repo.local="$PWD/mvnrepo"  $(inputs.params.GOALS)
+        mvn  -Dmaven.repo.local="$PWD/mvnrepo"  $(inputs.params.GOALS)
 
 
   workspaces:
