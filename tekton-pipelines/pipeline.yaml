@@ -83,7 +83,7 @@ spec:
         - name: input
           workspace: shared-workspace
 
-    - name: push-imagess
+    - name: push-image
       taskRef:
         name: push-image
       runAfter:
@@ -104,4 +104,3 @@ spec:
       params:
         - name: keycloak_url
           value: "$(params.keycloak_url)"
-      
