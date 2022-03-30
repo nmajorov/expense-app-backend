@@ -100,7 +100,7 @@ spec:
       taskRef:
         name: deploy-native-backend
       runAfter:
-        - push-imagess
+        - push-image
       params:
         - name: keycloak_url
           value: "$(params.keycloak_url)"
