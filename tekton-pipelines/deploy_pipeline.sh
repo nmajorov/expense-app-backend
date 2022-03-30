@@ -1,5 +1,7 @@
 #!/usr/bin/env bash 
 
+oc new-project nm-demo
+
 PROJECT=$(oc  project -q)
 
 DIRNAME=`dirname "$0"`
