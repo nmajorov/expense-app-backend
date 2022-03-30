@@ -1,12 +1,20 @@
-#!/usr/bin/env bash 
+#!/usr/bin/env bash
 
-oc new-project nm-demo
 
-PROJECT=$(oc  project -q)
+
+
+PROJECT=nm-demo
+
+oc new-project $PROJECT
 
 DIRNAME=`dirname "$0"`
 
 echo "deploy pipelines in project $PROJECT"
+
+
+echo "add policy for pipeline"
+oc policy add-role-to-user admin system:serviceaccount:$PROJECT:pipeline -n $PROJECT
+
 
 
 echo "delete existing pipelines and tasks first if exists in project already"
@@ -33,5 +41,3 @@ oc create -f tasks/
 
 echo "deploy pipeline"
 oc create -f pipeline.yaml
-
-
