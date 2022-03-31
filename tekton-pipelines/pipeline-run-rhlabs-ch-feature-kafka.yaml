@@ -8,7 +8,7 @@ spec:
     - name: git-revision
       value: "feature/kafka"
     - name: keycloak_url
-      value: "http://sso-test-nm-demo.apps.ocp-cluster-1.rhlab.ch"
+      value: "http://sso-test-nm-demo.apps.ocp001.rhlab.ch"
   pipelineRef:
     name: build-and-deploy-backend
   workspaces:
