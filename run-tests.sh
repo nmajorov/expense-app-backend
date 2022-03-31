@@ -26,7 +26,7 @@ export KEYCLOAK_CLIENT_ID="backend"
 export KEYCLOAK_SECRET="16c3384b-725d-410d-8107-df3319165f70"
 
 run_maven () {
-$SCRIPT_DIR/mvnw    clean test
+    mvn    clean test
 
 }
 

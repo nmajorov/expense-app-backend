@@ -67,6 +67,8 @@ spec:
           -p SSO_TRUSTSTORE_PASSWORD="mykeystorepass" \
           -p SSO_TRUSTSTORE_SECRET="sso-app-secret"
 
+          #let sso come up for tests
+          sleep 1m
 
 
     - name: check-if-database-is-ready
@@ -75,7 +77,7 @@ spec:
         #!/usr/bin/env bash
         # check for 3 minute if container is ready
 
-        sleep 1m
+        sleep 2m
         containerReady="False"
 
         for i in {1..3}
