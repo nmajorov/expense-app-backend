@@ -113,5 +113,5 @@ run_operator_install(){
 #deploy_kubeconfig_configmap
 deploy_pvc
 deploy_ansible_runner_task
-#clone_directory
+clone_directory
 run_operator_install
