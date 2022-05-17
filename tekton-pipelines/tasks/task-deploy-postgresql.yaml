@@ -1,0 +1,95 @@
+---
+
+# deploy SSO and postgresql database
+# expenses app server and client using SSO for users authorisation/authentications
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: deploy-postgresql
+spec:
+  inputs:
+    params:
+
+      - name: postgesql-user
+        type: string
+        description: login for postgresql database
+        default: keycloak
+
+      - name: postgresql-password
+        type: string
+        description: password for postgresql database
+        default: keycloak
+
+      - name: postresql-database
+        type: string
+        default: root
+        description: default database
+
+      - name: app-name
+        type: string
+        default: sso-test
+
+
+  steps:
+    - name: deploy-app
+      image: quay.io/openshift/origin-cli:latest
+      script: |
+          #!/usr/bin/env bash
+          #oc policy add-role-to-user view system:serviceaccount:$(oc project -q):default
+          echo "create secret"
+
+          oc new-app --name=$(inputs.params.app-name) --template openshift/postgresql-persistent \
+          --param POSTGRESQL_USER=$(inputs.params.postgresql-password) \
+          --param POSTGRESQL_PASSWORD=$(inputs.params.postgesql-user) \
+          --param POSTGRESQL_DATABASE=keycloak
+          # DATABASE_SERVICE_NAME
+
+          #let sso come up for tests
+          sleep 1m
+
+
+    - name: check-if-database-is-ready
+      image: quay.io/openshift/origin-cli:latest
+      script: |
+        #!/usr/bin/env bash
+        # check for 3 minute if container is ready
+
+        sleep 2m
+        containerReady="False"
+
+        for i in {1..3}
+        do
+          response=$(oc get pods --selector application=$(inputs.params.app-name),component=database -o=jsonpath="{.items['.status'].conditions[?(@.type=='Ready')].status}")
+
+          echo " database deployment is ready: $response "
+
+          if [[ "$response" == "True" ]]
+           then
+              containerReady="True"
+              break
+           else
+              sleep 1m
+          fi
+
+        done
+
+        if [[ "$containerReady" == "False" ]]
+        then
+          exit 1
+        fi
+
+    - name: provision-database
+      image: registry.redhat.io/rhel8/postgresql-10
+      workingDir: /workspace/source
+      command: ["/bin/bash", "-c"]
+      args:
+        - |-
+          ls -lisa
+          echo "import test sql data"
+          PGPASSWORD=$(inputs.params.postgresql-password) psql --host=$(inputs.params.app-name)-postgresql \
+            --username=$(inputs.params.postgesql-user) \
+            --dbname=$(inputs.params.postresql-database) < ./keycloak/keycloak_export.sql
+
+  workspaces:
+    - name: input
+      mountPath: /workspace/source
