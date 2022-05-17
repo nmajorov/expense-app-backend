@@ -61,12 +61,7 @@ spec:
 
     - name: run-playbook
       image: docker.io/nmajorov/nm-ansible-runner:1.0
-      env:
-        - name: KUBECONF
-          valueFrom:
-            configMapKeyRef:
-              name: kubeconfig
-              key: config
+      
 
       command: ['entrypoint']
       args:
