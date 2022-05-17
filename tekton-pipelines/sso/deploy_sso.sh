@@ -87,7 +87,31 @@ clone_directory(){
 }
 
 
+run_operator_install(){
+
+  echo "step run sso operator install"
+  if [ -z "$SSO_NAMESPACE" ]
+  then
+     SSO_NAMESPACE="nm-sso"
+  fi
+  echo
+  echo "usin SSO_NAMESPACE: $SSO_NAMESPACE"
+  echo
+
+  #--serviceaccount ansible-deployer-account \
+
+  tkn task start ansible-runner \
+  --param=project-dir="tekton-pipelines/sso/ansible" \
+  --param=args="-p,sso_operator_install.yaml,--role-vars,sso_operator_namespace=$SSO_NAMESPACE "\
+  --workspace=name=runner-dir,claimName=ansible-playbooks \
+  --showlog \
+  --use-param-defaults
+
+}
+
+
 deploy_kubeconfig_configmap
 deploy_pvc
 deploy_ansible_runner_task
-clone_directory
+#clone_directory
+run_operator_install
