@@ -10,7 +10,7 @@ deploy_kubeconfig_configmap(){
   echo "current local dir $DIRNAME"
   echo "current kubernetes $CURRENT_NAMESPACE"
   echo
-  if  kubectl get configmaps | grep -q kubeconfig > 0
+  if  kubectl get configmaps | grep -q kubeconfig
   then
     echo "found configmaps kubeconfig"
     echo "... skip steps"
@@ -30,7 +30,7 @@ deploy_pvc(){
   echo "current kubernetes $(kubectl config view --minify | grep namespace:)"
   echo
 
-  if kubectl get pvc  | grep -q ansible-playbooks > 0
+  if kubectl get pvc  | grep -q ansible-playbooks
   then
       echo "found pvc ansible-playbooks"
       echo "... skip steps"
@@ -50,7 +50,7 @@ deploy_ansible_runner_task(){
     echo "current local dir $DIRNAME"
     echo "current kubernetes $(kubectl config view --minify | grep namespace:)"
     echo
-    if tkn tasks list | grep -q ansible-runner > 0
+    if tkn tasks list | grep -q ansible-runner
     then
       echo "found tekton task ansible-runner"
       echo ".... skip step"
