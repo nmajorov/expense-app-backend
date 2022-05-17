@@ -2,6 +2,7 @@
 
 DIRNAME=`dirname "$0"`
 CURRENT_NAMESPACE="$(kubectl config view --minify | grep namespace:)"
+BRANCH="$1"
 
 deploy_kubeconfig_configmap(){
 
@@ -49,10 +50,37 @@ deploy_ansible_runner_task(){
     echo "current local dir $DIRNAME"
     echo "current kubernetes $(kubectl config view --minify | grep namespace:)"
     echo
+    if tkn tasks list | grep -q ansible-runner > 0
+    then
+      echo "found tekton task ansible-runner"
+      echo ".... skip step"
+    else
+      kubectl apply -f $DIRNAME/ansible-runner.yaml
+    fi
+    echo
+}
 
+clone_directory(){
+  echo "step checkout git "
+  if [ -z "$BRANCH" ]
+  then
+     BRANCH="main"
+  fi
+  echo
+  echo "using BRANCH: $BRANCH"
+  echo
 
+  tkn clustertask start git-clone \
+  --workspace=name=output \
+  --param=url=https://github.com/nmajorov/expense-app-backend-quarkus.git \
+  --param=refspec=branch \
+  --param=revision=$BRANCH \
+  --param=deleteExisting=true \
+  --showlog
 }
 
 
 deploy_kubeconfig_configmap
 deploy_pvc
+deploy_ansible_runner_task
+clone_directory
