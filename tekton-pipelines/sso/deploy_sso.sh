@@ -61,6 +61,7 @@ deploy_ansible_runner_task(){
 }
 
 clone_directory(){
+
   echo "step checkout git "
   if [ -z "$BRANCH" ]
   then
@@ -71,12 +72,18 @@ clone_directory(){
   echo
 
   tkn clustertask start git-clone \
-  --workspace=name=output \
+  --workspace=name=output,claimName=ansible-playbooks\
   --param=url=https://github.com/nmajorov/expense-app-backend-quarkus.git \
-  --param=refspec=branch \
+  --param=refspec="" \
   --param=revision=$BRANCH \
+  --param=submodules=true \
+  --param=depth=1 \
+  --param=sslVerify=true \
+  --param=verbose=true \
   --param=deleteExisting=true \
-  --showlog
+  --showlog \
+  --use-param-defaults
+
 }
 
 
