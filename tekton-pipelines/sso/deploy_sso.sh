@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 
 DIRNAME=`dirname "$0"`
-CURRENT_NAMESPACE="$(kubectl config view --minify | grep namespace:)"
+CURRENT_NAMESPACE="$(kubectl config view --minify --output jsonpath={..namespace})"
 BRANCH="$1"
 
 deploy_kubeconfig_configmap(){
@@ -27,7 +27,7 @@ deploy_pvc(){
 
   echo "step deploy pvc"
   echo "current local dir $DIRNAME"
-  echo "current kubernetes $(kubectl config view --minify | grep namespace:)"
+  echo "current kubernetes  $(kubectl config view --minify | grep namespace:)"
   echo
 
   if kubectl get pvc  | grep -q ansible-playbooks
@@ -92,7 +92,7 @@ run_operator_install(){
   echo "step run sso operator install"
   if [ -z "$SSO_NAMESPACE" ]
   then
-     SSO_NAMESPACE="nm-sso"
+     SSO_NAMESPACE="$CURRENT_NAMESPACE"
   fi
   echo
   echo "usin SSO_NAMESPACE: $SSO_NAMESPACE"
