@@ -5,7 +5,8 @@
   connection: local
   become: false
   vars:
-      kubeconfig: "{{ lookup('env','HOME') }}/.kube/config"
+      # default will be $HOME/.kube/config
+      kubeconfig: "{{ lookup('env','KUBECONFIG') }}"
       sso_operator_namespace: "nm-sso"
      
       #      htpasswd:
