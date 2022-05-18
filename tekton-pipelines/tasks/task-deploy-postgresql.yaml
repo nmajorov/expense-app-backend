@@ -66,18 +66,28 @@ spec:
             --param POSTGRESQL_DATABASE=keycloak \
             --param DATABASE_SERVICE_NAME=$(inputs.params.app-name) 
 
-            #in case of not progressing 
-            if oc rollout status dc/$(inputs.params.app-name)  | grep -q "rolled out"
+
+            ROLLOUT_OK=true
+
+            if oc rollout status dc/$(inputs.params.app-name)  | grep -q "failed progressing"
             then 
               echo "rollout is ok"
             else 
               echo "rollout is not ok"
+              ROLLOUT_OK=false
               echo
-              oc rollout resume dc/$(inputs.params.app-name)
+            fi
+
+            if [ "$ROLLOUT_OK" = "false" ] ; then
+              oc rollout latest dc/$(inputs.params.app-name)
             fi
 
           }
-    
+   
+
+          ##############################
+          # main programm starts here  #
+          # ############################
           if [ "${PARAM_DELETE_EXISTING}" = "true" ] ; then
             clean
           fi
