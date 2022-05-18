@@ -83,7 +83,7 @@ spec:
 
         containerReady="False"
 
-        for i in {1..50}
+        for i in {1..10}
         do
           response=$(oc get pods --selector name=$(inputs.params.app-name) -o=jsonpath="{.items['.status'].conditions[?(@.type=='Ready')].status}")
 
@@ -93,6 +93,8 @@ spec:
            then
               containerReady="True"
               break
+           else
+              sleep 1m
           fi
 
         done
