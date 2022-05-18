@@ -69,14 +69,22 @@ spec:
 
             ROLLOUT_OK=true
 
+            oc label dc/$(inputs.params.app-name)  app.kubernetes.io/name=postgresql --overwrite
+            
+            
+            #wait and let container starts
+            sleep 1m
+
             if oc rollout status dc/$(inputs.params.app-name)  | grep -q "failed progressing"
             then 
-              echo "rollout is ok"
-            else 
-              echo "rollout is not ok"
+              echo "rollout is failed"
               ROLLOUT_OK=false
               echo
             fi
+
+            echo
+            echo "ROLLOUT_OK=$ROLLOUT_OK"
+            echo
 
             if [ "$ROLLOUT_OK" = "false" ] ; then
               echo "start rollout latest"
