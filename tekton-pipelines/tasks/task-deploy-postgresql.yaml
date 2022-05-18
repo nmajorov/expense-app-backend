@@ -67,7 +67,14 @@ spec:
             --param DATABASE_SERVICE_NAME=$(inputs.params.app-name) 
 
             #in case of not progressing 
-            oc rollout resume dc/$(inputs.params.app-name)
+            if oc rollout status dc/$(inputs.params.app-name)  | grep -q "rolled out"
+            then 
+              echo "rollout is ok"
+            else 
+              echo "rollout is not ok"
+              echo
+              oc rollout resume dc/$(inputs.params.app-name)
+            fi
 
           }
     
