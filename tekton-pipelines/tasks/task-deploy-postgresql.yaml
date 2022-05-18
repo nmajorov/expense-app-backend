@@ -63,7 +63,7 @@ spec:
             oc new-app --name=$(inputs.params.app-name) --template openshift/postgresql-persistent \
             --param POSTGRESQL_USER=$(inputs.params.postgresql-password) \
             --param POSTGRESQL_PASSWORD=$(inputs.params.postgesql-user) \
-            --param POSTGRESQL_DATABASE=keycloak \
+            --param POSTGRESQL_DATABASE=$(inputs.params.postresql-database) \
             --param DATABASE_SERVICE_NAME=$(inputs.params.app-name) 
 
 
@@ -79,6 +79,7 @@ spec:
             fi
 
             if [ "$ROLLOUT_OK" = "false" ] ; then
+              echo "start rollout latest"
               oc rollout latest dc/$(inputs.params.app-name)
             fi
 
