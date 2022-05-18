@@ -17,11 +17,12 @@ install_task_deploy_postgresql(){
   if tkn t list | grep -q deploy-postgresql 
   then
     echo "found task installed"
-    echo "... skip steps"
+    echo "... delete it first"
+    tkn t delete deploy-postgresql -f
     echo
-  else
-    kubectl  apply -f $DIRNAME/task-deploy-postgresql.yaml
   fi
+
+    kubectl  apply -f $DIRNAME/tasks/task-deploy-postgresql.yaml
 
   echo
 }
@@ -87,7 +88,7 @@ run_postgresql_install(){
 
   tkn task start deploy-postgresql \
   \
-  --workspace=name=input,claimName=source-pvc \
+  --workspace=name=output,claimName=source-pvc \
   --showlog \
   --use-param-defaults
 
