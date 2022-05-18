@@ -27,7 +27,7 @@ spec:
 
       - name: app-name
         type: string
-        default: sso-test
+        default: expense-database
 
 
   steps:
@@ -91,5 +91,5 @@ spec:
             --dbname=$(inputs.params.postresql-database) < ./keycloak/keycloak_export.sql
 
   workspaces:
-    - name: input
+    - name: output
       mountPath: /workspace/source
