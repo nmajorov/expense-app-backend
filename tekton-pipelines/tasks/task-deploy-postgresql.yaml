@@ -65,6 +65,10 @@ spec:
             --param POSTGRESQL_PASSWORD=$(inputs.params.postgesql-user) \
             --param POSTGRESQL_DATABASE=keycloak \
             --param DATABASE_SERVICE_NAME=$(inputs.params.app-name) 
+
+            #in case of not progressing 
+            oc rollout resume dc/$(inputs.params.app-name)
+
           }
     
           if [ "${PARAM_DELETE_EXISTING}" = "true" ] ; then
@@ -112,7 +116,7 @@ spec:
         - |-
           ls -lisa
           echo "import test sql data"
-          PGPASSWORD=$(inputs.params.postgresql-password) psql --host=$(inputs.params.app-name)-postgresql \
+          PGPASSWORD=$(inputs.params.postgresql-password) psql --host=$(inputs.params.app-name) \
             --username=$(inputs.params.postgesql-user) \
             --dbname=$(inputs.params.postresql-database) < ./keycloak/keycloak_export.sql
 
