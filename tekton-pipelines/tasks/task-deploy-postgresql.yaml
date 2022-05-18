@@ -46,14 +46,20 @@ spec:
           echo "create database"
           
           clean(){
+            echo "============================="
             echo "run clean previous deployment"
+            echo "============================="
             oc delete all --selector app=$(inputs.params.app-name)  --ignore-not-found=true
             oc delete pvc --selector app=$(inputs.params.app-name)  --ignore-not-found=true
+            oc delete secrets   --selector app=$(inputs.params.app-name)  --ignore-not-found=true
           }
 
           deploy(){
             echo
+
+            echo "============================="
             echo "run database deployment"
+            echo "============================="
             oc new-app --name=$(inputs.params.app-name) --template openshift/postgresql-persistent \
             --param POSTGRESQL_USER=$(inputs.params.postgresql-password) \
             --param POSTGRESQL_PASSWORD=$(inputs.params.postgesql-user) \
