@@ -1,10 +1,11 @@
 #!/usr/bin/env zsh
+#test task to deploy postgresql 
 
 DIRNAME=`dirname "$0"`
 CURRENT_NAMESPACE="$(kubectl config view --minify --output jsonpath={..namespace})"
 BRANCH="$1"
 
-# usage test_postgres <>
+# usage test_postgres <BRANCH_NAME>
 
 
 install_task_deploy_postgresql(){
@@ -44,6 +45,7 @@ deploy_pvc(){
   fi
   echo
 
+}
 
 
 clone_directory(){
@@ -97,5 +99,4 @@ run_postgresql_install(){
 install_task_deploy_postgresql
 deploy_pvc
 clone_directory
-
-run_posgresql_install
+run_postgresql_install
