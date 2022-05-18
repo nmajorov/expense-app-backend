@@ -83,9 +83,9 @@ spec:
 
         containerReady="False"
 
-        for i in {1..30}
+        for i in {1..50}
         do
-          response=$(oc get pods --selector deploymentconfig=postgresql,name=posrgresql -o=jsonpath="{.items['.status'].conditions[?(@.type=='Ready')].status}")
+          response=$(oc get pods --selector name=$(inputs.params.app-name) -o=jsonpath="{.items['.status'].conditions[?(@.type=='Ready')].status}")
 
           echo " database deployment is ready: $response "
 
