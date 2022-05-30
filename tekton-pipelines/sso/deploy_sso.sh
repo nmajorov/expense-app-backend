@@ -102,7 +102,7 @@ run_operator_install(){
 
   tkn task start ansible-runner \
   --param=project-dir="tekton-pipelines/sso/ansible" \
-  --param=args="-p,sso_operator_install.yaml,--role-vars,sso_operator_namespace=$SSO_NAMESPACE "\
+  --param=args="-p,sso_operator_install.yaml,--cmdline,-e sso_operator_namespace=$SSO_NAMESPACE "\
   --workspace=name=runner-dir,claimName=ansible-playbooks \
   --showlog \
   --use-param-defaults
