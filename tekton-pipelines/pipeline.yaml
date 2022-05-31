@@ -25,17 +25,6 @@ spec:
     - name: backend-image
       type: image
   tasks:
-    - name: deploy-sso
-      taskRef:
-        name: deploy-sso
-      params:
-        - name: app-name
-          value: $(params.sso-service-name)
-      runAfter:
-        - fetch-repository
-      workspaces:
-        - name: input
-          workspace: shared-workspace
     - name: clean-workspace
       taskRef:
         name: clean-up-backend
