@@ -28,7 +28,7 @@ spec:
       - name: app-name
         type: string
         default: expense-database
-      
+
       - name: deleteExisting
         description: clean existing deployment
         type: string
@@ -44,7 +44,7 @@ spec:
           #!/usr/bin/env bash
           #oc policy add-role-to-user view system:serviceaccount:$(oc project -q):default
           echo "create database"
-          
+
           clean(){
             echo "============================="
             echo "run clean previous deployment"
@@ -64,19 +64,19 @@ spec:
             --param POSTGRESQL_USER=$(inputs.params.postgresql-password) \
             --param POSTGRESQL_PASSWORD=$(inputs.params.postgesql-user) \
             --param POSTGRESQL_DATABASE=$(inputs.params.postresql-database) \
-            --param DATABASE_SERVICE_NAME=$(inputs.params.app-name) 
+            --param DATABASE_SERVICE_NAME=$(inputs.params.app-name)
 
 
             ROLLOUT_OK=true
 
             oc label dc/$(inputs.params.app-name)  app.kubernetes.io/name=postgresql --overwrite
-            
-            
+
+
             #wait and let container starts
             sleep 1m
 
             if oc rollout status dc/$(inputs.params.app-name)  | grep -q "failed progressing"
-            then 
+            then
               echo "rollout is failed"
               ROLLOUT_OK=false
               echo
@@ -92,7 +92,7 @@ spec:
             fi
 
           }
-   
+
 
           ##############################
           # main programm starts here  #
@@ -100,7 +100,7 @@ spec:
           if [ "${PARAM_DELETE_EXISTING}" = "true" ] ; then
             clean
           fi
-          
+
           deploy
 
 

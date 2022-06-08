@@ -1,3 +1,0 @@
-#ignore navigator output files
-sso*.json
-ansible-navigator.log
