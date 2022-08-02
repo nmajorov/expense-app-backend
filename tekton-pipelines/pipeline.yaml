@@ -54,8 +54,6 @@ spec:
       params:
         - name: keycloak_url
           value: "http://$(params.sso-service-name):8080"
-      runAfter:
-        - deploy-sso
       workspaces:
         - name: input
           workspace: shared-workspace
