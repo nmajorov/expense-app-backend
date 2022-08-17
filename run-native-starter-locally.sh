@@ -7,7 +7,17 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 cd $SCRIPT_DIR
 
-echo "run with postgresql profile"
+SSO_REALM_URL="http://localhost:7080/auth/realms/basic"
+
+if [ "X$1" == "X" ] ; then
+     echo
+else 
+     SSO_REALM_URL=$1
+fi
+
+
+echo "run with postgresql on localhost"
+
 export POSTGRESQL_SERVICE_NAME=127.0.0.1
 
 
@@ -20,7 +30,7 @@ export POSTGRESQL_DATABASE=root
 
 
 # keycloak properties
-export KEYCLOAK_URL="http://localhost:7080/auth/realms/basic"
+export KEYCLOAK_URL="${SSO_REALM_URL}"
 export KEYCLOAK_INTROSPECT_URL="$KEYCLOAK_URL/protocol/openid-connect/token/introspect"
 export KEYCLOAK_CLIENT_ID="backend"
 export KEYCLOAK_SECRET="16c3384b-725d-410d-8107-df3319165f70"

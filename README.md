@@ -27,6 +27,8 @@ The application is now runnable using `java -jar target/code-with-quarkus-1.0.0-
 
 ## Creating a native executable
 
+**At the moment it's only working with madrel or graalvm version 21.3!!!**
+
 You can create a native executable using: `./mvnw package -Pnative`.
 
 Or, if you don't have GraalVM installed, you can run the native executable build in a container using: `./mvnw package -Pnative -Dquarkus.native.container-build=true`.
