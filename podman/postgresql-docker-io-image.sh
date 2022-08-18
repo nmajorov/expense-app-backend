@@ -41,7 +41,7 @@ uid=$(id -u)
 
 echo "run container as user $uid"
 echo "using docker image: $IMAGE"
-    CMD="podman run -it   --name  postgresql-database \
+    CMD="podman run -d   --name  postgresql-database \
      -e POSTGRES_USER=$POSTGRESQL_USER -e POSTGRES_PASSWORD=$POSTGRESQL_PASSWORD \
      -e POSTGRES_DB=$POSTGRESQL_DATABASE \
      -p 127.0.0.1:5432:5432 \
