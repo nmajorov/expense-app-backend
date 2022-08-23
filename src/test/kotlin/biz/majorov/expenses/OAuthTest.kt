@@ -1,5 +1,6 @@
 package biz.majorov.expenses;
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.restassured.parsing.Parser
 import org.junit.jupiter.api.BeforeEach
 import java.math.BigInteger
@@ -12,7 +13,11 @@ import javax.net.ssl.HttpsURLConnection
 
 
 /**
- *  This class has a  common functions for oauth2 flow scenarios
+ *  This class has a  common functions for oauth2 flow scenarios tests
+ *  Quarkus always set all restassured tests to default address  [:1]:8081
+ *  I need to get access_token from remote urls, so I need  a call  external sso separately
+ *  without using reassured.
+ *  @author Nikolaj Majorov
  */
 open class OAuthTest {
     val defaultParser = Parser.JSON
@@ -21,24 +26,25 @@ open class OAuthTest {
         var TOKEN = ""
     }
 
+
+    /**
+     * create a parameters for a form encoded transfer
+     */
     fun ofMimeMultipartData(data: Map<String, String>): HttpRequest.BodyPublisher {
-        val boundary = BigInteger(256, Random()).toString()
-
         var byteArrays = byteArrayOf()
-        var separator = ("--" + boundary + "\r\nContent-Disposition: form-data; name=")
-            .toByteArray(Charsets.UTF_8);
+        var separator = ("&").toByteArray(Charsets.UTF_8);
+
+        var el = data.size
         for ((key, value) in data) {
-            byteArrays += (separator);
+            byteArrays += ("$key=$value").toByteArray(Charsets.UTF_8)
 
+            el --
 
-            byteArrays += (
-                    ("\"" + key + "\"\r\n\r\n" + value + "\r\n")
-                        .toByteArray(Charsets.UTF_8)
-                    );
+            //don't append separator to last element
+            if (el >0 ) {
+                byteArrays += separator;
+            }
         }
-        //HttpsURLConnection.setDefaultHostnameVerifier { hostname, session -> true }
-
-        byteArrays += "--$boundary--\r\n".toByteArray(Charsets.UTF_8);
         return HttpRequest.BodyPublishers.ofByteArrays(mutableListOf(byteArrays).asIterable());
     }
 
@@ -60,7 +66,8 @@ open class OAuthTest {
         var parmetersMap = mapOf<String, String>(
             "client_id" to clientID,
             "username" to user,
-            "password" to password
+            "password" to password,
+            "grant_type" to "password"
         )
         //.formParam("username", user))
 
@@ -72,21 +79,17 @@ open class OAuthTest {
             .build()
 
         val response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        println("Get body: " + response.body())
+        if (response.statusCode() !=200) {
+            println("body: " + response.body())
+            throw Throwable ("can't obtain access_token from sso")
+        }
 
 
+        val json = ObjectMapper()
+        val jsonParsed = json.readerFor(Expense::class.java).readTree(response.body().toString())
 
-        /**
-        val response =
-        RestAssured.given().formParam("grant_type", "password")
-        .formParam("client_id", clientID)
-        .formParam("username", user)
-        .formParam("password", password).`when`().post(ssoURL)
-        .`as`(HashMap<String?, String?>()::class.java)
-         **/
-
-        //TOKEN = response["access_token"].toString()
-        // println("\n access_token now: ${TOKEN}")
+        TOKEN = jsonParsed["access_token"].toString()
+        println("\n using  access_token: ${TOKEN}")
 
 
     }
