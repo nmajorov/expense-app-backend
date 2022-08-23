@@ -71,7 +71,7 @@ run_test(){
               -e KEYCLOAK_SECRET=${KEYCLOAK_SECRET} \
       --annotation run.oci.keep_original_groups=1 \
        -v ${SCRIPT_DIR}:/project:Z   \
-     quay.io/nmajorov/centos-quarkus-maven:21.3 mvn -Dmaven.repo.local=/project/repo clean test"
+     quay.io/nmajorov/centos-quarkus-maven:21.3.nm001-jdk11 mvn -Dmaven.repo.local=/project/repo clean test"
 
   echo  $CMD
   $CMD

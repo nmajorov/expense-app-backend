@@ -17,7 +17,7 @@ class ReportApiTest : OAuthTest() {
     fun `test get all report for user`() {
         println("${object {}.javaClass.enclosingMethod.name} ")
         println("reports should be get for  specific  user ")
-        print("use token:" + OAuthTest.TOKEN)
+        println("use token:" + OAuthTest.TOKEN)
         given().header("Authorization","Bearer " + OAuthTest.TOKEN)
                 .`when`().get("/reports")
                 .then()
