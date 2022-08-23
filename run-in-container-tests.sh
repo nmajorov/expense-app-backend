@@ -19,29 +19,36 @@ export KEYCLOAK_INTROSPECT_URL="$KEYCLOAK_URL/protocol/openid-connect/token/intr
 export KEYCLOAK_CLIENT_ID="backend"
 export KEYCLOAK_SECRET="16c3384b-725d-410d-8107-df3319165f70"
 #export KEYCLOAK_SECRET="b530c9d1-45f0-4f30-87d2-471530534c4a"
-
-
-create_pod(){
-    podman pod create -l $POD --name $POD  --userns=keep-id -p 7080:8080 -p 8080:8080 -p 5432:5432
-
-}
-
-start_database(){
-  export POSTGRESQL_USER=keycloak
+ export POSTGRESQL_USER=keycloak
   export POSTGRESQL_PASSWORD=keycloak
   export POSTGRESQL_DATABASE=root
   export POSTGRESQL_SERVICE_NAME="${POD}"
 
+create_pod(){
+    podman pod create -l $POD --name $POD  --userns=keep-id -p 8080:8080 -p 5432:5432
 
-  echo "start datbase in pod test"
-  $(echo "${SCRIPT_DIR}/podman/postgresql-docker-io-image.sh ${POD}")
+}
+
+start_database(){
+
+
+
+  echo "start datbase in pod ${POD}"
   #podman stop  postgresql-database
-
-  local CMD="podman run -d --pod "${POD}" --name  postgresql-database \
-           -e POSTGRES_USER=${POSTGRESQL_USER} -e POSTGRES_PASSWORD=${POSTGRESQL_PASSWORD} \
-           -e POSTGRES_DB=${POSTGRESQL_DATABASE}  ${IMAGE}"
+  local IMAGE="quay.io/centos7/postgresql-10-centos7:latest"
+  local CMD="podman run  -d -u $(id -u) --pod ${POD} --name  postgresql-database \
+                  -e POSTGRESQL_USER=${POSTGRESQL_USER} \
+                  -e POSTGRESQL_PASSWORD=${POSTGRESQL_PASSWORD} \
+                  -e POSTGRESQL_DATABASE=${POSTGRESQL_DATABASE} \
+                  $IMAGE"
    echo $CMD
    $CMD
+
+   echo
+   echo "wait database to start"
+   sleep 15
+   echo "check connection"
+   podman exec  postgresql-database pg_isready
 }
 
 #podman run -it -p 8080:8080 -v ${SCRIPT_DIR}:/project:Z quay.io/nmajorov/centos-quarkus-maven:21.3 mvn  clean test
@@ -49,16 +56,22 @@ start_database(){
 
 run_test(){
 
+   echo "copy custom  settings.xml file to repo"
+   cp -v ${SCRIPT_DIR}/settings.xml ${SCRIPT_DIR}/repo
+
+
   local CMD="podman --log-level=info run --pod ${POD}  -it --rm   \
-              -e POSTGRES_USER=${POSTGRESQL_USER} \
-              -e POSTGRES_PASSWORD=${POSTGRESQL_PASSWORD} \
-              -e POSTGRES_DB=${POSTGRESQL_DATABASE} \
+                  -e POSTGRESQL_USER=${POSTGRESQL_USER} \
+              -e POSTGRESQL_PASSWORD=${POSTGRESQL_PASSWORD} \
+              -e POSTGRESQL_DATABASE=${POSTGRESQL_DATABASE} \
+          -e POSTGRESQL_SERVICE_NAME=${POSTGRESQL_SERVICE_NAME} \
               -e KEYCLOAK_URL=${KEYCLOAK_URL} \
               -e KEYCLOAK_INTROSPECT_URL=${KEYCLOAK_INTROSPECT_URL} \
-              -e KEYCLOAK_CLIENT_ID=$KEYCLOAK_CLIENT_ID \
-              -e KEYCLOAK_SECRET=$KEYCLOAK_SECRET \
+              -e KEYCLOAK_CLIENT_ID=${KEYCLOAK_CLIENT_ID} \
+              -e KEYCLOAK_SECRET=${KEYCLOAK_SECRET} \
       --annotation run.oci.keep_original_groups=1 \
-       -v ${SCRIPT_DIR}:/project:Z   quay.io/nmajorov/centos-quarkus-maven:21.3 mvn -Dmaven.repo.local=/project/repo cean test"
+       -v ${SCRIPT_DIR}:/project:Z   \
+     quay.io/nmajorov/centos-quarkus-maven:21.3 mvn -Dmaven.repo.local=/project/repo clean test"
 
   echo  $CMD
   $CMD
@@ -73,14 +86,15 @@ echo "run test with containers"
     echo "list pods"
     podman pod ls
     echo
-
    else
       create_pod
       start_database
   fi
 
+  podman pod start "${POD}"
+
 
   echo $(env | grep POSTGRESQL)
 
 
-# run_test
+  run_test
