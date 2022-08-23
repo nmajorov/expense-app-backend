@@ -77,7 +77,7 @@ run_keycloak_imports() {
 
 	podman cp $SCRIPT_DIR/export.sql postgresql-database:/tmp
 
-	podman exec postgresql-database bash -c "psql root  < /tmp/export.sql"
+	podman exec postgresql-database bash -c "psql root  < /tmp/export.sql >/dev/null"
 
 }
 

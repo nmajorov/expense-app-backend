@@ -40,20 +40,34 @@ fi
 uid=$(id -u)
 
 echo "run container as user $uid"
-echo "using docker image: $IMAGE"
+run_db(){
+
+if [ -z "$1" ]
+  then
+    echo "No POD name as argument run standalone"
     CMD="podman run -d   --name  postgresql-database \
      -e POSTGRES_USER=$POSTGRESQL_USER -e POSTGRES_PASSWORD=$POSTGRESQL_PASSWORD \
      -e POSTGRES_DB=$POSTGRESQL_DATABASE \
      -p 127.0.0.1:5432:5432 \
      $IMAGE"
+  else
+    echo "joining the pod"
+    CMD="podman run -d --pod "$1" --name  postgresql-database \
+         -e POSTGRES_USER=$POSTGRESQL_USER -e POSTGRES_PASSWORD=$POSTGRESQL_PASSWORD \
+         -e POSTGRES_DB=$POSTGRESQL_DATABASE  ${IMAGE}"
 
-    echo $CMD
-    $CMD
+fi
+
+echo $CMD
+$CMD
+
 
 echo "wait database to start"
 sleep 15
 echo "check connection"
 podman exec  postgresql-database pg_isready
+}
+
 
 run_keycloak_imports() {
 	
@@ -65,8 +79,11 @@ run_keycloak_imports() {
 
 }
 
-if [ -z $1 ];then
-echo
-else
-   run_keycloak_imports
-fi
+
+run_db
+
+#if [ -z $1 ];then
+#echo
+#else
+#   run_keycloak_imports
+#fi
