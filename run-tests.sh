@@ -1,5 +1,5 @@
 #!/bin/env bash
-set -x
+#set -x
 
 
 #get current script dir
@@ -21,7 +21,7 @@ echo $(env | grep POSTGRESQL)
 # keycloak properties
 #export KEYCLOAK_URL="http://localhost:7080/auth/realms/basic"
 
-export KEYCLOAK_URL="https://keycloak-nm-sso.apps.ocp001.rhlab.ch/auth/realms/basic"
+export KEYCLOAK_URL="$2"
 export KEYCLOAK_INTROSPECT_URL="$KEYCLOAK_URL/protocol/openid-connect/token/introspect"
 export KEYCLOAK_CLIENT_ID="backend"
 export KEYCLOAK_SECRET="16c3384b-725d-410d-8107-df3319165f70"
@@ -41,6 +41,33 @@ run_gradle () {
     #$SCRIPT_DIR/gradlew  --console=plain quarkusDev
     exit
 }
+
+
+usage(){
+  echo
+  echo "Usage: $0 [options...] <keycloak-url>"
+  echo
+  echo "url example http://localhost:7080/auth/realms/basic "
+  echo
+  echo " options:"
+  echo "       gradle - for gradle build and test -> very fast"
+  echo
+  echo "       maven - for slow and old maven build "
+
+  echo
+}
+
+if [ "X$2" == "X" ] ; then
+     echo
+     echo "keycloak url should be set as second param"
+
+     usage
+     exit 1
+else
+    echo "using keycloak url: $2"
+fi
+
+
 
 case "$1" in
   gradle)
