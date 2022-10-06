@@ -1,5 +1,5 @@
 #!/bin/env bash
-set -x
+#set -x
 
 
 #get current script dir
@@ -19,11 +19,13 @@ export POSTGRESQL_DATABASE=root
 echo $(env | grep POSTGRESQL)
 
 # keycloak properties
-export KEYCLOAK_URL="http://localhost:7080/auth/realms/basic"
+#export KEYCLOAK_URL="http://localhost:7080/auth/realms/basic"
+
+export KEYCLOAK_URL="$2"
 export KEYCLOAK_INTROSPECT_URL="$KEYCLOAK_URL/protocol/openid-connect/token/introspect"
 export KEYCLOAK_CLIENT_ID="backend"
-#export KEYCLOAK_SECRET="b530c9d1-45f0-4f30-87d2-471530534c4a"
 export KEYCLOAK_SECRET="16c3384b-725d-410d-8107-df3319165f70"
+
 
 run_maven () {
     mvn    clean test
@@ -35,9 +37,37 @@ run_gradle () {
     # find ~/.gradle -type f -name "*.lock" -delete
     # $SCRIPT_DIR/gradlew --info test --tests *ReportApiTest.testFindOneReport
    # $SCRIPT_DIR/gradlew  test  --tests *ExpenseApiTest.testDeleteExpense
-     $SCRIPT_DIR/gradlew  test
+      $SCRIPT_DIR/gradlew test -Dorg.gradle.jvmargs=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5006
+    #$SCRIPT_DIR/gradlew  --console=plain quarkusDev
     exit
 }
+
+
+usage(){
+  echo
+  echo "Usage: $0 [options...] <keycloak-url>"
+  echo
+  echo "url example http://localhost:7080/auth/realms/basic "
+  echo
+  echo " options:"
+  echo "       gradle - for gradle build and test -> very fast"
+  echo
+  echo "       maven - for slow and old maven build "
+
+  echo
+}
+
+if [ "X$2" == "X" ] ; then
+     echo
+     echo "keycloak url should be set as second param"
+
+     usage
+     exit 1
+else
+    echo "using keycloak url: $2"
+fi
+
+
 
 case "$1" in
   gradle)

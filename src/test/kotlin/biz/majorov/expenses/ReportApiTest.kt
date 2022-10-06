@@ -17,8 +17,8 @@ class ReportApiTest : OAuthTest() {
     fun `test get all report for user`() {
         println("${object {}.javaClass.enclosingMethod.name} ")
         println("reports should be get for  specific  user ")
-        print("use token:" + OAuthTest.TOKEN)
-        given().header("Authorization","Bearer " + OAuthTest.TOKEN)
+        println("use token: $TOKEN")
+        given().header("Authorization","Bearer $TOKEN")
                 .`when`().get("/reports")
                 .then()
                 .statusCode(200)
@@ -27,13 +27,12 @@ class ReportApiTest : OAuthTest() {
 
     @Test
     fun `test create report for user`() {
-        println("${object {}.javaClass.enclosingMethod.name} ")
-        println("report  should be created for authenticated user ")
-        print("use token:" + OAuthTest.TOKEN)
+
+        println("\n\n ******* test report  should be created for authenticated user *************** \n ")
         val generatedReportName = "test-report-" + System.currentTimeMillis();
         val report = Report(name=generatedReportName)
-        given().contentType("application/json").body(report.name)
-                .header("Authorization","Bearer " + OAuthTest.TOKEN)
+        given().filter(LOGFILTER).contentType("application/json").body(report.name)
+                .header("Authorization","Bearer $TOKEN")
                 .`when`().post("/reports")
                 .then()
                 .statusCode(200)
@@ -46,7 +45,7 @@ class ReportApiTest : OAuthTest() {
         val generatedReportName = "test-report-" + System.currentTimeMillis();
 
         println("\n 1:  create report with name $generatedReportName \n")
-        given().contentType("application/json").body(generatedReportName)
+        given().contentType("application/json").body(generatedReportName).filter(LOGFILTER)
                 .header("Authorization","Bearer " + OAuthTest.TOKEN)
                 .`when`().post("/reports")
                 .then()
@@ -70,7 +69,7 @@ class ReportApiTest : OAuthTest() {
         println("2: get created report from Database with id: $reportFromDB")
         println("3: trying to delete report: $reportFromDB")
         if (reportFromDB != null) {
-            given().contentType("application/json")
+            given().contentType("application/json").filter(LOGFILTER)
                     .header("Authorization","Bearer " + OAuthTest.TOKEN)
                     .`when`().delete("/reports/${reportFromDB.id}")
                     .then()
@@ -113,7 +112,7 @@ class ReportApiTest : OAuthTest() {
 
         println("\n use token:" + OAuthTest.TOKEN)
         println("\n 1: get  reports from Database\n ")
-        val reports = given().header("Authorization","Bearer " + OAuthTest.TOKEN)
+        val reports = given().header("Authorization","Bearer " + OAuthTest.TOKEN).filter(LOGFILTER)
                 .`when`().get("/reports").`as`(mutableListOf<HashMap<String?, Any?>>()::class.java)
 
         assert(reports.isNotEmpty())

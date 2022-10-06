@@ -12,6 +12,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
 
+
 /**
  * test Expenses API
  */
@@ -19,15 +20,15 @@ import java.util.*
 @QuarkusTest
 class ExpenseApiTest : OAuthTest() {
 
+
     // get all expenses lambda
     val allExpense:(sort:Optional<String>) -> (ArrayList<HashMap<String?, String?>>) = {
 
-        given().contentType("application/json")
-                .header("Authorization", "Bearer $TOKEN")
-                .queryParam("reportid", 1)
-                .queryParam("sort_by", it.orElse("id_asc"))
-                .get("/expenses")
-                .`as`(ArrayList<HashMap<String?, String?>>()::class.java)
+        given().contentType("application/json").filter(LOGFILTER)
+            .header("Authorization", "Bearer $TOKEN")
+            .queryParam("reportid", 1)
+            .queryParam("sort_by", it.orElse("id_asc"))
+            .get("/expenses").`as`(ArrayList<HashMap<String?, String?>>()::class.java)
     }
 
 
@@ -35,7 +36,9 @@ class ExpenseApiTest : OAuthTest() {
     fun testGetAllExpenses() {
         println("\n\n **** ${object {}.javaClass.enclosingMethod.name} ***** \n ")
         println("\n use token:$TOKEN")
+
         val result = allExpense(Optional.empty())
+        println("\n  all expenses size: ${result.size} \n")
         assertFalse(result.isEmpty())
 
     }
@@ -166,7 +169,7 @@ class ExpenseApiTest : OAuthTest() {
         assertEquals(expense.amount,expenseFromRequest.amount)
 
         println("\n step 3,  delete expense with id ${expenseFromRequest.id}" )
-        given().contentType("application/json")
+        given().contentType("application/json").filter(LOGFILTER)
                 .header("Authorization", "Bearer $TOKEN")
                 .`when`().delete("/expenses/" + expenseFromRequest.id)
                 .then().statusCode(200)

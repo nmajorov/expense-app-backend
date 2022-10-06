@@ -1,15 +1,18 @@
 package biz.majorov.expenses;
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.restassured.filter.FilterContext
 import io.restassured.parsing.Parser
+import io.restassured.response.Response
+import io.restassured.filter.Filter
+import io.restassured.specification.FilterableRequestSpecification
+import io.restassured.specification.FilterableResponseSpecification
+import org.jboss.logging.Logger
 import org.junit.jupiter.api.BeforeEach
-import java.math.BigInteger
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
-import java.util.*
-import javax.net.ssl.HttpsURLConnection
 
 
 /**
@@ -24,9 +27,40 @@ open class OAuthTest {
 
     companion object {
         var TOKEN = ""
+        var LOGFILTER: Filter = CustomLogFilter()
     }
 
 
+    class CustomLogFilter : Filter {
+        var log: Logger = Logger.getLogger(CustomLogFilter::class.java)
+        override fun filter(
+            requestSpec: FilterableRequestSpecification,
+            responseSpec: FilterableResponseSpecification?, ctx: FilterContext
+        ): Response {
+            val response: Response = ctx.next(requestSpec, responseSpec)
+            val requestBuilder = StringBuilder()
+            requestBuilder.append("\n ------------- Request ----------\n")
+            requestBuilder.append(requestSpec.method)
+            requestBuilder.append("\n")
+            requestBuilder.append(requestSpec.uri)
+            requestBuilder.append("\n")
+            requestBuilder.append("Headers:")
+            for (it in requestSpec.headers){
+                requestBuilder.append("\n ${it.name}:${it.value} \n")
+            }
+            requestBuilder.append("\n")
+            log.info(requestBuilder.toString()) //Log your request where you need it
+
+            val responseBuilder = StringBuilder()
+            responseBuilder.append("\n ------------- Response ----------\n")
+            responseBuilder.append(response.getStatusLine())
+            responseBuilder.append("\n")
+            responseBuilder.append(response.getBody())
+            log.info(responseBuilder.toString()) //Log your response where you need it
+            responseBuilder.append("\n")
+            return response
+        }
+    }
     /**
      * create a parameters for a form encoded transfer
      */
@@ -57,7 +91,7 @@ open class OAuthTest {
         if (OAuthTest.TOKEN.isNotEmpty()) return
 
         //act as react application
-        val clientID = "curl"
+        val clientID = "react-app"
         val user = "niko"
         val password = "openshift"
         var ssoURL: String = System.getenv("KEYCLOAK_URL").plus("/protocol/openid-connect/token")
@@ -88,9 +122,8 @@ open class OAuthTest {
         val json = ObjectMapper()
         val jsonParsed = json.readerFor(Expense::class.java).readTree(response.body().toString())
 
-        TOKEN = jsonParsed["access_token"].toString()
+        TOKEN = jsonParsed["access_token"].toString().replace("\"", "")
         println("\n using  access_token: ${TOKEN}")
-
 
     }
 
