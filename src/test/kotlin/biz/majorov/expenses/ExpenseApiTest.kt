@@ -24,7 +24,7 @@ class ExpenseApiTest : OAuthTest() {
     // get all expenses lambda
     val allExpense:(sort:Optional<String>) -> (ArrayList<HashMap<String?, String?>>) = {
 
-        given().contentType("application/json").filter(LOGFILTER)
+        given().contentType("application/json").filter(logFilter)
             .header("Authorization", "Bearer $TOKEN")
             .queryParam("reportid", 1)
             .queryParam("sort_by", it.orElse("id_asc"))
@@ -169,7 +169,7 @@ class ExpenseApiTest : OAuthTest() {
         assertEquals(expense.amount,expenseFromRequest.amount)
 
         println("\n step 3,  delete expense with id ${expenseFromRequest.id}" )
-        given().contentType("application/json").filter(LOGFILTER)
+        given().contentType("application/json").filter(logFilter)
                 .header("Authorization", "Bearer $TOKEN")
                 .`when`().delete("/expenses/" + expenseFromRequest.id)
                 .then().statusCode(200)
