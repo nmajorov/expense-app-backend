@@ -96,7 +96,7 @@ open class OAuthTest {
         if (TOKEN.isNotEmpty()) return
 
         //act as react application
-        val clientID = "react-app"
+        val clientID = "curl"
         val user = "niko"
         val password = "openshift"
         val ssoURL: String = System.getenv("KEYCLOAK_URL").plus("/protocol/openid-connect/token")
