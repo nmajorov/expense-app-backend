@@ -19,7 +19,7 @@ echo $(env | grep POSTGRESQL)
 
 
 # keycloak properties
-export KEYCLOAK_URL="http://localhost:7080/auth/realms/basic"
+export KEYCLOAK_URL="http://localhost:7080/realms/basic"
 export KEYCLOAK_INTROSPECT_URL="$KEYCLOAK_URL/protocol/openid-connect/token/introspect"
 export KEYCLOAK_CLIENT_ID="backend"
 export KEYCLOAK_SECRET="16c3384b-725d-410d-8107-df3319165f70"

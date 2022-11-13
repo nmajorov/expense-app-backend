@@ -84,5 +84,5 @@ run_keycloak_imports() {
 
 
 
-run_keycloak_imports
+#run_keycloak_imports
 
