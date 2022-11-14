@@ -200,8 +200,8 @@ interface ReportService {
 @Path("/exchange")
 interface ExchangeRateService {
     @GET
-    @Path("/")
-    @Operation(summary = "Get quotes for currency, default CHF")
+    @Path("/{source}")
+    @Operation(summary = "Get quotes for currency")
     @APIResponses(value = [
 
         APIResponse(responseCode = "200", description = "successful operation",
@@ -210,7 +210,18 @@ interface ExchangeRateService {
         APIResponse(responseCode = "400", description = "invalid input"),
         APIResponse(responseCode = "404", description = "not found")
     ])
-    fun getQuotes(Source: String):Response
+    fun getQuotes( @PathParam("source") @Parameter(description = "name of currency",required = true,
+        schema = Schema(type = SchemaType.STRING))  source: String):Response
+
+
+    @GET
+    @Path("/")
+    @Operation(summary = "get all available quotes")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @APIResponses(value = [
+        APIResponse(responseCode = "200", description = "successful operation")
+    ])
+    fun getAllQuotes(): Response
 
     @PUT
     @Path("/")
