@@ -194,4 +194,41 @@ interface ReportService {
 
 }
 
+/**
+ * Get currencies exchange rates
+ */
+@Path("/exchange")
+interface ExchangeRateService {
+    @GET
+    @Path("/{source}")
+    @Operation(summary = "Get quotes for currency")
+    @APIResponses(value = [
 
+        APIResponse(responseCode = "200", description = "successful operation",
+            content = [Content(mediaType = "application/json",
+                schema = Schema(implementation = Response::class))]),
+        APIResponse(responseCode = "400", description = "invalid input"),
+        APIResponse(responseCode = "404", description = "not found")
+    ])
+    fun getQuotes( @PathParam("source") @Parameter(description = "name of currency",required = true,
+        schema = Schema(type = SchemaType.STRING))  source: String):Response
+
+
+    @GET
+    @Path("/")
+    @Operation(summary = "get all available quotes")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @APIResponses(value = [
+        APIResponse(responseCode = "200", description = "successful operation")
+    ])
+    fun getAllQuotes(): Response
+
+    @PUT
+    @Path("/")
+    @Operation(summary = "update an currency quote")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @APIResponses(value = [
+        APIResponse(responseCode = "200", description = "successful operation")
+    ])
+    fun updateQuote(quote: String): Response
+}

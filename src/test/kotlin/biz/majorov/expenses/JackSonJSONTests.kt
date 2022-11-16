@@ -43,19 +43,25 @@ class JacksonTest {
 
     }
 
-    /***
+
     @Test
     @Throws(Exception::class)
-    fun testSerializeExpensesCollection(){
+    fun testSerializeExchangeQuote(){
 
+        var quote = ExchangeQuote(id = 1, currencyPair = "EUR_CHF", quote = 0.97693)
+
+
+        /**
         val simpleCollection = arrayListOf(Expense(amount = 10.0,
                 createdAT = LocalDate.of(2019, 10, 1),
                 description = "Schloss Schoenbrunn entry fee"), Expense(amount = 10.0,
                 createdAT = LocalDate.of(2019, 10, 1),
                 description = "Lunch"))
+        **/
 
-        val jsonFromObj = this.json.write(simpleCollection)
+        val jsonFromObj = this.json.writeValueAsString(quote)
         logger.info("************ json array : $jsonFromObj")
+        /**
         val  testJSON ="""
             [{"ID":"1", "DESCRIPTION":"Lunch", "AMOUNT":"10", "CREATED":"2019-09-29", "TSTAMP":"2019-10-05"},
              {"ID":"2", 
@@ -65,7 +71,7 @@ class JacksonTest {
         logger.info("************ json array from string : $testJSON")
         val entities: List<Expense> = this.json.parse(testJSON).`object` as List<Expense>
         assertTrue(entities.isEmpty() == false)
-
+         **/
     }
-    **/
+
 }

@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.Currency
 
 //https://spring.io/guides/tutorials/spring-boot-kotlin/
 
@@ -102,4 +103,21 @@ enum class 	ExpenseSortBy(val orderStatement: String){
 	CREATED_ASC("created ASC"),
 	CREATED_DESC("created DESC")
 
+}
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+class ExchangeQuote(
+	@JsonProperty(value = "id")
+	var id: Int? = null,
+	@JsonProperty(value = "currency pair like EUR_CHF or EUR_USD")
+	var currencyPair: String,
+
+	@JsonProperty("quote")
+	var quote: Double,
+
+
+	) {
+	constructor() : this(null, "", 0.0)
+
+	override fun toString(): String = """ExchangeQuote[ id: $id | currencyPair: $currencyPair | amout: $quote"""
 }
