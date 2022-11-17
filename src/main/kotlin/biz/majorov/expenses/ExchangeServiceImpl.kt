@@ -49,8 +49,13 @@ class ExchangeServiceImpl : ExchangeRateService {
 
     override fun getAllQuotes(): Response {
         logger.debug("get all available quotes ")
+        //set for not found by default
+
+        val entities = mutableListOf<ExchangeQuote>()
         val exchange = this.camelContext.createFluentProducerTemplate().to("direct:select-all-quote")
             .send()
+
+
 
         @Suppress("UNCHECKED_CAST")
         val camelResult = exchange.getIn().body as List<Map<String, Any>>
@@ -59,21 +64,19 @@ class ExchangeServiceImpl : ExchangeRateService {
 
         if (camelResult.isNotEmpty()){
 
-            val entities = mutableListOf<ExchangeQuote>()
             //convert sql result to the entities
             camelResult.forEach{
                 val entity =convertRowToEntity(it)
                 entities.add(entity)
             }
-
-            return Response.ok(entities, MediaType.APPLICATION_JSON).build()
+            
+            logger.debug("entities size: " + entities.size)
 
         }
-
-
-        val builder = Response.status(Response.Status.NOT_FOUND)
-        return builder.build()
+        
+        return Response.ok(entities, MediaType.APPLICATION_JSON).build()
     }
+
 
     override fun updateQuote(quote: String): Response {
         TODO("Not yet implemented")

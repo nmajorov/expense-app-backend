@@ -217,7 +217,7 @@ interface ExchangeRateService {
     @GET
     @Path("/")
     @Operation(summary = "get all available quotes")
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     @APIResponses(value = [
         APIResponse(responseCode = "200", description = "successful operation")
     ])
