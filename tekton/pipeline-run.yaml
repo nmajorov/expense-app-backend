@@ -7,7 +7,8 @@ spec:
     - name: git-revision
       value: "development"
     - name: keycloak_url
-      value: "https://keycloak-nm-sso.apps.ocp001.rhlab.ch/auth/"
+      # for sso 7.6 without /auth 
+      value: "https://keycloak-nm-sso.apps.ocp001.rhlab.ch"
      # backend database parameters
     - name: postgesql-user
       value: "keycloak"
