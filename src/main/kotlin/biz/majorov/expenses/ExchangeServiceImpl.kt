@@ -3,6 +3,7 @@ package biz.majorov.expenses
 import org.apache.camel.CamelContext
 import org.jboss.logging.Logger
 import java.math.BigDecimal
+import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
@@ -13,6 +14,7 @@ import javax.ws.rs.core.Response
  * We need it to convert currencies
  *
  */
+@ApplicationScoped
 class ExchangeServiceImpl : ExchangeRateService {
 
     private val logger: Logger = Logger.getLogger(ExchangeRateService::class.java)
@@ -59,21 +61,13 @@ class ExchangeServiceImpl : ExchangeRateService {
 
         @Suppress("UNCHECKED_CAST")
         val camelResult = exchange.getIn().body as List<Map<String, Any>>
-        logger.debug("camel result: $camelResult")
-
-
-        if (camelResult.isNotEmpty()){
-
-            //convert sql result to the entities
-            camelResult.forEach{
+        //convert sql result to the entities
+        camelResult.forEach{
                 val entity =convertRowToEntity(it)
                 entities.add(entity)
-            }
-            
-            logger.debug("entities size: " + entities.size)
-
         }
-        
+            
+        logger.debug("entities: $entities")
         return Response.ok(entities, MediaType.APPLICATION_JSON).build()
     }
 

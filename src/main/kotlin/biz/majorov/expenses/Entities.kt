@@ -70,7 +70,7 @@ class Report(
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 class User(
-@JsonProperty(value = "id")
+		@JsonProperty(value = "id")
 		var id: Int? = null,
 		@JsonProperty(value = "name")
 		var name: String
@@ -105,10 +105,11 @@ enum class 	ExpenseSortBy(val orderStatement: String){
 
 }
 
-@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonIgnoreProperties(ignoreUnknown = false)
 class ExchangeQuote(
 	@JsonProperty(value = "id")
 	var id: Int? = null,
+
 	@JsonProperty(value = "currencyPair")
 	var currencyPair: String,
 

@@ -202,13 +202,11 @@ interface ExchangeRateService {
     @GET
     @Path("/{source}")
     @Operation(summary = "Get quotes for currency")
+    @Produces(MediaType.APPLICATION_JSON)
     @APIResponses(value = [
-
         APIResponse(responseCode = "200", description = "successful operation",
             content = [Content(mediaType = "application/json",
-                schema = Schema(implementation = Response::class))]),
-        APIResponse(responseCode = "400", description = "invalid input"),
-        APIResponse(responseCode = "404", description = "not found")
+                schema = Schema(implementation = ExchangeQuote::class))]),
     ])
     fun getQuotes( @PathParam("source") @Parameter(description = "name of currency",required = true,
         schema = Schema(type = SchemaType.STRING))  source: String):Response
@@ -219,7 +217,12 @@ interface ExchangeRateService {
     @Operation(summary = "get all available quotes")
     @Produces(MediaType.APPLICATION_JSON)
     @APIResponses(value = [
-        APIResponse(responseCode = "200", description = "successful operation")
+        APIResponse(responseCode = "200", description = "successful operation",
+            content = [Content(
+                mediaType = "application/json",
+                schema = Schema(implementation = Array<ExchangeQuote>::class)
+            )]
+        )
     ])
     fun getAllQuotes(): Response
 
