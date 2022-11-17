@@ -61,17 +61,48 @@ class JacksonTest {
 
         val jsonFromObj = this.json.writeValueAsString(quote)
         logger.info("************ json array : $jsonFromObj")
-        /**
+
         val  testJSON ="""
-            [{"ID":"1", "DESCRIPTION":"Lunch", "AMOUNT":"10", "CREATED":"2019-09-29", "TSTAMP":"2019-10-05"},
-             {"ID":"2", 
-            "DESCRIPTION":"Schloss Schoenbrunn entry fee", "AMOUNT":"30", "CREATED":"2019-09-29", "TSTAMP":"2019-10-05"}]
-        """.trimIndent().toLowerCase()
+            [
+              {
+                "id": 1,
+                "currencyPair": "EUR_CHF",
+                "quote": 0.9758
+              },
+              {
+                "id": 2,
+                "currencyPair": "EUR_USD",
+                "quote": 1.0318
+              },
+              {
+                "id": 3,
+                "currencyPair": "EUR_GBP",
+                "quote": 0.9437
+              },
+              {
+                "id": 4,
+                "currencyPair": "USD_CHF",
+                "quote": 1.0318
+              },
+              {
+                "id": 5,
+                "currencyPair": "GBP_CHF",
+                "quote": 1.1229
+              }
+            ]
+        """.trimIndent()
 
         logger.info("************ json array from string : $testJSON")
-        val entities: List<Expense> = this.json.parse(testJSON).`object` as List<Expense>
-        assertTrue(entities.isEmpty() == false)
-         **/
+        val quotes = mutableListOf<ExchangeQuote>()
+        val nodes = this.json.readerFor(Expense::class.java).readTree(testJSON)
+        nodes.forEach {
+            println(it)
+            var q = ExchangeQuote(id = it["id"].asInt(), currencyPair = it["currencyPair"].toString(), quote = it["quote"].asDouble())
+            quotes.add(q)
+        }
+
+        assert(quotes.isNotEmpty())
+        assert(quotes.size == 5)
     }
 
 }
