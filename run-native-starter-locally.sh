@@ -7,7 +7,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 cd $SCRIPT_DIR
 
-SSO_REALM_URL="http://localhost:7080/auth/realms/basic"
+SSO_REALM_URL="http://localhost:7080/realms/basic"
 
 if [ "X$1" == "X" ] ; then
      echo

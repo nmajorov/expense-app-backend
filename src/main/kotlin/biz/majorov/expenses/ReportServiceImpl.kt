@@ -33,6 +33,7 @@ class ReportServiceImpl: ReportService {
      * user information will be taken from security context
      */
     override fun findAll(ctx: SecurityContext): Response {
+        println("ctx userPrincipal : ${ctx.userPrincipal}")
         if (ctx.userPrincipal == null){
             return Response.status(Response.Status.UNAUTHORIZED).build()
         }

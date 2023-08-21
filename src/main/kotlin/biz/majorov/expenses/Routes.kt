@@ -65,6 +65,13 @@ class Routes {
                         "WHERE fk_app_user =" +
                 " :#\$simple{body['user']} AND ID = :#\$simple{body['report-id']}")
 
+        from("direct:select-quote").log("select quote \${body} ")
+            .to("sql:SELECT ID,CURRENCY_PAIR,QUOTE from exchange_quotes where  currency_pair LIKE  :#\${body}")
+            .log(" db found rows: \${body}")
+        from("direct:select-all-quote")
+            .to("sql:SELECT ID,CURRENCY_PAIR,QUOTE from exchange_quotes")
+            .log(" db found rows: \${body}")
+
     }
 
 }
