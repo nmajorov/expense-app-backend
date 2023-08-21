@@ -5,12 +5,15 @@
 SCRIPT_DIR=`dirname "$0"`
 echo "run keycloak server"
 
-IMAGE="docker.io/jboss/keycloak:11.0.2"
+# IMAGE="docker.io/jboss/keycloak:11.0.2"
+IMAGE="quay.io/bward/sso76-openshift-rhel8-btw:latest"
 
 if [ -z "$1" ]
   then
     echo "No POD name as argument run standalone"
     podman run --rm  -p 7080:8080  --security-opt label=disable  -e KEYCLOAK_USER=admin \
+    -e SSO_ADMIN_USERNAME=admin \
+    -e SSO_ADMIN_PASSWORD=admin \
     -e KEYCLOAK_PASSWORD=admin \
     \
     $IMAGE
