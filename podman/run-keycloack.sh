@@ -36,6 +36,8 @@ if [ -z "$1" ]
     podman run -dt --pod $POD --security-opt label=disable \
      -e KEYCLOAK_USER=admin \
      -e KEYCLOAK_PASSWORD=admin \
+     -e SSO_ADMIN_USERNAME=admin \
+     -e SSO_ADMIN_PASSWORD=admin \\
      -e DB_PORT="5432" \
      -e DB_VENDOR="postgres" \
      -e DB_USER=$POSTGRESQL_USER \
