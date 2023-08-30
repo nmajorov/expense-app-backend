@@ -1,2 +1,0 @@
-FROM quay.io/bward/sso76-openshift-rhel8-btw:latest
-COPY standalone-openshift-pg.xml /opt/eap/standalone/configuration/standalone-openshift.xml

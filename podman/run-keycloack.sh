@@ -28,10 +28,10 @@ function run_standalone() {
 
 # run in pod
 function run_in_pod() {
-    podman run  -d --pod "$1"  --name keycloak \
+    podman run --rm  -d --pod "$1"  --name keycloak \
     -e SSO_ADMIN_USERNAME=admin \
     -e SSO_ADMIN_PASSWORD=admin \
-    -e KEYCLOAK_POSTGRESQL_SERVICE_HOST="sso" \
+    -e KEYCLOAK_POSTGRESQL_SERVICE_HOST="host.containers.internal" \
     -e KEYCLOAK_POSTGRESQL_SERVICE_PORT="5432" \
     -e DB_USERNAME=$POSTGRESQL_USER \
     -e DB_PASSWORD=$POSTGRESQL_USER \

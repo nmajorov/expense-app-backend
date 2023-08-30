@@ -52,7 +52,7 @@ if [ -z "$1" ]
  else
     echo "joining pod: $1"
     # run command to join the pod
-    CMD="podman run  -d -u $uid --pod "$1" --name  postgresql-database \
+    CMD="podman run  -d -u $uid --pod "$1" --name  database \
      -e POSTGRESQL_USER=$POSTGRESQL_USER -e POSTGRESQL_PASSWORD=$POSTGRESQL_PASSWORD \
      -e POSTGRESQL_DATABASE=$POSTGRESQL_DATABASE \
      $IMAGE"
