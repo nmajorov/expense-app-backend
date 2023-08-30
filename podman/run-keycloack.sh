@@ -5,47 +5,79 @@
 SCRIPT_DIR=`dirname "$0"`
 echo "run keycloak server"
 
-# IMAGE="docker.io/jboss/keycloak:11.0.2"
+ # IMAGE="docker.io/nmajorov/sso-openshift:7.6"
 IMAGE="quay.io/bward/sso76-openshift-rhel8-btw:latest"
+
+
+# run stand alone container
+function run_standalone() {
+    podman run  --rm -p 7080:8080  --security-opt label=disable  --name=keycloak \
+    -e SSO_ADMIN_USERNAME=admin \
+    -e SSO_ADMIN_PASSWORD=admin \
+    -e KEYCLOAK_POSTGRESQL_SERVICE_HOST="localhost"
+    -e KEYCLOAK_POSTGRESQL_SERVICE_PORT="5432" \
+    -e DB_USERNAME=$POSTGRESQL_USER \
+    -e DB_PASSWORD=$POSTGRESQL_USER \
+    -e DB_DATABASE=$POSTGRESQL_DATABASE \
+    -e DB_SERVICE_PREFIX_MAPPING="keycloak-postgresql=DB" \
+    -e TX_DATABASE_PREFIX_MAPPING="keycloak-postgresql=DB" \
+    -e DB_JNDI="java:jboss/datasources/KeycloakDS" \
+    $IMAGE
+}
+
+
+# run in pod
+function run_in_pod() {
+    podman run  -d --pod "$1"  --name keycloak \
+    -e SSO_ADMIN_USERNAME=admin \
+    -e SSO_ADMIN_PASSWORD=admin \
+    -e KEYCLOAK_POSTGRESQL_SERVICE_HOST="sso" \
+    -e KEYCLOAK_POSTGRESQL_SERVICE_PORT="5432" \
+    -e DB_USERNAME=$POSTGRESQL_USER \
+    -e DB_PASSWORD=$POSTGRESQL_USER \
+    -e DB_DATABASE=$POSTGRESQL_DATABASE \
+    -e DB_SERVICE_PREFIX_MAPPING="keycloak-postgresql=DB" \
+    -e TX_DATABASE_PREFIX_MAPPING="keycloak-postgresql=DB" \
+    -e DB_JNDI="java:jboss/datasources/KeycloakDS" \
+    $IMAGE
+}
+
+  # -e CLI_SCRIPT_FILE="/opt/eap/change-database-to-postgresql.cli" \
+
+ #-e DB_JNDI="java:jboss/datasources/KeycloakPGDS" \
+
+
+###############################################
+#               main script flow              #
+###############################################
+if [ "x$POSTGRESQL_USER" = "x" ];then
+            POSTGRESQL_USER="keycloak"
+fi
+
+if [ "x$POSTGRESQL_PASSWORD" = "x" ]; then
+          POSTGRESQL_PASSWORD="keycloak"
+fi
+
+if [ "x$POSTGRESQL_DATABASE" = "x" ]; then
+          POSTGRESQL_DATABASE="root"
+fi
 
 if [ -z "$1" ]
   then
     echo "No POD name as argument run standalone"
-    podman run --rm  -p 7080:8080  --security-opt label=disable  -e KEYCLOAK_USER=admin \
-    -e SSO_ADMIN_USERNAME=admin \
-    -e SSO_ADMIN_PASSWORD=admin \
-    -e KEYCLOAK_PASSWORD=admin \
-    \
-    $IMAGE
+    run_standalone
  else
     echo "pod name is to join  is $1"
-    if [ "x$POSTGRESQL_USER" = "x" ];then
-              POSTGRESQL_USER="keycloak"
-    fi
-
-    if [ "x$POSTGRESQL_PASSWORD" = "x" ]; then
-              POSTGRESQL_PASSWORD="keycloak"
-    fi
-
-    if [ "x$POSTGRESQL_DATABASE" = "x" ]; then
-              POSTGRESQL_DATABASE="root"
-    fi
-
-    # run command to join the pod with  database
-    POD="$1"
-    podman run -dt --pod $POD --security-opt label=disable \
-     -e KEYCLOAK_USER=admin \
-     -e KEYCLOAK_PASSWORD=admin \
-     -e SSO_ADMIN_USERNAME=admin \
-     -e SSO_ADMIN_PASSWORD=admin \\
-     -e DB_PORT="5432" \
-     -e DB_VENDOR="postgres" \
-     -e DB_USER=$POSTGRESQL_USER \
-     -e DB_PASSWORD=$POSTGRESQL_USER \
-     -e DB_ADDR=$POD \
-     -e DB_DATABASE=$POSTGRESQL_DATABASE \
-    $IMAGE
+    run_in_pod
 fi
+
+
+
+
+
+
+
+
 
 #-e KEYCLOAK_IMPORT=/tmp/geektour-realm.json  -v ./keycloak-conf/geektour-realm.json:/tmp/geektour-realm.json \
 
