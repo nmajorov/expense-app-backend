@@ -43,7 +43,7 @@ echo "using docker image: $IMAGE"
 if [ -z "$1" ]
   then
     echo "No POD name as argument run standalone"
-    podman run --rm -d -u $uid  --name  postgresql-database \
+    podman run --rm -d -u $uid  --name  database \
      -e POSTGRESQL_USER=$POSTGRESQL_USER -e POSTGRESQL_PASSWORD=$POSTGRESQL_PASSWORD \
      -e POSTGRESQL_DATABASE=$POSTGRESQL_DATABASE \
      -p 5432:5432 \
@@ -52,7 +52,7 @@ if [ -z "$1" ]
  else
     echo "joining pod: $1"
     # run command to join the pod
-    CMD="podman run  -d -u $uid --pod "$1" --name  database \
+    CMD="podman run  --rm -d -u $uid --pod "$1" --name  database \
      -e POSTGRESQL_USER=$POSTGRESQL_USER -e POSTGRESQL_PASSWORD=$POSTGRESQL_PASSWORD \
      -e POSTGRESQL_DATABASE=$POSTGRESQL_DATABASE \
      $IMAGE"
@@ -65,7 +65,7 @@ fi
 echo "wait database to start"
 sleep 15
 echo "check connection"
-podman exec  postgresql-database pg_isready
+podman exec  database pg_isready
 
 
 
@@ -77,7 +77,7 @@ run_keycloak_imports() {
 
 	podman cp $SCRIPT_DIR/export.sql postgresql-database:/tmp
 
-	podman exec postgresql-database bash -c "psql root  < /tmp/export.sql >/dev/null"
+	podman exec database bash -c "psql root  < /tmp/export.sql >/dev/null"
 
 }
 
