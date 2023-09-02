@@ -5,7 +5,6 @@
 SCRIPT_DIR=`dirname "$0"`
 echo "run keycloak server"
 
- # IMAGE="docker.io/nmajorov/sso-openshift:7.6"
 IMAGE="quay.io/nmajorov/sso:7.6"
 
 # run stand alone container

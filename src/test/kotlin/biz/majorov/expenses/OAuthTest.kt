@@ -52,14 +52,14 @@ open class OAuthTest {
                 requestBuilder.append("\n ${it.name}:${it.value} \n")
             }
             requestBuilder.append("\n")
-            log.info(requestBuilder.toString()) //Log your request where you need it
+            println(requestBuilder.toString()) //Log your request where you need it
 
             val responseBuilder = StringBuilder()
             responseBuilder.append("\n ------------- Response ----------\n")
             responseBuilder.append(response.statusLine)
             responseBuilder.append("\n")
             responseBuilder.append(response.body)
-            log.info(responseBuilder.toString()) //Log your response where you need it
+            println(responseBuilder.toString()) //Log your response where you need it
             responseBuilder.append("\n")
             return response
         }

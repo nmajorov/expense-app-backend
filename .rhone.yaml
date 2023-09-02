@@ -21,7 +21,7 @@ build_podman_params:
 scripts:
   pre_install:
     - ./podman/delete-pod.sh
-    - ./podman/run-full-pod.sh
+    - ./podman/start-pod.sh
   # do some clean ups
   post_install:
     - ./podman/delete-pod.sh

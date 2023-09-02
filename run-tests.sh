@@ -24,7 +24,8 @@ echo $(env | grep POSTGRESQL)
 export KEYCLOAK_URL="$2"
 export KEYCLOAK_INTROSPECT_URL="$KEYCLOAK_URL/protocol/openid-connect/token/introspect"
 export KEYCLOAK_CLIENT_ID="backend"
-export KEYCLOAK_SECRET="16c3384b-725d-410d-8107-df3319165f70"
+#export KEYCLOAK_SECRET="16c3384b-725d-410d-8107-df3319165f70"
+export KEYCLOAK_SECRET="T8JL4ZnuUVctC7LyyjDZN04EZHO5LLxz"
 
 
 run_maven () {
@@ -33,11 +34,11 @@ run_maven () {
 }
 
 run_gradle () {
-
+    java --version
     # find ~/.gradle -type f -name "*.lock" -delete
     # $SCRIPT_DIR/gradlew --info test --tests *ReportApiTest.testFindOneReport
    # $SCRIPT_DIR/gradlew  test  --tests *ExpenseApiTest.testDeleteExpense
-      $SCRIPT_DIR/gradlew test -Dorg.gradle.jvmargs=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5006
+      $SCRIPT_DIR/gradlew test -i  -Dorg.gradle.jvmargs=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5006
     #$SCRIPT_DIR/gradlew  --console=plain quarkusDev
     exit
 }
