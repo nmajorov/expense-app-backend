@@ -32,7 +32,7 @@ if [ "x$POSTGRESQL_DATABASE" = "x" ]; then
   POSTGRESQL_DATABASE="root"
 fi
 
-
+CONTAINER_NAME="database"
 
 
 ## get UID
@@ -43,7 +43,7 @@ echo "using docker image: $IMAGE"
 if [ -z "$1" ]
   then
     echo "No POD name as argument run standalone"
-    podman run --rm -d -u $uid  --name  database \
+    podman run --rm -d -u $uid  --name  $CONTAINER_NAME \
      -e POSTGRESQL_USER=$POSTGRESQL_USER -e POSTGRESQL_PASSWORD=$POSTGRESQL_PASSWORD \
      -e POSTGRESQL_DATABASE=$POSTGRESQL_DATABASE \
      -p 5432:5432 \
@@ -52,7 +52,7 @@ if [ -z "$1" ]
  else
     echo "joining pod: $1"
     # run command to join the pod
-    CMD="podman run  --rm -d -u $uid --pod "$1" --name  database \
+    CMD="podman run  --rm -d -u $uid --pod "$1" --name  $CONTAINER_NAME \
      -e POSTGRESQL_USER=$POSTGRESQL_USER -e POSTGRESQL_PASSWORD=$POSTGRESQL_PASSWORD \
      -e POSTGRESQL_DATABASE=$POSTGRESQL_DATABASE \
      $IMAGE"
@@ -62,12 +62,6 @@ if [ -z "$1" ]
 
 fi
 
-echo "wait database to start"
-sleep 15
-echo "check connection"
-podman exec  database pg_isready
-
-
 
 
 
@@ -75,14 +69,17 @@ run_keycloak_imports() {
 	
 	echo "run keycloak imports"
 
-	podman cp $SCRIPT_DIR/export.sql postgresql-database:/tmp
+	podman cp $SCRIPT_DIR/export.sql $CONTAINER_NAME:/tmp
 
-	podman exec database bash -c "psql root  < /tmp/export.sql >/dev/null"
+	podman exec $CONTAINER_NAME bash -c "psql root  < /tmp/export.sql >/dev/null"
 
 }
 
 
 
+echo "wait $CONTAINER_NAME to start"
+sleep 15
+echo "check connection"
+podman exec  $CONTAINER_NAME pg_isready
 
-#run_keycloak_imports
-
+run_keycloak_imports
