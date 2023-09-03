@@ -44,5 +44,5 @@ Sometimes database migration  get problem with old schema files especially  afte
 
 Run this statement:
 
-    DROP SCHEMA IF EXISTS expenses;
+    DROP SCHEMA IF EXISTS expenses CASCADE;
 
