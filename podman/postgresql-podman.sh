@@ -63,6 +63,28 @@ if [ -z "$1" ]
 fi
 
 
+run_keycloak_imports() {
+  echo "wait database to start"
+  sleep 1
+  for i in $(seq 10);
+  do 
+  
+    if  echo $(podman exec $CONTAINER_NAME  pg_isready) | grep -q "no response"
+    then
+      sleep 1
+    else
+      break
+    fi
+
+  done;
+
+	echo "run keycloak imports"
+
+	podman cp $SCRIPT_DIR/export.sql $CONTAINER_NAME:/tmp
+
+	podman exec sso-database bash -c "psql root  < /tmp/export.sql >/dev/null"
+
+}
 
 
 run_keycloak_imports() {
