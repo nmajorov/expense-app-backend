@@ -36,3 +36,13 @@ Or, if you don't have GraalVM installed, you can run the native executable build
 You can then execute your native executable with: `./target/code-with-quarkus-1.0.0-SNAPSHOT-runner`
 
 If you want to learn more about building native executables, please consult https://quarkus.io/guides/building-native-image.
+
+
+
+## OpenShift pipelines troubleshooting 
+Sometimes database migration  get problem with old schema files especially  after OpenShift update.
+
+Run this statement:
+
+    DROP SCHEMA IF EXISTS expenses;
+
