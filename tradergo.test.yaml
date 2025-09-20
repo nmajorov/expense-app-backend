@@ -1,0 +1,18 @@
+---
+web:
+  port: 7000
+
+database:
+  # ; Either "mysql", "postgres" or "sqlite3", it's your choice
+
+  ###################
+  # sqlite connection
+  ###################
+  type: "sqlite3"
+  connectionUrl: "host=localhost user=gorm password=gorm dbname=gorm port=9920 sslmode=disable TimeZone=Asia/Shanghai"
+
+  #type: "postgresql"
+  # cockroachdb default port is 26257 for single cluster
+  #connectionUrl: "localhost:26257/defaultdb?sslmode=disable"
+  #user: root
+  #passwd:

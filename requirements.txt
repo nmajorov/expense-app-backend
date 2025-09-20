@@ -1,0 +1,15 @@
+wheel >=0.41.2
+idna<3,>=2.5
+dataclasses>=0.6
+Pykka >=3.0.1
+toml>=0.9.0
+semantic_version >= 2.8.5
+cryptography >=3.4.8
+pyasn1 >=0.4.8
+pyyaml >=5.4.1
+pg8000 >= 1.21.1
+termcolor >= 1.1.0
+httpx[cli] >=0.24.0
+yamllint >= 1.32.0
+pandas >=2.1.1
+TA-Lib==0.4.20

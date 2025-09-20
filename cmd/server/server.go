@@ -1,0 +1,161 @@
+package server
+
+import (
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"strconv"
+	"time"
+
+	"github.com/nmajorov/expense-app-backend/cmd/server/account"
+	"github.com/nmajorov/expense-app-backend/cmd/server/persistence/dblayer"
+
+	"github.com/gorilla/mux"
+
+	"github.com/nmajorov/expense-app-backend/config"
+	log "github.com/nmajorov/expense-app-backend/logger"
+	gormstore "github.com/wader/gormstore/v2"
+)
+
+var (
+	logger       = log.AppLogger
+	sessionStore *gormstore.Store
+)
+
+var (
+	sha1ver   string         // sha1 revision used to build the program
+	buildTime string         // when the executable was built
+	version   string = "dev" // version
+)
+
+type Server struct {
+	HTTPServer *http.Server
+}
+
+type UserLogin struct {
+	Account     string `json:"account,omitempty"`
+	Passwd      string `json:"passwd,omitempty"`
+	Name        string `json:"name,omitempty"`
+	AccessToken string `json:"access_token,omitempty"`
+}
+
+//https://betterprogramming.pub/how-to-inject-a-logger-into-gos-http-handlers-34481a4f2aad
+
+func corsMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Headers", "*")
+		if r.Method == "OPTIONS" {
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+
+}
+
+func loggingMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		trReqStart := time.Now()
+		logger.Info(fmt.Sprintf("%s  %s -- %s %s", r.Method, r.URL.Path, r.RemoteAddr, r.UserAgent()))
+		next.ServeHTTP(w, r)
+		trEnd := time.Since(trReqStart)
+		logger.Infof("request took: %s", trEnd)
+
+	})
+
+}
+
+func NewServer(conf *config.Config) *Server {
+
+	logger.Infof("server version: %s", version)
+
+	logger.Infof("server build:  %s  %s", sha1ver, buildTime)
+
+	dbHandler := dblayer.NewPersistenceLayer(conf.Database)
+
+	logger.Infof("configured database type: %s", conf.Database.Type)
+
+	//configure session store
+	sessionStore = gormstore.New(dbHandler.GetGORM(), []byte("secret"))
+
+	//create periodic session clean up
+	quit := make(chan struct{})
+	go sessionStore.PeriodicCleanup(5*time.Minute, quit)
+
+	router := mux.NewRouter()
+
+	router.Use(loggingMiddleware)
+	router.Use(corsMiddleware)
+	router.Use(mux.CORSMethodMiddleware(router))
+
+	//No authentication required  for status
+
+	//readiness probe for a server
+	// give status for all brokers
+	router.HandleFunc("/status", func(w http.ResponseWriter, r *http.Request) {
+
+		//var brokersStatuses []BrokerStatus = make([]BrokerStatus, 5)
+
+		var status = new(ServerStatus)
+		status.Version = version
+
+		// if err != nil {
+		// 	logger.Errorf("error at calling binanceClient.Ping %v", err)
+		// 	brokersStatuses[0] = BrokerStatus{model.Binance, false}
+		// } else {
+		// 	brokersStatuses[0] = BrokerStatus{model.Binance, true}
+		// }
+
+		//TODO: check other brokers status
+
+		// // an example API handler
+		// status.Brokers = brokersStatuses[0:1]
+		err := json.NewEncoder(w).Encode(status)
+		if err != nil {
+			logger.Error("error at json encodings")
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+	})
+
+	// it will be used by proxy to check if server is alive
+	router.HandleFunc("/alive", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, "alive\n")
+	})
+
+	authRoute := router.PathPrefix("/auth")
+	authRoute.Methods(http.MethodPost).Path("/login").HandlerFunc(LoginHandler)
+	//TODO implement logout
+
+	//future route
+	accountRouter := router.PathPrefix("/account").Subrouter()
+	//	accountRouter.Use(AuthMiddleware)
+	accountHandler := account.NewAccountHandler(&dbHandler)
+	accountRouter.Methods("GET").Path("/info").HandlerFunc(accountHandler.GetAccountInfo)
+
+	//market data routes
+	marketRoute := router.PathPrefix("/market").Subrouter()
+	marketRoute.Use(AuthMiddleware)
+
+	//set port for server
+	serverPort := strconv.FormatInt(conf.PortWeb, 10)
+	logger.Info("server port: " + serverPort)
+
+	srv := &http.Server{
+		Handler: router,
+		Addr:    "0.0.0.0:" + serverPort,
+		// Good practice: enforce timeouts for servers you create!
+		WriteTimeout: 15 * time.Second,
+		ReadTimeout:  15 * time.Second,
+	}
+
+	server := &Server{
+		HTTPServer: srv,
+	}
+
+	return server
+}
+
+func (s *Server) Run() {
+
+	logger.Fatal(s.HTTPServer.ListenAndServe())
+}
