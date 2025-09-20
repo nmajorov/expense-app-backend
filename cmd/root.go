@@ -80,7 +80,6 @@ func initConfig() *config.Config {
 	var err error = nil
 	var filePath string
 	var isEnvSet bool
-	var passwd string
 
 	if cfgFile == "" {
 		// Use config file from the flag.

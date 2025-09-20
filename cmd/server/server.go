@@ -132,10 +132,6 @@ func NewServer(conf *config.Config) *Server {
 	accountHandler := account.NewAccountHandler(&dbHandler)
 	accountRouter.Methods("GET").Path("/info").HandlerFunc(accountHandler.GetAccountInfo)
 
-	//market data routes
-	marketRoute := router.PathPrefix("/market").Subrouter()
-	marketRoute.Use(AuthMiddleware)
-
 	//set port for server
 	serverPort := strconv.FormatInt(conf.PortWeb, 10)
 	logger.Info("server port: " + serverPort)
