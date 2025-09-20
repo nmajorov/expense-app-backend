@@ -85,13 +85,13 @@ func initConfig() *config.Config {
 	if cfgFile == "" {
 		// Use config file from the flag.
 		//fmt.Println("No configuration provided... searching for default configuration")
-		cfgFile = "./tradergo.yaml"
+		cfgFile = "./config.yaml"
 	}
 
-	filePath, isEnvSet = os.LookupEnv("TRADERGO_CONFIG_FILE")
+	filePath, isEnvSet = os.LookupEnv("EXPENSE_APP_CONFIG_FILE")
 
 	if !isEnvSet {
-		logger.Warn("env TRADERGO_CONFIG_FILE not provided")
+		logger.Warn("env EXPENSE_APP_CONFIG_FILE not provided")
 		// Find current directory.
 		filePath, err = filepath.Abs(cfgFile)
 
@@ -107,16 +107,7 @@ func initConfig() *config.Config {
 		panic(fmt.Errorf("can't read file %v", err))
 	}
 
-	passwd = "geneva2021"
-
-	// passwd := vault.AskPassword()
-
-	decryptedText, err := vault.DecryptText(data, passwd)
-	if err != nil {
-		panic("can't decrypt text")
-	}
-
-	conf := config.Init(string(decryptedText))
+	conf := config.Init(string(data))
 
 	return conf
 
