@@ -20,16 +20,10 @@ type Database struct {
 	Passwd        string `yaml:"passwd,omitempty"`
 }
 
-type Nats struct {
-	Server  string `yaml:"server"`
-	AuthKey string `yaml:"authKey"`
-}
-
 // ServerConfig represent configuration of api  server
 type Config struct {
 	Database `yaml:"database"`
 	Web
-	Nats `yaml:"nats"`
 }
 
 var log = logger.AppLogger

@@ -63,3 +63,4 @@ release.properties
 pgdatabase/
 
 *.db
+*.db-journal

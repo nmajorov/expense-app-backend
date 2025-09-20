@@ -30,10 +30,6 @@ func TestConfig_parseYAML(t *testing.T) {
 					PortWeb: 7000,
 					Verbose: false,
 				},
-				Nats: Nats{
-					Server:  "nats://localhost:4222",
-					AuthKey: "437e09f020446dd5c1a20b27d4c",
-				},
 			},
 			false,
 		},
