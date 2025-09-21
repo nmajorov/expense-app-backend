@@ -30,6 +30,7 @@ all: help
 
 dev: ##  run  in dev mode
 	@echo "run in dev mode"
+	swag init
 	go run $(GOFLAGS) main.go
 
 

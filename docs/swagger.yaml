@@ -1,4 +1,35 @@
+definitions:
+  server.UserLogin:
+    description: User login information
+    properties:
+      account:
+        type: string
+      passwd:
+        type: string
+    type: object
 info:
   contact: {}
-paths: {}
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Login into app
+      parameters:
+      - description: login
+        in: body
+        name: some_id
+        required: true
+        schema:
+          $ref: '#/definitions/server.UserLogin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+      summary: Login in the application
+      tags:
+      - accounts
 swagger: "2.0"

@@ -34,25 +34,33 @@ type Server struct {
 	HTTPServer *http.Server
 }
 
+// UserLogin model info
+// @Description User login information
 type UserLogin struct {
 	Account     string `json:"account,omitempty"`
 	Passwd      string `json:"passwd,omitempty"`
-	Name        string `json:"name,omitempty"`
-	AccessToken string `json:"access_token,omitempty"`
+	Name        string `json:"name,omitempty"  swaggerignore:"true"`
+	AccessToken string `json:"access_token,omitempty" swaggerignore:"true"`
 }
 
-//https://betterprogramming.pub/how-to-inject-a-logger-into-gos-http-handlers-34481a4f2aad
-
+// corsMiddleware is a simple middleware to handle CORS headers.
 func corsMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Set necessary CORS headers. You can make this more specific
+		// by checking the Origin header and only allowing specific origins.
 		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Headers", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+		w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+
+		// Handle preflight requests.
 		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
 			return
 		}
+
+		// Pass the request to the next handler.
 		next.ServeHTTP(w, r)
 	})
-
 }
 
 func loggingMiddleware(next http.Handler) http.Handler {
@@ -67,25 +75,6 @@ func loggingMiddleware(next http.Handler) http.Handler {
 
 }
 
-// @title           Swagger Example API
-// @version         1.0
-// @description     This is a sample server celler server.
-// @termsOfService  http://swagger.io/terms/
-
-// @contact.name   API Support
-// @contact.url    http://www.swagger.io/support
-// @contact.email  support@swagger.io
-
-// @license.name  Apache 2.0
-// @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
-
-// @host      localhost:8080
-// @BasePath  /api/v1
-
-// @securityDefinitions.basic  BasicAuth
-
-// @externalDocs.description  OpenAPI
-// @externalDocs.url          https://swagger.io/resources/open-api/
 func NewServer(conf *config.Config) *Server {
 
 	logger.Infof("server version: %s", version)
@@ -107,7 +96,7 @@ func NewServer(conf *config.Config) *Server {
 
 	router.Use(loggingMiddleware)
 	router.Use(corsMiddleware)
-	router.Use(mux.CORSMethodMiddleware(router))
+	//router.Use(mux.CORSMethodMiddleware(router))
 
 	//No authentication required  for status
 
@@ -146,7 +135,8 @@ func NewServer(conf *config.Config) *Server {
 	router.PathPrefix("/swagger").Handler(httpSwagger.WrapHandler)
 
 	authRoute := router.PathPrefix("/auth")
-	authRoute.Methods(http.MethodPost).Path("/login").HandlerFunc(LoginHandler)
+
+	authRoute.Methods(http.MethodPost, http.MethodOptions).Path("/login").HandlerFunc(LoginHandler)
 	//TODO implement logout
 
 	//future route
@@ -174,6 +164,27 @@ func NewServer(conf *config.Config) *Server {
 	return server
 }
 
+//	@title			Expense app  API
+//	@version		1.0
+//	@description	This is a sample server app  server.
+//	@termsOfService	http://swagger.io/terms/
+
+//	@contact.name	API Support
+//	@contact.url	http://www.swagger.io/support
+//	@contact.email	support@swagger.io
+
+//	@license.name	Apache 2.0
+//	@license.url	http://www.apache.org/licenses/LICENSE-2.0.html
+
+//	@host		localhost:7000
+//	@BasePath	/api/v1
+
+//	@securityDefinitions.basic	BasicAuth
+
+// @securityDefinitions.apikey	ApiKeyAuth
+// @in							header
+// @name						Authorization
+// @description				Description for what is this security definition being used
 func (s *Server) Run() {
 
 	logger.Fatal(s.HTTPServer.ListenAndServe())

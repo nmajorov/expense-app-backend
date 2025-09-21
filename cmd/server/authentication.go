@@ -5,7 +5,18 @@ import (
 	"net/http"
 )
 
-// LoginHandler - simple user authentication
+// Login - simple user authentication
+//
+//	 @Param some_id	body  UserLogin true	"login"
+//		@Summary		Login in the application
+//		@Description	Login into app
+//		@Tags			accounts
+//		@Accept			json
+//		@Produce		json
+//		@Success	200
+//		@Failure	400
+//
+// @Router		/auth/login [post]
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	var login UserLogin
