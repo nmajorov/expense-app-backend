@@ -20,7 +20,7 @@
                 "parameters": [
                     {
                         "description": "login",
-                        "name": "some_id",
+                        "name": "login",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -44,10 +44,10 @@
             "description": "User login information",
             "type": "object",
             "properties": {
-                "account": {
+                "passwd": {
                     "type": "string"
                 },
-                "passwd": {
+                "username": {
                     "type": "string"
                 }
             }

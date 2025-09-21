@@ -2,9 +2,9 @@ definitions:
   server.UserLogin:
     description: User login information
     properties:
-      account:
-        type: string
       passwd:
+        type: string
+      username:
         type: string
     type: object
 info:
@@ -18,7 +18,7 @@ paths:
       parameters:
       - description: login
         in: body
-        name: some_id
+        name: login
         required: true
         schema:
           $ref: '#/definitions/server.UserLogin'

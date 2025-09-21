@@ -31,7 +31,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "description": "login",
-                        "name": "some_id",
+                        "name": "login",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -55,10 +55,10 @@ const docTemplate = `{
             "description": "User login information",
             "type": "object",
             "properties": {
-                "account": {
+                "passwd": {
                     "type": "string"
                 },
-                "passwd": {
+                "username": {
                     "type": "string"
                 }
             }

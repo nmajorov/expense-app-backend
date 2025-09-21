@@ -37,10 +37,8 @@ type Server struct {
 // UserLogin model info
 // @Description User login information
 type UserLogin struct {
-	Account     string `json:"account,omitempty"`
-	Passwd      string `json:"passwd,omitempty"`
-	Name        string `json:"name,omitempty"  swaggerignore:"true"`
-	AccessToken string `json:"access_token,omitempty" swaggerignore:"true"`
+	Username string `json:"username"`
+	Passwd   string `json:"passwd"`
 }
 
 // corsMiddleware is a simple middleware to handle CORS headers.

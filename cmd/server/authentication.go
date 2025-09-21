@@ -7,7 +7,7 @@ import (
 
 // Login - simple user authentication
 //
-//	 @Param some_id	body  UserLogin true	"login"
+//	 @Param login	body  UserLogin true	"login"
 //		@Summary		Login in the application
 //		@Description	Login into app
 //		@Tags			accounts
@@ -28,9 +28,9 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if login.Account == "niko" && login.Passwd == "Geneva2022" {
+	if login.Username == "niko" && login.Passwd == "Geneva2022" {
 		session, err := sessionStore.Get(r, "session")
-		session.Values["user_id"] = login.Account
+		session.Values["user_id"] = login.Username
 		// 24 hours session
 		session.Options.MaxAge = 3600 * 24
 		sessionStore.Save(r, w, session)
@@ -40,7 +40,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusInternalServerError)
 		}
 
-		logger.WithField("user", login.Account).Info("login was successful")
+		logger.WithField("user", login.Username).Info("login was successful")
 		w.Header().Set("Content-Type", "application/json;charset=utf8")
 		w.WriteHeader(http.StatusOK)
 
