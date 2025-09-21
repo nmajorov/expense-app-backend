@@ -13,7 +13,9 @@ import (
 	"github.com/gorilla/mux"
 
 	"github.com/nmajorov/expense-app-backend/config"
+	_ "github.com/nmajorov/expense-app-backend/docs"
 	log "github.com/nmajorov/expense-app-backend/logger"
+	httpSwagger "github.com/swaggo/http-swagger" // http-swagger middleware
 	gormstore "github.com/wader/gormstore/v2"
 )
 
@@ -65,6 +67,25 @@ func loggingMiddleware(next http.Handler) http.Handler {
 
 }
 
+// @title           Swagger Example API
+// @version         1.0
+// @description     This is a sample server celler server.
+// @termsOfService  http://swagger.io/terms/
+
+// @contact.name   API Support
+// @contact.url    http://www.swagger.io/support
+// @contact.email  support@swagger.io
+
+// @license.name  Apache 2.0
+// @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host      localhost:8080
+// @BasePath  /api/v1
+
+// @securityDefinitions.basic  BasicAuth
+
+// @externalDocs.description  OpenAPI
+// @externalDocs.url          https://swagger.io/resources/open-api/
 func NewServer(conf *config.Config) *Server {
 
 	logger.Infof("server version: %s", version)
@@ -121,6 +142,8 @@ func NewServer(conf *config.Config) *Server {
 	router.HandleFunc("/alive", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "alive\n")
 	})
+
+	router.PathPrefix("/swagger").Handler(httpSwagger.WrapHandler)
 
 	authRoute := router.PathPrefix("/auth")
 	authRoute.Methods(http.MethodPost).Path("/login").HandlerFunc(LoginHandler)

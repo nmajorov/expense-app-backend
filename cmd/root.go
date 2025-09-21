@@ -9,8 +9,6 @@ import (
 	"github.com/MakeNowJust/heredoc/v2"
 	"github.com/nmajorov/expense-app-backend/cmd/server"
 
-	"github.com/nmajorov/expense-app-backend/cmd/vault"
-
 	"github.com/nmajorov/expense-app-backend/config"
 
 	log "github.com/nmajorov/expense-app-backend/logger"
@@ -21,19 +19,17 @@ var logger = log.AppLogger
 
 var cliLong = heredoc.Doc(`
 
-Crypto trader Client
+demo app backend Client
 --------------------
-This client helps you trade cryptocurrencies as  margin on brokers.
-It also includes the vault commands for encrypt and decrypt a
-configuration file under the 'vault' subcommand.`)
+`)
 
 // configuration file
 var cfgFile string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "tradergo",
-	Short: "An application to trader cryptos",
+	Use:   "expense-app-backend",
+	Short: "An application",
 	Long:  cliLong,
 	Run: func(cmd *cobra.Command, args []string) {
 		//	flagNrSet := cmd.Flags().NFlag()
@@ -49,7 +45,6 @@ var rootCmd = &cobra.Command{
 		s := server.NewServer(conf)
 		s.Run()
 
-		//		binanceClient := binance.NewClient(conf.Key, conf.Secret)
 	},
 }
 
@@ -69,8 +64,8 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 
-	rootCmd.Flags().StringVarP(&cfgFile, "config", "c", "", "config file (default is ./tradergo.yaml)")
-	rootCmd.AddCommand(vault.GetVaultCommand(os.Args))
+	rootCmd.Flags().StringVarP(&cfgFile, "config", "c", "", "config file (default is ./config.yaml)")
+
 }
 
 // initConfig reads in config file and ENV variables if set.
