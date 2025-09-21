@@ -14,4 +14,4 @@ COPY --from=builder /src/bin/expense-app-backend /usr/bin/
 USER 1000:1000
 ENV LC_ALL en_US.UTF-8
 
-ENTRYPOINT ["/usr/bin/tradergo"]
+ENTRYPOINT ["/usr/bin/expense-app-backend"]
