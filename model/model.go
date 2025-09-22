@@ -3,11 +3,11 @@ package model
 import "gorm.io/gorm"
 
 type AccountInfo struct {
-	gorm.Model
-	ID       uint   `gorm:"primaryKey"`
-	Name     string `json:"name"`
-	LastName string `json:"last_name"`
-	Username string `json:"username"`
+	gorm.Model `swaggerignore:"true"`
+	ID         uint   `gorm:"primaryKey" swaggerignore:"true"`
+	Name       string `json:"name"`
+	LastName   string `json:"last_name"`
+	Username   string `json:"username"`
 	//email is a username
 	Email string `json:"email" gorm:"unique"`
 	//Company string `json:"company"`
