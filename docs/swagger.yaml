@@ -1,8 +1,20 @@
 definitions:
-  server.UserLogin:
-    description: User login information
+  model.Credentials:
     properties:
-      passwd:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  server.registrationData:
+    properties:
+      email:
+        type: string
+      last_name:
+        type: string
+      name:
+        type: string
+      password:
         type: string
       username:
         type: string
@@ -16,20 +28,67 @@ paths:
       - application/json
       description: Login into app
       parameters:
-      - description: login
+      - description: User credentials
         in: body
         name: login
         required: true
         schema:
-          $ref: '#/definitions/server.UserLogin'
+          $ref: '#/definitions/model.Credentials'
       produces:
       - application/json
       responses:
         "200":
           description: OK
+          schema:
+            type: string
         "400":
           description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
       summary: Login in the application
       tags:
-      - accounts
+      - auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Register a new user account
+      parameters:
+      - description: User Registration Data
+        in: body
+        name: registrationData
+        required: true
+        schema:
+          $ref: '#/definitions/server.registrationData'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: User registered successfully
+          schema:
+            properties:
+              message:
+                type: string
+            type: object
+        "400":
+          description: Invalid request payload
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+      summary: Register User in the application
+      tags:
+      - auth
 swagger: "2.0"

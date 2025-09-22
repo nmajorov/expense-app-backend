@@ -134,17 +134,19 @@ func NewServer(conf *config.Config) *Server {
 
 	router.PathPrefix("/swagger").Handler(httpSwagger.WrapHandler)
 
-	authRoute := router.PathPrefix("/auth")
+	authRoute := router.PathPrefix("/auth").Subrouter()
+	loginHandler := NewLoginHandler(dbHandler)
 
-	authRoute.Methods(http.MethodPost, http.MethodOptions).Path("/login").HandlerFunc(LoginHandler)
+	authRoute.Methods(http.MethodOptions, http.MethodPost).Path("/login").HandlerFunc(loginHandler.Login)
+	authRoute.Methods(http.MethodPost, http.MethodOptions).Path("/register").HandlerFunc(loginHandler.RegisterUser)
+
 	//TODO implement logout
 
 	//future route
 	accountRouter := router.PathPrefix("/account").Subrouter()
 	//	accountRouter.Use(AuthMiddleware)
 	accountHandler := account.NewAccountHandler(dbHandler)
-	accountRouter.Methods("GET").Path("/info").HandlerFunc(accountHandler.GetAccountInfo)
-	accountRouter.Methods("POST").Path("/register").HandlerFunc(accountHandler.RegisterUser)
+	accountRouter.Methods(http.MethodGet, http.MethodOptions).Path("/info").HandlerFunc(accountHandler.GetAccountInfo)
 
 	//set port for server
 	serverPort := strconv.FormatInt(conf.PortWeb, 10)

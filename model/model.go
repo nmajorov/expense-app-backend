@@ -4,9 +4,10 @@ import "gorm.io/gorm"
 
 type AccountInfo struct {
 	gorm.Model
+	ID       uint   `gorm:"primaryKey"`
 	Name     string `json:"name"`
 	LastName string `json:"last_name"`
-	Username string `json:"username" gorm:"primaryKey""`
+	Username string `json:"username"`
 	//email is a username
 	Email string `json:"email" gorm:"unique"`
 	//Company string `json:"company"`

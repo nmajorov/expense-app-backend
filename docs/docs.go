@@ -25,37 +25,129 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "accounts"
+                    "auth"
                 ],
                 "summary": "Login in the application",
                 "parameters": [
                     {
-                        "description": "login",
+                        "description": "User credentials",
                         "name": "login",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/server.UserLogin"
+                            "$ref": "#/definitions/model.Credentials"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
                     },
                     "400": {
-                        "description": "Bad Request"
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/register": {
+            "post": {
+                "description": "Register a new user account",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Register User in the application",
+                "parameters": [
+                    {
+                        "description": "User Registration Data",
+                        "name": "registrationData",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/server.registrationData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "User registered successfully",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "message": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request payload",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "error": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "error": {
+                                    "type": "string"
+                                }
+                            }
+                        }
                     }
                 }
             }
         }
     },
     "definitions": {
-        "server.UserLogin": {
-            "description": "User login information",
+        "model.Credentials": {
             "type": "object",
             "properties": {
-                "passwd": {
+                "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "server.registrationData": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
                     "type": "string"
                 },
                 "username": {

@@ -25,7 +25,16 @@ func (sqlLayer *SqlLayer) AddAccount(user *model.AccountInfo) error {
 
 // GetAccountInfo implements persistence.DatabaseHandler.
 func (sqlLayer *SqlLayer) GetAccountInfo(Username string) (*model.AccountInfo, error) {
-	panic("unimplemented")
+
+	account := new(model.AccountInfo)
+	result := sqlLayer.db.First(&account, "username = ?", Username)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return account, nil
+
 }
 
 func (pgLayer *SqlLayer) GetGORM() *gorm.DB {
@@ -50,7 +59,7 @@ func NewSqlLayer(conf config.Database) *SqlLayer {
 			os.Exit(1)
 		}
 
-	case "sqlite":
+	case "sqlite3":
 		db, err = gorm.Open(sqlite.Open(connString), &gorm.Config{})
 		if err != nil {
 			logger.AppLogger.Errorf("Unable to connect to sqlite database: %v\n", err)
