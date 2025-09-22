@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/nmajorov/expense-app-backend/cmd/server/account"
-	"github.com/nmajorov/expense-app-backend/cmd/server/persistence/dblayer"
+	"github.com/nmajorov/expense-app-backend/cmd/server/persistence"
 
 	"github.com/gorilla/mux"
 
@@ -79,7 +79,9 @@ func NewServer(conf *config.Config) *Server {
 
 	logger.Infof("server build:  %s  %s", sha1ver, buildTime)
 
-	dbHandler := dblayer.NewPersistenceLayer(conf.Database)
+	dbHandler := persistence.NewSqlLayer(conf.Database)
+
+	//dbHandler := .NewPersistenceLayer(conf.Database)
 
 	logger.Infof("configured database type: %s", conf.Database.Type)
 
@@ -140,8 +142,9 @@ func NewServer(conf *config.Config) *Server {
 	//future route
 	accountRouter := router.PathPrefix("/account").Subrouter()
 	//	accountRouter.Use(AuthMiddleware)
-	accountHandler := account.NewAccountHandler(&dbHandler)
+	accountHandler := account.NewAccountHandler(dbHandler)
 	accountRouter.Methods("GET").Path("/info").HandlerFunc(accountHandler.GetAccountInfo)
+	accountRouter.Methods("POST").Path("/register").HandlerFunc(accountHandler.RegisterUser)
 
 	//set port for server
 	serverPort := strconv.FormatInt(conf.PortWeb, 10)
