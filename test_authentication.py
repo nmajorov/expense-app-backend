@@ -6,7 +6,7 @@ import requests
 
 if __name__ == '__main__':
     headers = {"Content-Type": "application/json, charset=utf-8"}
-    r = requests.post("http://localhost:7000/auth/login",json={'account':'niko','passwd':'Geneva2022'},
+    r = requests.post("http://localhost:7000/auth/login",json={'username':'joe','passwd':'secret'},
                    headers=headers)
 
     assert r.status_code == 200
