@@ -26,6 +26,10 @@ if __name__ == "__main__":
 
     print("\n\n response status code:{} \n".format(r.status_code))
 
+    if r.status_code == 409:
+        print("\n Account already created for this email")
+        exit(0)
+
     assert r.status_code == 201
 
     headers_response = r.headers.items()

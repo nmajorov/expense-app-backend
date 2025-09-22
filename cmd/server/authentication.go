@@ -59,13 +59,6 @@ func (lg *LoginHandler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	currentLoginPassHash, err := utils.HashPassword(login.Password)
-	if err != nil {
-		logger.Error("Error at hashing password: ", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
 	account, err := lg.DataBaseHandler.GetAccountInfo(login.Username)
 
 	//	err = utils.CheckPasswordHash([]byte(storedHash), []byte(creds.Password))
@@ -74,7 +67,7 @@ func (lg *LoginHandler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if utils.CheckPasswordHash(account.PasswordHash, currentLoginPassHash) {
+	if utils.CheckPasswordHash(login.Password, account.PasswordHash) {
 		session, err := sessionStore.Get(r, "session")
 		session.Values["user_id"] = login.Username
 		// 24 hours session
