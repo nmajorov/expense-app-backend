@@ -11,7 +11,7 @@ type AccountInfo struct {
 	//email is a username
 	Email string `json:"email" gorm:"unique"`
 	//Company string `json:"company"`
-	// Phone        string `json:"phone"`
+	// Phone        string `json:"phone"`pop
 	// Address      string `json:"address"`
 	// City         string `json:"city"`
 	// State        string `json:"state"`
@@ -24,5 +24,5 @@ type AccountInfo struct {
 
 type Credentials struct {
 	Username string `json:"username"`
-	Password string `json:"password"`
+	Password string `json:"passwd"`
 }

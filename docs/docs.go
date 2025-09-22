@@ -127,7 +127,7 @@ const docTemplate = `{
         "model.Credentials": {
             "type": "object",
             "properties": {
-                "password": {
+                "passwd": {
                     "type": "string"
                 },
                 "username": {
