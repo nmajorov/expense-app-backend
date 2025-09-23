@@ -57,7 +57,7 @@ func TestCheckPasswordHash(t *testing.T) {
 }
 
 func TestJWTToken(t *testing.T) {
-	name := "neo"
+	name := "leo"
 	role := "admin"
 
 	tokenString, err := getJWTToken(name, role)
@@ -74,6 +74,8 @@ func TestJWTToken(t *testing.T) {
 	for k, v := range claims.(jwt.MapClaims) {
 		logger.AppLogger.Infof("claims: %v, value: %v", k, v)
 	}
+
+	logger.AppLogger.Infof("claim id  value: %v", claims.(jwt.MapClaims)["id"])
 
 	// Not the best way to do this, but it works for now
 	if claims.(jwt.MapClaims)["name"] != name {
