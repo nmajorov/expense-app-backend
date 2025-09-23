@@ -1,9 +1,12 @@
 module github.com/nmajorov/expense-app-backend
 
-go 1.19
+go 1.21
+
+toolchain go1.22.4
 
 require (
 	github.com/MakeNowJust/heredoc/v2 v2.0.1
+	github.com/golang-jwt/jwt/v5 v5.3.0
 	github.com/gorilla/mux v1.8.0
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/cobra v1.2.1
