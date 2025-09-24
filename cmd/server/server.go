@@ -95,7 +95,6 @@ func NewServer(conf *config.Config) *Server {
 
 	router.Use(loggingMiddleware)
 	router.Use(corsMiddleware)
-	//router.Use(mux.CORSMethodMiddleware(router))
 
 	//No authentication required  for status
 
@@ -143,7 +142,7 @@ func NewServer(conf *config.Config) *Server {
 
 	//future route
 	accountRouter := router.PathPrefix("/account").Subrouter()
-	//	accountRouter.Use(AuthMiddleware)
+	accountRouter.Use(AuthMiddleware)
 	accountHandler := account.NewAccountHandler(dbHandler)
 	accountRouter.Methods(http.MethodGet, http.MethodOptions).Path("/info").HandlerFunc(accountHandler.GetAccountInfo)
 

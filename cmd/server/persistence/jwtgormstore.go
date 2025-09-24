@@ -169,6 +169,7 @@ func (st *JWTStore) GetJWTFromHeader(r *http.Request) *gormJWT {
 			return s
 		}
 	}
+	logger.AppLogger.Debugf("Authorization header not found")
 	return nil
 }
 

@@ -168,17 +168,20 @@ func (ah *LoginHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 // It ensures that a user is authenticated before allowing access to a protected route.
 func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		logger.Println("AuthMiddleware")
-		next.ServeHTTP(w, r)
-
+		logger.Debug("AuthMiddleware")
+		// List all headers
+		for name, values := range r.Header {
+			logger.Debugf("%s: %v\n", name, values)
+		}
 		jwt := jwtstore.GetJWTFromHeader(r)
+		logger.Debug("jwt from header ", jwt)
 		if jwt == nil {
+			logger.Warning("StatusUnauthorized")
 			w.WriteHeader(http.StatusUnauthorized)
 			return
-		} else {
-			//If the user is authenticated, pass the request to the next handler in the chain.
-			next.ServeHTTP(w, r)
 		}
+		//If the user is authenticated, pass the request to the next handler in the chain.
+		next.ServeHTTP(w, r)
 
 	})
 }
