@@ -7,7 +7,11 @@ database:
   type: mysql
   connectionUrl: "user:pass@tcp(127.0.0.1:3306)/dbname?charset=utf8mb4&parseTime=True&loc=Local"
 
+jwt:
+  maxAgeHours: 24
+  signingKey: "keymaker"
+############# additional messaging configuration #########
 # nats connection configuration
-nats:
-  server: "nats://localhost:4222"
-  authKey: "437e09f020446dd5c1a20b27d4c"
+# nats:
+#   server: "nats://localhost:4222"
+#   authKey: "437e09f020446dd5c1a20b27d4c"

@@ -1,11 +1,14 @@
----                     
-web:                                                                                                                                                     
+---
+web:
   port: 7000
-                                      
-###################                                                         
-# sqlite connection                                                         
-###################                                                         
-database:                                                                   
-  type: "sqlite3"                                                           
-  connectionUrl: "file:./expense.dev.db"                
-            
+
+###################
+# sqlite connection
+###################
+database:
+  type: "sqlite3"
+  connectionUrl: "file:./expense.dev.db"
+
+jwt:
+  maxAgeHours: 4
+  signingKey: "keymaker"

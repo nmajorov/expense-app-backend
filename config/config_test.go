@@ -30,6 +30,10 @@ func TestConfig_parseYAML(t *testing.T) {
 					PortWeb: 7000,
 					Verbose: false,
 				},
+				JWT: JWT{
+					MaxAgeHours: 24,
+					SigningKey:  "keymaker",
+				},
 			},
 			false,
 		},
@@ -55,6 +59,8 @@ func TestConfig_parseYAML(t *testing.T) {
 				log.Panicf("cannot read data: %v", err)
 
 			}
+
+			log.Printf("test config data: %v", string(data))
 
 			//simulate coming from decrypter
 			got := Init(string(data))

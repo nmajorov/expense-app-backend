@@ -17,18 +17,8 @@ func CheckPasswordHash(password, hash string) bool {
 	return err == nil
 }
 
-func getJWTToken(name string, role string) (string, error) {
-	signingKey := []byte("keymaker")
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"name": name,
-		"role": role,
-	})
-	tokenString, err := token.SignedString(signingKey)
-	return tokenString, err
-}
-
-func verifyJWTToken(tokenString string) (jwt.Claims, error) {
-	signingKey := []byte("keymaker")
+func VerifyJWTToken(tokenString string, sigKey string) (jwt.Claims, error) {
+	signingKey := []byte(sigKey)
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return signingKey, nil
 	})

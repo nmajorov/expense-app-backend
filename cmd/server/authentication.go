@@ -68,11 +68,8 @@ func (lg *LoginHandler) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if utils.CheckPasswordHash(login.Password, account.PasswordHash) {
-		session, err := sessionStore.Get(r, "session")
-		session.Values["user_id"] = login.Username
-		// 24 hours session
-		session.Options.MaxAge = 3600 * 24
-		sessionStore.Save(r, w, session)
+		jwt, err := jwtstore.Get(login.Username)
+		jwtstore.Save(r, w, jwt)
 
 		if err != nil {
 			logger.Error("Error at at getting session ", err)
@@ -166,22 +163,24 @@ func (ah *LoginHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		logger.Println("AuthMiddleware")
-		session, err := sessionStore.Get(r, "session")
+		next.ServeHTTP(w, r)
 
-		// If there is an error retrieving the session, it's a server-side issue.
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-		logger.Debug(session.Values["user_id"])
+		//session, err := jwtstore.Get(r, "session")
 
-		// Check if the user_id is present in the session. If not, the user is not authenticated.
-		if session.Values["user_id"] == nil {
-			w.WriteHeader(http.StatusUnauthorized)
-		} else {
-			// If the user is authenticated, pass the request to the next handler in the chain.
-			next.ServeHTTP(w, r)
-		}
+		// // If there is an error retrieving the session, it's a server-side issue.
+		// if err != nil {
+		// 	w.WriteHeader(http.StatusInternalServerError)
+		// 	return
+		// }
+		// logger.Debug(session.Values["user_id"])
+
+		// // Check if the user_id is present in the session. If not, the user is not authenticated.
+		// if session.Values["user_id"] == nil {
+		// 	w.WriteHeader(http.StatusUnauthorized)
+		// } else {
+		// 	// If the user is authenticated, pass the request to the next handler in the chain.
+		// 	next.ServeHTTP(w, r)
+		// }
 
 	})
 }

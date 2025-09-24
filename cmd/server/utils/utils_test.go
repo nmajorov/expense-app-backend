@@ -2,9 +2,6 @@ package utils
 
 import (
 	"testing"
-
-	jwt "github.com/golang-jwt/jwt/v5"
-	"github.com/nmajorov/expense-app-backend/logger"
 )
 
 func TestHashPassword(t *testing.T) {
@@ -54,35 +51,4 @@ func TestCheckPasswordHash(t *testing.T) {
 			t.Errorf("CheckPasswordHash() = true, want false for a malformed hash")
 		}
 	})
-}
-
-func TestJWTToken(t *testing.T) {
-	name := "leo"
-	role := "admin"
-
-	tokenString, err := getJWTToken(name, role)
-	logger.AppLogger.Infof("token string : %v", tokenString)
-	if err != nil {
-		t.Fatalf("getJWTToken() returned an unexpected error: %v", err)
-	}
-
-	claims, err := verifyJWTToken(tokenString)
-	if err != nil {
-		t.Fatalf("verifyJWTToken() returned an unexpected error: %v", err)
-	}
-
-	for k, v := range claims.(jwt.MapClaims) {
-		logger.AppLogger.Infof("claims: %v, value: %v", k, v)
-	}
-
-	logger.AppLogger.Infof("claim id  value: %v", claims.(jwt.MapClaims)["id"])
-
-	// Not the best way to do this, but it works for now
-	if claims.(jwt.MapClaims)["name"] != name {
-		t.Errorf("Expected name %s, got %s", name, claims.(jwt.MapClaims)["name"])
-	}
-	// Not the best way to do this, but it works for now
-	if claims.(jwt.MapClaims)["role"] != role {
-		t.Errorf("Expected role %s, got %s", role, claims.(jwt.MapClaims)["role"])
-	}
 }

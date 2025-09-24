@@ -1,7 +1,7 @@
 package persistence
 
 /*
-jwt gorm store
+jwt gorm JWTStore
 */
 
 import (
@@ -10,29 +10,30 @@ import (
 	"strings"
 	"time"
 
+	jwt "github.com/golang-jwt/jwt/v5"
 	"github.com/gorilla/securecookie"
-	"github.com/gorilla/sessions"
-		"github.com/nmajorov/expense-app-backend/logger"
+	"github.com/nmajorov/expense-app-backend/cmd/server/utils"
+	"github.com/nmajorov/expense-app-backend/config"
+	"github.com/nmajorov/expense-app-backend/logger"
 	"gorm.io/gorm"
 )
 
 const sessionIDLen = 32
 const defaultTableName = "jwt"
-const defaultMaxAge = 60 * 60 * 24 * 30 // 30 days, default for securecookie
 const defaultPath = "/"
 
-// Options for gormstore
+// Options for gormJWTStore
 type Options struct {
 	TableName       string
 	SkipCreateTable bool
+	signingKey      string
+	MaxAgeHours     time.Duration
 }
 
-// Store represent a gormstore
-type Store struct {
-	db          *gorm.DB
-	opts        Options
-	Codecs      []securecookie.Codec
-	SessionOpts *sessions.Options
+// JWTStore represent a gormJWTStore
+type JWTStore struct {
+	db   *gorm.DB
+	opts *Options
 }
 
 type gormJWT struct {
@@ -43,115 +44,103 @@ type gormJWT struct {
 	ExpiresAt time.Time `sql:"index"`
 }
 
-// New creates a new gormstore session
-func New(db *gorm.DB, keyPairs ...[]byte) *Store {
-	return NewOptions(db, Options{}, keyPairs...)
+// New creates a new gormJWTStore session
+func New(db *gorm.DB, conf *config.Config) *JWTStore {
+
+	opt := new(Options)
+	opt.MaxAgeHours = time.Duration(conf.JWT.MaxAgeHours) * time.Hour
+	opt.signingKey = conf.JWT.SigningKey
+	return &JWTStore{db, opt}
 }
 
-// NewOptions creates a new gormstore session with options
-func NewOptions(db *gorm.DB, opts Options, keyPairs ...[]byte) *Store {
-	st := &Store{
-		db:     db,
-		opts:   opts,
-		Codecs: securecookie.CodecsFromPairs(keyPairs...),
-		SessionOpts: &sessions.Options{
-			Path:   defaultPath,
-			MaxAge: defaultMaxAge,
-		},
-	}
-	if st.opts.TableName == "" {
-		st.opts.TableName = defaultTableName
-	}
-
-	if !st.opts.SkipCreateTable {
-		st.sessionTable().AutoMigrate(&gormJWT{})
-	}
-
-	return st
-}
-
-func (st *Store) sessionTable() *gorm.DB {
+func (st *JWTStore) sessionTable() *gorm.DB {
 	return st.db.Table(st.opts.TableName)
 }
 
-// Get returns a session for the given name after adding it to the registry.
-func (st *Store) Get(r *http.Request, name string) (jwt string, error) {
-	return sessions.GetRegistry(r).Get(jwt, name)
-}
+// Get returns a jwt for the given username name
+func (st *JWTStore) Get(username string) (jwtToken string, err error) {
+	signingKey := []byte(st.opts.signingKey) // TODO: move to config
 
-// New creates a session with name without adding it to the registry.
-func (st *Store) New(r *http.Request, name string) (*sessions.Session, error) {
-	session := sessions.NewSession(st, name)
-	opts := *st.SessionOpts
-	session.Options = &opts
-	session.IsNew = true
-
-	st.MaxAge(st.SessionOpts.MaxAge)
-
-	// try fetch from db if there is a cookie
-	s := st.getSessionFromCookie(r, session.Name())
-	if s != nil {
-		if err := securecookie.DecodeMulti(session.Name(), s.Data, &session.Values, st.Codecs...); err != nil {
-			return session, nil
-		}
-		session.ID = s.ID
-		session.IsNew = false
+	type MyCustomClaims struct {
+		User string `json:"user"`
+		Role string `json:"role"`
+		jwt.RegisteredClaims
 	}
 
-	return session, nil
+	// Create claims with multiple fields populated
+	claims := MyCustomClaims{
+		username,
+		"user",
+		jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Duration(st.opts.MaxAgeHours * time.Hour))),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+			Issuer:    "majorov.biz",
+			ID:        base32.StdEncoding.EncodeToString(securecookie.GenerateRandomKey(len(username))),
+			Audience:  []string{"somebody_else"},
+		},
+	}
+
+	// Create the token with claims
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	// Sign the token and return it
+	jwtToken, err = token.SignedString(signingKey)
+	if err != nil {
+		return "", err
+	}
+
+	return jwtToken, nil
 }
 
 // Save session and set cookie header
-func (st *Store) Save(r *http.Request, w http.ResponseWriter, jwt sting) error {
-	now := time.Now()
-	expire := now.Add(time.Second * time.Duration(session.Options.MaxAge))
+func (st *JWTStore) Save(r *http.Request, w http.ResponseWriter, jwt string) error {
+	//	now := time.Now()
+	//	expire := now.Add(time.Second * time.Duration(Options.MaxAge))
 
+	// // generate random session ID key suitable for storage in the db
+	// session.ID = strings.TrimRight(
+	// 	base32.StdEncoding.EncodeToString(
+	// 		securecookie.GenerateRandomKey(sessionIDLen)), "=")
+	// s = &gormJWT{
+	// 	ID:        session.ID,
+	// 	Data:      jwt,
+	// 	CreatedAt: now,
+	// 	UpdatedAt: now,
+	// 	ExpiresAt: expire,
+	// }
+	// if err := st.sessionTable().Create(s).Error; err != nil {
+	// 	return err
+	// }
 
-		// generate random session ID key suitable for storage in the db
-		session.ID = strings.TrimRight(
-			base32.StdEncoding.EncodeToString(
-				securecookie.GenerateRandomKey(sessionIDLen)), "=")
-		s = &gormJWT{
-			ID:        session.ID,
-			Data:      jwt,
-			CreatedAt: now,
-			UpdatedAt: now,
-			ExpiresAt: expire,
-		}
-		if err := st.sessionTable().Create(s).Error; err != nil {
-			return err
-		}
-
-		// TODO handle update
-		// s.Data = data
-		// s.UpdatedAt = now
-		// s.ExpiresAt = expire
-		// if err := st.sessionTable().Save(s).Error; err != nil {
-		// 	return err
-		// }
-
+	// TODO handle update
+	// s.Data = data
+	// s.UpdatedAt = now
+	// s.ExpiresAt = expire
+	// if err := st.sessionTable().Save(s).Error; err != nil {
+	// 	return err
+	// }
 
 	return nil
 }
 
-// get jwt  looks for an existing gormJWT from a id claim  stored inside a header
-func (st *Store) getJWTFromHeader(r *http.Request) *gormJWT {
-	if bearer, err := r.Header("Authorization"); err == nil {
-		token = strings.TrimPrefix(bearer, "Bearer ")
-		claims, err := verifyJWTToken(tokenString)
+// get jwt  looks for an existing gormJWT from a id claim  JWTStored inside a header
+func (st *JWTStore) getJWTFromHeader(r *http.Request) *gormJWT {
+	if bearer := r.Header.Get("Authorization"); bearer != "" {
+		token := strings.TrimPrefix(bearer, "Bearer ")
+		claims, err := utils.VerifyJWTToken(token, st.opts.signingKey)
 		if err != nil {
-			t.Fatalf("verifyJWTToken() returned an unexpected error: %v", err)
+			logger.AppLogger.Fatalf("verifyJWTToken() returned an unexpected error: %v", err)
 		}
 
-		if  claims.(jwt.MapClaims)["id"] != nil {
-			logger.AppLogger.Errorf("claim id not found")
-			err := errors.New("claim id not found")
-			return err
+		if claims.(jwt.MapClaims)["jti"] == nil {
+			logger.AppLogger.Errorf("ID claim id not found")
+
+			return nil
 		}
-		sessionID := claims.(jwt.MapClaims)["id"]
+		jwtID := claims.(jwt.MapClaims)["jti"]
 
 		s := &gormJWT{}
-		sr := st.sessionTable().Where("id = ? AND expires_at > ?", sessionID, time.Now()).Limit(1).Find(s)
+		sr := st.sessionTable().Where("id = ? AND expires_at > ?", jwtID, time.Now()).Limit(1).Find(s)
 		if sr.Error != nil || sr.RowsAffected == 0 {
 			return nil
 		}
@@ -160,25 +149,13 @@ func (st *Store) getJWTFromHeader(r *http.Request) *gormJWT {
 	return nil
 }
 
-
-// MaxLength restricts the maximum length of new sessions to l.
-// If l is 0 there is no limit to the size of a session, use with caution.
-// The default is 4096 (default for securecookie)
-func (st *Store) MaxLength(l int) {
-	for _, c := range st.Codecs {
-		if codec, ok := c.(*securecookie.SecureCookie); ok {
-			codec.MaxLength(l)
-		}
-	}
-}
-
 // Cleanup deletes expired sessions
-func (st *Store) Cleanup() {
+func (st *JWTStore) Cleanup() {
 	st.sessionTable().Delete(&gormJWT{}, "expires_at <= ?", time.Now())
 }
 
 // PeriodicCleanup runs Cleanup every interval. Close quit channel to stop.
-func (st *Store) PeriodicCleanup(interval time.Duration, quit <-chan struct{}) {
+func (st *JWTStore) PeriodicCleanup(interval time.Duration, quit <-chan struct{}) {
 	t := time.NewTicker(interval)
 	defer t.Stop()
 	for {

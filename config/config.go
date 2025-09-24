@@ -11,6 +11,11 @@ type Web struct {
 	Verbose bool  `yaml:"verbose,omitempty"`
 }
 
+type JWT struct {
+	MaxAgeHours int64  `yaml:"maxAgeHours"`
+	SigningKey  string `yaml:"signingKey"`
+}
+
 // Database define configuration
 // of database connection string
 type Database struct {
@@ -23,6 +28,7 @@ type Database struct {
 // ServerConfig represent configuration of api  server
 type Config struct {
 	Database `yaml:"database"`
+	JWT
 	Web
 }
 
