@@ -68,13 +68,19 @@ func (lg *LoginHandler) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if utils.CheckPasswordHash(login.Password, account.PasswordHash) {
-		jwt, err := jwtstore.Get(login.Username)
-		jwtstore.Save(r, w, jwt)
+		jwToken, err := jwtstore.Get(login.Username)
 
 		if err != nil {
-			logger.Error("Error at at getting session ", err)
+			logger.Error("Error at at getting token ", err)
 			w.WriteHeader(http.StatusInternalServerError)
 		}
+
+		err = jwtstore.Save(jwToken)
+		if err != nil {
+			logger.Error("Error at at saving in database token ", err)
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+		w.Header().Set("Authorization", "Bearer "+jwToken)
 
 		logger.WithField("user", login.Username).Info("login was successful")
 		w.Header().Set("Content-Type", "application/json;charset=utf8")
@@ -165,22 +171,14 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		logger.Println("AuthMiddleware")
 		next.ServeHTTP(w, r)
 
-		//session, err := jwtstore.Get(r, "session")
-
-		// // If there is an error retrieving the session, it's a server-side issue.
-		// if err != nil {
-		// 	w.WriteHeader(http.StatusInternalServerError)
-		// 	return
-		// }
-		// logger.Debug(session.Values["user_id"])
-
-		// // Check if the user_id is present in the session. If not, the user is not authenticated.
-		// if session.Values["user_id"] == nil {
-		// 	w.WriteHeader(http.StatusUnauthorized)
-		// } else {
-		// 	// If the user is authenticated, pass the request to the next handler in the chain.
-		// 	next.ServeHTTP(w, r)
-		// }
+		jwt := jwtstore.GetJWTFromHeader(r)
+		if jwt == nil {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		} else {
+			//If the user is authenticated, pass the request to the next handler in the chain.
+			next.ServeHTTP(w, r)
+		}
 
 	})
 }

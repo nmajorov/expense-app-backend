@@ -116,7 +116,7 @@ func TestJWTStore_getJWTFromHeader(t *testing.T) {
 	req, _ := http.NewRequest("GET", "/", nil)
 	req.Header.Set("Authorization", "Bearer "+token)
 
-	gormJWT := store.getJWTFromHeader(req)
+	gormJWT := store.GetJWTFromHeader(req)
 	if gormJWT == nil {
 		t.Fatal("expected gormJWT, got nil")
 	}
@@ -127,7 +127,7 @@ func TestJWTStore_getJWTFromHeader(t *testing.T) {
 
 	// 2. Test with no Authorization header
 	req, _ = http.NewRequest("GET", "/", nil)
-	gormJWT = store.getJWTFromHeader(req)
+	gormJWT = store.GetJWTFromHeader(req)
 	if gormJWT != nil {
 		t.Fatal("expected nil, got gormJWT")
 	}
@@ -135,7 +135,7 @@ func TestJWTStore_getJWTFromHeader(t *testing.T) {
 	// 3. Test with a malformed Authorization header
 	req, _ = http.NewRequest("GET", "/", nil)
 	req.Header.Set("Authorization", "Bearer")
-	gormJWT = store.getJWTFromHeader(req)
+	gormJWT = store.GetJWTFromHeader(req)
 	if gormJWT != nil {
 		t.Fatal("expected nil, got gormJWT")
 	}
@@ -147,8 +147,59 @@ func TestJWTStore_getJWTFromHeader(t *testing.T) {
 	}
 	req, _ = http.NewRequest("GET", "/", nil)
 	req.Header.Set("Authorization", "Bearer "+tokenWithNonExistentJti)
-	gormJWT = store.getJWTFromHeader(req)
+	gormJWT = store.GetJWTFromHeader(req)
 	if gormJWT != nil {
 		t.Fatal("expected nil, got gormJWT")
+	}
+}
+
+func TestJWTStore_Save(t *testing.T) {
+	config := &config.Config{
+		Database: config.Database{
+			Type:          "sqlite3",
+			ConnectionURL: "file::memory:?cache=shared",
+		},
+		Web: config.Web{
+			PortWeb: 7000,
+			Verbose: false,
+		},
+		JWT: config.JWT{
+			MaxAgeHours: 24,
+			SigningKey:  "keymaker",
+		},
+	}
+
+	db, err := gorm.Open(sqlite.Open(config.ConnectionURL), &gorm.Config{})
+	if err != nil {
+		t.Fatalf("failed to connect database: %v", err)
+	}
+
+	store := New(db, config)
+
+	username := "testuser"
+
+	token, err := store.Get(username)
+	if err != nil {
+		t.Errorf("JWTStore.Get() error = %v, wantErr %v", err, false)
+	}
+
+	if err := store.Save(token); err != nil {
+		t.Errorf("JWTStore.Save() error = %v, wantErr %v", err, false)
+	}
+
+	// Verify that the record was created in the database
+	claims, err := utils.VerifyJWTToken(token, config.JWT.SigningKey)
+	if err != nil {
+		t.Fatalf("utils.VerifyJWTToken() failed: %v", err)
+	}
+	jti := claims.(jwt.MapClaims)["jti"].(string)
+
+	var jwtRecord gormJWT
+	if err := db.First(&jwtRecord, "id = ?", jti).Error; err != nil {
+		t.Fatalf("failed to find created jwt record: %v", err)
+	}
+
+	if jwtRecord.ID != jti {
+		t.Errorf("expected jti %s, got %s", jti, jwtRecord.ID)
 	}
 }

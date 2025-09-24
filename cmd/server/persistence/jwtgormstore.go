@@ -37,11 +37,11 @@ type JWTStore struct {
 }
 
 type gormJWT struct {
-	ID        string `sql:"unique_index"`
-	Data      string `sql:"type:text"`
+	ID        string `gorm:"primaryKey"`
+	Data      string `gorm:"type:text"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
-	ExpiresAt time.Time `sql:"index"`
+	ExpiresAt time.Time `gorm:"index"`
 }
 
 // New creates a new gormJWTStore session
@@ -95,24 +95,41 @@ func (st *JWTStore) Get(username string) (jwtToken string, err error) {
 }
 
 // Save session and set cookie header
-func (st *JWTStore) Save(r *http.Request, w http.ResponseWriter, jwt string) error {
-	//	now := time.Now()
-	//	expire := now.Add(time.Second * time.Duration(Options.MaxAge))
+func (st *JWTStore) Save(token string) error {
+	claims, err := utils.VerifyJWTToken(token, st.opts.signingKey)
+	if err != nil {
+		logger.AppLogger.Errorf("verifyJWTToken() returned an unexpected error: %v", err)
+		return nil
+	}
 
-	// // generate random session ID key suitable for storage in the db
-	// session.ID = strings.TrimRight(
-	// 	base32.StdEncoding.EncodeToString(
-	// 		securecookie.GenerateRandomKey(sessionIDLen)), "=")
-	// s = &gormJWT{
-	// 	ID:        session.ID,
-	// 	Data:      jwt,
-	// 	CreatedAt: now,
-	// 	UpdatedAt: now,
-	// 	ExpiresAt: expire,
-	// }
-	// if err := st.sessionTable().Create(s).Error; err != nil {
-	// 	return err
-	// }
+	if claims == nil || claims.(jwt.MapClaims)["jti"] == nil {
+		logger.AppLogger.Errorf("claim id not found")
+
+		return nil
+	}
+
+	jwtID := claims.(jwt.MapClaims)["jti"].(string)
+
+	s := &gormJWT{}
+	s.ID = jwtID
+	s.Data = token
+	expTime, err := claims.GetExpirationTime()
+	if err != nil {
+		logger.AppLogger.Errorf("getExpirationTime() returned an unexpected error: %v", err)
+		return err
+	}
+	s.ExpiresAt = time.Unix(expTime.Unix(), 0)
+	issueTime, err := claims.GetIssuedAt()
+	if err != nil {
+		logger.AppLogger.Errorf("getIssuedAt() returned an unexpected error: %v", err)
+		return err
+	}
+
+	s.CreatedAt = time.Unix(issueTime.Unix(), 0)
+
+	if err := st.sessionTable().Create(s).Error; err != nil {
+		return err
+	}
 
 	// TODO handle update
 	// s.Data = data
@@ -126,12 +143,15 @@ func (st *JWTStore) Save(r *http.Request, w http.ResponseWriter, jwt string) err
 }
 
 // get jwt  looks for an existing gormJWT from a id claim  JWTStored inside a header
-func (st *JWTStore) getJWTFromHeader(r *http.Request) *gormJWT {
+func (st *JWTStore) GetJWTFromHeader(r *http.Request) *gormJWT {
+
 	if bearer := r.Header.Get("Authorization"); bearer != "" {
 		token := strings.TrimPrefix(bearer, "Bearer ")
+
 		claims, err := utils.VerifyJWTToken(token, st.opts.signingKey)
 		if err != nil {
 			logger.AppLogger.Errorf("verifyJWTToken() returned an unexpected error: %v", err)
+			return nil
 		}
 
 		if claims == nil || claims.(jwt.MapClaims)["jti"] == nil {
@@ -139,14 +159,15 @@ func (st *JWTStore) getJWTFromHeader(r *http.Request) *gormJWT {
 
 			return nil
 		}
+
 		jwtID := claims.(jwt.MapClaims)["jti"]
 
 		s := &gormJWT{}
+
 		sr := st.sessionTable().Where("id = ? AND expires_at > ?", jwtID, time.Now()).Limit(1).Find(s)
 		if sr.Error != nil || sr.RowsAffected == 0 {
-			return nil
+			return s
 		}
-		return s
 	}
 	return nil
 }

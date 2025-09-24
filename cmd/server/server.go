@@ -23,7 +23,7 @@ var (
 	jwtstore *persistence.JWTStore
 )
 
-var
+var (
 	sha1ver   string         // sha1 revision used to build the program
 	buildTime string         // when the executable was built
 	version   string = "dev" // version
@@ -85,11 +85,11 @@ func NewServer(conf *config.Config) *Server {
 	logger.Infof("configured database type: %s", conf.Database.Type)
 
 	//configure session store
-	jwtStore = persistence.JWTStore.New(dbHandler.GetGORM(), conf)
+	jwtstore = persistence.New(dbHandler.GetGORM(), conf)
 
 	//create periodic session clean up
 	quit := make(chan struct{})
-	go jwtStore.PeriodicCleanup(5*time.Minute, quit)
+	go jwtstore.PeriodicCleanup(5*time.Minute, quit)
 
 	router := mux.NewRouter()
 

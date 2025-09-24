@@ -15,11 +15,14 @@ if __name__ == '__main__':
     print("\n\n Status:{} \n".format(r.status_code))
     for k ,v in headers_response :
         print("{0}:{1}\n".format(k,v))
+    
+    # Print all request headers
+    for header, value in r.headers.items():
+        print(f"{header}: {value}")
 
-    session_cookie = r.headers.get('set-cookie')
-    session = session_cookie.split(';')[0]
 
-    print("got session cookie: {0} \n".format(session))
+
+    #//print("got session cookie: {0} \n".format(session))
  #   print("\n call server status with session")
 #    headers = {"Cookie": "{0}".format(session)}
  #   r = requests.get("http://localhost:7000/status",headers=headers)
