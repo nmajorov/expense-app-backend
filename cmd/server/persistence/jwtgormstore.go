@@ -50,7 +50,9 @@ func New(db *gorm.DB, conf *config.Config) *JWTStore {
 	opt := new(Options)
 	opt.MaxAgeHours = time.Duration(conf.JWT.MaxAgeHours) * time.Hour
 	opt.signingKey = conf.JWT.SigningKey
-	return &JWTStore{db, opt}
+	jwtStore := &JWTStore{db, opt}
+	jwtStore.db.AutoMigrate(&gormJWT{})
+	return jwtStore
 }
 
 func (st *JWTStore) sessionTable() *gorm.DB {
@@ -129,11 +131,11 @@ func (st *JWTStore) getJWTFromHeader(r *http.Request) *gormJWT {
 		token := strings.TrimPrefix(bearer, "Bearer ")
 		claims, err := utils.VerifyJWTToken(token, st.opts.signingKey)
 		if err != nil {
-			logger.AppLogger.Fatalf("verifyJWTToken() returned an unexpected error: %v", err)
+			logger.AppLogger.Errorf("verifyJWTToken() returned an unexpected error: %v", err)
 		}
 
-		if claims.(jwt.MapClaims)["jti"] == nil {
-			logger.AppLogger.Errorf("ID claim id not found")
+		if claims == nil || claims.(jwt.MapClaims)["jti"] == nil {
+			logger.AppLogger.Errorf("claim id not found")
 
 			return nil
 		}
