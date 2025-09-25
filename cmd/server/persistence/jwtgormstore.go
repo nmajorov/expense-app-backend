@@ -166,8 +166,11 @@ func (st *JWTStore) GetJWTFromHeader(r *http.Request) *gormJWT {
 
 		sr := st.sessionTable().Where("id = ? AND expires_at > ?", jwtID, time.Now()).Limit(1).Find(s)
 		if sr.Error != nil || sr.RowsAffected == 0 {
+			return nil
+		} else {
 			return s
 		}
+
 	}
 	logger.AppLogger.Debugf("Authorization header not found")
 	return nil
