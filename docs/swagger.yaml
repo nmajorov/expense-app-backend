@@ -18,6 +18,36 @@ definitions:
       username:
         type: string
     type: object
+  model.Expense:
+    properties:
+      amount:
+        type: number
+      createdAT:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      reportID:
+        type: integer
+      tstamp:
+        type: string
+    type: object
+  model.Report:
+    properties:
+      createdAT:
+        type: string
+      expenses:
+        items:
+          $ref: '#/definitions/model.Expense'
+        type: array
+      id:
+        type: integer
+      name:
+        type: string
+      tstamp:
+        type: string
+    type: object
   server.registrationData:
     properties:
       email:
@@ -145,4 +175,194 @@ paths:
       summary: Register User in the application
       tags:
       - auth
+  /expenses:
+    get:
+      description: Get all expenses
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Expense'
+            type: array
+      summary: Get all expenses
+      tags:
+      - expenses
+    post:
+      consumes:
+      - application/json
+      description: Create a new expense
+      parameters:
+      - description: Expense to create
+        in: body
+        name: expense
+        required: true
+        schema:
+          $ref: '#/definitions/model.Expense'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/model.Expense'
+      summary: Create a new expense
+      tags:
+      - expenses
+  /expenses/{id}:
+    delete:
+      description: Delete an expense
+      parameters:
+      - description: Expense ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+      summary: Delete an expense
+      tags:
+      - expenses
+    get:
+      description: Get an expense by ID
+      parameters:
+      - description: Expense ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Expense'
+      summary: Get an expense by ID
+      tags:
+      - expenses
+    put:
+      consumes:
+      - application/json
+      description: Update an expense
+      parameters:
+      - description: Expense ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Expense to update
+        in: body
+        name: expense
+        required: true
+        schema:
+          $ref: '#/definitions/model.Expense'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Expense'
+      summary: Update an expense
+      tags:
+      - expenses
+  /reports:
+    get:
+      description: Get all reports
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Report'
+            type: array
+      summary: Get all reports
+      tags:
+      - reports
+    post:
+      consumes:
+      - application/json
+      description: Create a new report
+      parameters:
+      - description: Report to create
+        in: body
+        name: report
+        required: true
+        schema:
+          $ref: '#/definitions/model.Report'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/model.Report'
+      summary: Create a new report
+      tags:
+      - reports
+  /reports/{id}:
+    delete:
+      description: Delete a report
+      parameters:
+      - description: Report ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+      summary: Delete a report
+      tags:
+      - reports
+    get:
+      description: Get a report by ID
+      parameters:
+      - description: Report ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Report'
+      summary: Get a report by ID
+      tags:
+      - reports
+    put:
+      consumes:
+      - application/json
+      description: Update a report
+      parameters:
+      - description: Report ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Report to update
+        in: body
+        name: report
+        required: true
+        schema:
+          $ref: '#/definitions/model.Report'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Report'
+      summary: Update a report
+      tags:
+      - reports
 swagger: "2.0"

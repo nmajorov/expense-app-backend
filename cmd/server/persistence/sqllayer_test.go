@@ -69,3 +69,75 @@ func TestSqlLayer_GetAccountInfo(t *testing.T) {
 		})
 	}
 }
+
+func TestSqlLayer_Report(t *testing.T) {
+	conf := config.Database{
+		Type:          "sqlite3",
+		ConnectionURL: "file::memory:?cache=shared",
+	}
+	sqllayer := persistence.NewSqlLayer(conf)
+
+	t.Run("AddReport", func(t *testing.T) {
+		report := &model.Report{
+			Name: "Test Report",
+		}
+		err := sqllayer.AddReport(report)
+		if err != nil {
+			t.Errorf("AddReport() failed: %v", err)
+		}
+	})
+
+	t.Run("GetReport", func(t *testing.T) {
+		report, err := sqllayer.GetReport(1)
+		if err != nil {
+			t.Errorf("GetReport() failed: %v", err)
+		}
+		if report.ID != 1 {
+			t.Errorf("GetReport() got = %v, want %v", report.ID, 1)
+		}
+	})
+
+	t.Run("GetReports", func(t *testing.T) {
+		reports, err := sqllayer.GetReports()
+		if err != nil {
+			t.Errorf("GetReports() failed: %v", err)
+		}
+		if len(reports) != 1 {
+			t.Errorf("GetReports() got = %v, want %v", len(reports), 1)
+		}
+	})
+
+	t.Run("UpdateReport", func(t *testing.T) {
+		report, err := sqllayer.GetReport(1)
+		if err != nil {
+			t.Errorf("GetReport() failed: %v", err)
+		}
+
+		report.Name = "Updated Report"
+		err = sqllayer.UpdateReport(report)
+		if err != nil {
+			t.Errorf("UpdateReport() failed: %v", err)
+		}
+
+		updatedReport, err := sqllayer.GetReport(1)
+		if err != nil {
+			t.Errorf("GetReport() failed: %v", err)
+		}
+
+		if updatedReport.Name != "Updated Report" {
+			t.Errorf("UpdateReport() got = %v, want %v", updatedReport.Name, "Updated Report")
+		}
+	})
+
+	t.Run("DeleteReport", func(t *testing.T) {
+		err := sqllayer.DeleteReport(1)
+		if err != nil {
+			t.Errorf("DeleteReport() failed: %v", err)
+		}
+
+		_, err = sqllayer.GetReport(1)
+		if err == nil {
+			t.Errorf("GetReport() should have failed after DeleteReport(), but it didn't")
+		}
+	})
+}

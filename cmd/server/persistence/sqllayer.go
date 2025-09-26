@@ -37,6 +37,67 @@ func (sqlLayer *SqlLayer) GetAccountInfo(Username string) (*model.AccountInfo, e
 
 }
 
+func (sqlLayer *SqlLayer) AddReport(name string) error {
+	report := &model.Report{Name: name}
+	result := sqlLayer.db.Create(report)
+	return result.Error
+}
+
+func (sqlLayer *SqlLayer) GetReports() ([]model.Report, error) {
+	var reports []model.Report
+	result := sqlLayer.db.Preload("Expenses").Find(&reports)
+	return reports, result.Error
+}
+
+func (sqlLayer *SqlLayer) GetReport(id int64) (*model.Report, error) {
+	report := new(model.Report)
+	result := sqlLayer.db.Preload("Expenses").First(&report, id)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return report, nil
+}
+
+func (sqlLayer *SqlLayer) UpdateReport(report *model.Report) error {
+	result := sqlLayer.db.Save(report)
+	return result.Error
+}
+
+func (sqlLayer *SqlLayer) DeleteReport(id int64) error {
+	result := sqlLayer.db.Delete(&model.Report{}, id)
+	return result.Error
+}
+
+func (sqlLayer *SqlLayer) AddExpense(expense *model.Expense) error {
+	result := sqlLayer.db.Create(expense)
+	return result.Error
+}
+
+func (sqlLayer *SqlLayer) GetExpenses() ([]model.Expense, error) {
+	var expenses []model.Expense
+	result := sqlLayer.db.Find(&expenses)
+	return expenses, result.Error
+}
+
+func (sqlLayer *SqlLayer) GetExpense(id int64) (*model.Expense, error) {
+	expense := new(model.Expense)
+	result := sqlLayer.db.First(&expense, id)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return expense, nil
+}
+
+func (sqlLayer *SqlLayer) UpdateExpense(expense *model.Expense) error {
+	result := sqlLayer.db.Save(expense)
+	return result.Error
+}
+
+func (sqlLayer *SqlLayer) DeleteExpense(id int64) error {
+	result := sqlLayer.db.Delete(&model.Expense{}, id)
+	return result.Error
+}
+
 func (pgLayer *SqlLayer) GetGORM() *gorm.DB {
 	return pgLayer.db
 }
@@ -71,7 +132,7 @@ func NewSqlLayer(conf config.Database) *SqlLayer {
 	}
 
 	logger.AppLogger.Info("Running AutoMigrate for sqlite")
-	err = db.AutoMigrate(&model.AccountInfo{})
+	err = db.AutoMigrate(&model.AccountInfo{}, &model.Report{}, &model.Expense{})
 	if err != nil {
 		logger.AppLogger.Warnf("AutoMigrate failed: %v", err)
 	}

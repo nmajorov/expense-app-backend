@@ -25,6 +25,15 @@ type registrationData struct {
 	LastName string `json:"last_name"`
 }
 
+// Define a temporary struct to decode the registration request.
+type resposeUserInfo struct {
+	Token    string `json:"token"`
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Name     string `json:"firstname"`
+	LastName string `json:"lastname"`
+}
+
 // NewLoginHandler creates a new LoginHandler with the given database handler.
 func NewLoginHandler(db *persistence.SqlLayer) *LoginHandler {
 	return &LoginHandler{
@@ -83,7 +92,33 @@ func (lg *LoginHandler) Login(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Authorization", "Bearer "+jwToken)
 
 		logger.WithField("user", login.Username).Info("login was successful")
+		accountInfo, err := lg.DataBaseHandler.GetAccountInfo(login.Username)
+
+		if err != nil {
+			// Assuming a not found error is common here.
+			w.Header().Set("Content-Type", "application/json;charset=utf8")
+			w.WriteHeader(http.StatusInternalServerError)
+			_, _ = fmt.Fprintf(w, `{"error": "error occurred while getting account info %s"}`, err)
+			return
+		}
+
 		w.Header().Set("Content-Type", "application/json;charset=utf8")
+		resposeUserInfo := new(resposeUserInfo)
+		resposeUserInfo.Token = jwToken
+		resposeUserInfo.Username = login.Username
+		resposeUserInfo.Email = accountInfo.Email
+		resposeUserInfo.Name = accountInfo.Name
+		resposeUserInfo.LastName = accountInfo.LastName
+
+		err = json.NewEncoder(w).Encode(&resposeUserInfo)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			logger.Errorf("Error occurred while trying to encode account info to JSON: %s", err)
+			// The header is already written, so we can't send another status code.
+			// We can log the error. The client might receive a partial response.
+			_, _ = fmt.Fprintf(w, `{"error": "Error occurred while trying encode events to JSON %s"}`, err)
+			return
+		}
 		w.WriteHeader(http.StatusOK)
 
 	} else {

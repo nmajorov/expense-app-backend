@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/nmajorov/expense-app-backend/cmd/server/account"
+	"github.com/nmajorov/expense-app-backend/cmd/server/handlers"
 	"github.com/nmajorov/expense-app-backend/cmd/server/persistence"
 
 	"github.com/gorilla/mux"
@@ -145,6 +146,26 @@ func NewServer(conf *config.Config) *Server {
 	accountRouter.Use(AuthMiddleware)
 	accountHandler := account.NewAccountHandler(dbHandler)
 	accountRouter.Methods(http.MethodGet, http.MethodOptions).Path("/info").HandlerFunc(accountHandler.GetAccountInfo)
+
+	//report router
+	reportRouter := router.PathPrefix("/reports").Subrouter()
+	reportRouter.Use(AuthMiddleware)
+	reportHandler := handlers.NewReportHandler(dbHandler)
+	reportRouter.Methods(http.MethodPost, http.MethodOptions).HandlerFunc(reportHandler.CreateReportHandler)
+	reportRouter.Methods(http.MethodGet, http.MethodOptions).HandlerFunc(reportHandler.GetReportsHandler)
+	reportRouter.Methods(http.MethodGet, http.MethodOptions).Path("/{id}").HandlerFunc(reportHandler.GetReportHandler)
+	reportRouter.Methods(http.MethodPut, http.MethodOptions).Path("/{id}").HandlerFunc(reportHandler.UpdateReportHandler)
+	reportRouter.Methods(http.MethodDelete, http.MethodOptions).Path("/{id}").HandlerFunc(reportHandler.DeleteReportHandler)
+
+	//expense router
+	expenseRouter := router.PathPrefix("/expenses").Subrouter()
+	expenseRouter.Use(AuthMiddleware)
+	expenseHandler := handlers.NewExpenseHandler(dbHandler)
+	expenseRouter.Methods(http.MethodPost, http.MethodOptions).HandlerFunc(expenseHandler.CreateExpenseHandler)
+	expenseRouter.Methods(http.MethodGet, http.MethodOptions).HandlerFunc(expenseHandler.GetExpensesHandler)
+	expenseRouter.Methods(http.MethodGet, http.MethodOptions).Path("/{id}").HandlerFunc(expenseHandler.GetExpenseHandler)
+	expenseRouter.Methods(http.MethodPut, http.MethodOptions).Path("/{id}").HandlerFunc(expenseHandler.UpdateExpenseHandler)
+	expenseRouter.Methods(http.MethodDelete, http.MethodOptions).Path("/{id}").HandlerFunc(expenseHandler.DeleteExpenseHandler)
 
 	//set port for server
 	serverPort := strconv.FormatInt(conf.PortWeb, 10)
