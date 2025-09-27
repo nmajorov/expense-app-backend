@@ -356,7 +356,7 @@ const docTemplate = `{
             "post": {
                 "description": "Create a new report",
                 "consumes": [
-                    "application/json"
+                    "application/x-www-form-urlencoded"
                 ],
                 "produces": [
                     "application/json"
@@ -367,13 +367,11 @@ const docTemplate = `{
                 "summary": "Create a new report",
                 "parameters": [
                     {
-                        "description": "Report to create",
-                        "name": "report",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.Report"
-                        }
+                        "type": "string",
+                        "description": "Report name",
+                        "name": "name",
+                        "in": "formData",
+                        "required": true
                     }
                 ],
                 "responses": {

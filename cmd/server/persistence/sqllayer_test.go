@@ -78,10 +78,7 @@ func TestSqlLayer_Report(t *testing.T) {
 	sqllayer := persistence.NewSqlLayer(conf)
 
 	t.Run("AddReport", func(t *testing.T) {
-		report := &model.Report{
-			Name: "Test Report",
-		}
-		err := sqllayer.AddReport(report)
+		err := sqllayer.AddReport("Test Report")
 		if err != nil {
 			t.Errorf("AddReport() failed: %v", err)
 		}

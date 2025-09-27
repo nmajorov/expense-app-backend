@@ -2,11 +2,13 @@ package handlers
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"net/http"
 	"strconv"
 
 	"github.com/gorilla/mux"
 	"github.com/nmajorov/expense-app-backend/cmd/server/persistence"
+	"github.com/nmajorov/expense-app-backend/logger"
 	"github.com/nmajorov/expense-app-backend/model"
 )
 
@@ -21,25 +23,29 @@ func NewReportHandler(db *persistence.SqlLayer) *ReportHandler {
 // @Summary Create a new report
 // @Description Create a new report
 // @Tags reports
-// @Accept  json
+// @Accept  x-www-form-urlencoded
 // @Produce  json
-// @Param   report  body    model.Report  true  "Report to create"
+// @Param   name  formData    string  true  "Report name"
 // @Success 201 {object} model.Report
 // @Router /reports [post]
 func (h *ReportHandler) CreateReportHandler(w http.ResponseWriter, r *http.Request) {
-	var report model.Report
-	if err := json.NewDecoder(r.Body).Decode(&report); err != nil {
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	defer r.Body.Close()
 
-	if err := h.db.AddReport(&report); err != nil {
+	name := string(body)
+
+	logger.AppLogger.Debugf("Create report: %v", name)
+
+	if err := h.db.AddReport(name); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(report)
 }
 
 // @Summary Get all reports
