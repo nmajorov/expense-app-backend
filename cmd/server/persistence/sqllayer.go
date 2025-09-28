@@ -65,8 +65,19 @@ func (sqlLayer *SqlLayer) UpdateReport(report *model.Report) error {
 }
 
 func (sqlLayer *SqlLayer) DeleteReport(id int64) error {
-	result := sqlLayer.db.Delete(&model.Report{}, id)
+	//	result := sqlLayer.db.Select("Expenses").Delete(&model.Report{}, id)
+	result := sqlLayer.db.Select("Expenses").Delete(&model.Report{}, id)
+	if result.Error != nil {
+		return result.Error
+	}
+	result = sqlLayer.db.Where("report_id = ?", id).Delete(&model.Expense{})
 	return result.Error
+}
+
+func (sqlLayer *SqlLayer) GetExpensesForReport(reportID int64) ([]model.Expense, error) {
+	var expenses []model.Expense
+	result := sqlLayer.db.Where("report_id = ?", reportID).Find(&expenses)
+	return expenses, result.Error
 }
 
 func (sqlLayer *SqlLayer) AddExpense(expense *model.Expense) error {

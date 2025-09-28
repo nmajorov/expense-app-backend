@@ -4,18 +4,7 @@ import json,requests
 
 # curl -v -X POST --data  '{"account":"niko","passwd":"Geneva2022"}' --header "Content-Type: application/json"  http://localhost:7000/login
 
-if __name__ == "__main__":
-    headers = {"Content-Type": "application/json, charset=utf-8"}
-    payload = """
-       {
-        "username": "joe",
-        "email": "joe@joebiden.com",
-        "password": "secret",
-        "name": "Joe",
-        "last_name": "Biden"
-        }
-
-    """
+def sendUser(payload):
 
     json_data = json.loads(payload)
 
@@ -37,3 +26,32 @@ if __name__ == "__main__":
     for k, v in headers_response:
         print("{0}:{1}\n".format(k, v))
 
+
+
+if __name__ == "__main__":
+    headers = {"Content-Type": "application/json, charset=utf-8"}
+    joe_payload = """
+       {
+        "username": "joe",
+        "email": "joe@joebiden.com",
+        "password": "secret",
+        "name": "Joe",
+        "last_name": "Biden"
+        }
+
+    """
+
+    nikolaj_payload = """
+       {
+        "username": "nmajorov",
+        "email": "nikolaj@majorov.biz",
+        "password": "secret",
+        "name": "Nikolaj",
+        "last_name": "Majorov"
+        }
+
+    """
+    sendUser(joe_payload)
+    sendUser(nikolaj_payload)
+    
+ 

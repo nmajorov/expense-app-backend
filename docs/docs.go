@@ -189,7 +189,7 @@ const docTemplate = `{
         },
         "/expenses": {
             "get": {
-                "description": "Get all expenses",
+                "description": "Get all expenses , if reportid is specified, only expenses for that report are returned",
                 "produces": [
                     "application/json"
                 ],
@@ -520,10 +520,8 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "reportID": {
+                    "description": "TStamp      *time.Time ` + "`" + `json:\"tstamp,omitempty,gorm:\"autoCreateTime\"` + "`" + `",
                     "type": "integer"
-                },
-                "tstamp": {
-                    "type": "string"
                 }
             }
         },

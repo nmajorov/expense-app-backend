@@ -190,19 +190,39 @@ func (h *ExpenseHandler) CreateExpenseHandler(w http.ResponseWriter, r *http.Req
 }
 
 // @Summary Get all expenses
-// @Description Get all expenses
+// @Description Get all expenses , if reportid is specified, only expenses for that report are returned
 // @Tags expenses
 // @Produce  json
 // @Success 200 {array} model.Expense
 // @Router /expenses [get]
 func (h *ExpenseHandler) GetExpensesHandler(w http.ResponseWriter, r *http.Request) {
-	expenses, err := h.db.GetExpenses()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+	var expenses []model.Expense
+	var err error
+
+	if r.URL.Query().Get("reportid") != "" {
+		reportId, err := strconv.ParseUint(r.URL.Query().Get("reportid"), 10, 64)
+		if err != nil {
+			logger.AppLogger.Errorf("Error parsing reportid: %v", err)
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		expenses, err = h.db.GetExpensesForReport(int64(reportId))
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		json.NewEncoder(w).Encode(expenses)
+
+	} else {
+
+		expenses, err = h.db.GetExpenses()
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		json.NewEncoder(w).Encode(expenses)
 	}
 
-	json.NewEncoder(w).Encode(expenses)
 }
 
 // @Summary Get an expense by ID
