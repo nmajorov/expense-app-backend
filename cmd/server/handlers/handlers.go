@@ -160,18 +160,33 @@ func NewExpenseHandler(db *persistence.SqlLayer) *ExpenseHandler {
 // @Router /expenses [post]
 func (h *ExpenseHandler) CreateExpenseHandler(w http.ResponseWriter, r *http.Request) {
 	var expense model.Expense
-	if err := json.NewDecoder(r.Body).Decode(&expense); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
 
-	if err := h.db.AddExpense(&expense); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+	if r.URL.Query().Get("reportid") != "" {
+		reportId, err := strconv.ParseUint(r.URL.Query().Get("reportid"), 10, 64)
+		if err != nil {
+			logger.AppLogger.Errorf("Error parsing reportid: %v", err)
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		if err := json.NewDecoder(r.Body).Decode(&expense); err != nil {
+			logger.AppLogger.Errorf("Error decoding request body: %v", err)
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		expense.ReportID = uint(reportId)
+
+		logger.AppLogger.Debugf("adding expense: %v", expense)
+
+		if err := h.db.AddExpense(&expense); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
 	}
 
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(expense)
 }
 
 // @Summary Get all expenses

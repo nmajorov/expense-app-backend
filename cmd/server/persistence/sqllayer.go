@@ -45,7 +45,8 @@ func (sqlLayer *SqlLayer) AddReport(name string) error {
 
 func (sqlLayer *SqlLayer) GetReports() ([]model.Report, error) {
 	var reports []model.Report
-	result := sqlLayer.db.Preload("Expenses").Find(&reports)
+	//	result := sqlLayer.db.Preload("Expenses").Find(&reports)
+	result := sqlLayer.db.Find(&reports)
 	return reports, result.Error
 }
 

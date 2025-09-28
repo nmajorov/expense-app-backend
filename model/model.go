@@ -43,10 +43,10 @@ type Report struct {
 
 type Expense struct {
 	gorm.Model  `swaggerignore:"true"`
-	ID          int64      `json:"id"`
-	Description string     `json:"description"`
-	CreatedAt   time.Time  `json:"createdAT"`
-	Amount      float64    `json:"amount"`
-	TStamp      *time.Time `json:"tstamp,omitempty"`
-	ReportID    uint
+	ID          int64     `json:"id"`
+	Description string    `json:"description"`
+	CreatedAt   time.Time `json:"createdAT"`
+	Amount      float64   `json:"amount"`
+	//	TStamp      *time.Time `json:"tstamp,omitempty,gorm:"autoCreateTime"`
+	ReportID uint
 }
