@@ -101,6 +101,15 @@ func (sqlLayer *SqlLayer) GetExpense(id int64) (*model.Expense, error) {
 }
 
 func (sqlLayer *SqlLayer) UpdateExpense(expense *model.Expense) error {
+	if expense.ReportID == 0 {
+		expenseFromDB := new(model.Expense)
+		result := sqlLayer.db.Find(expenseFromDB, expense.ID)
+		if result.Error != nil {
+			return result.Error
+		}
+		expense.ReportID = expenseFromDB.ReportID
+
+	}
 	result := sqlLayer.db.Save(expense)
 	return result.Error
 }

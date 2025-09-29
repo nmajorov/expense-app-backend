@@ -263,14 +263,8 @@ func (h *ExpenseHandler) GetExpenseHandler(w http.ResponseWriter, r *http.Reques
 // @Param   id      path    int           true  "Expense ID"
 // @Param   expense  body    model.Expense  true  "Expense to update"
 // @Success 200 {object} model.Expense
-// @Router /expenses/{id} [put]
+// @Router /expenses [put]
 func (h *ExpenseHandler) UpdateExpenseHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id, err := strconv.ParseInt(vars["id"], 10, 64)
-	if err != nil {
-		http.Error(w, "Invalid expense ID", http.StatusBadRequest)
-		return
-	}
 
 	var expense model.Expense
 	if err := json.NewDecoder(r.Body).Decode(&expense); err != nil {
@@ -278,7 +272,6 @@ func (h *ExpenseHandler) UpdateExpenseHandler(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	expense.ID = id
 	if err := h.db.UpdateExpense(&expense); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

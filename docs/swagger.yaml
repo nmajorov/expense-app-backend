@@ -211,6 +211,32 @@ paths:
       summary: Create a new expense
       tags:
       - expenses
+    put:
+      consumes:
+      - application/json
+      description: Update an expense
+      parameters:
+      - description: Expense ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Expense to update
+        in: body
+        name: expense
+        required: true
+        schema:
+          $ref: '#/definitions/model.Expense'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Expense'
+      summary: Update an expense
+      tags:
+      - expenses
   /expenses/{id}:
     delete:
       description: Delete an expense
@@ -242,32 +268,6 @@ paths:
           schema:
             $ref: '#/definitions/model.Expense'
       summary: Get an expense by ID
-      tags:
-      - expenses
-    put:
-      consumes:
-      - application/json
-      description: Update an expense
-      parameters:
-      - description: Expense ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: Expense to update
-        in: body
-        name: expense
-        required: true
-        schema:
-          $ref: '#/definitions/model.Expense'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.Expense'
-      summary: Update an expense
       tags:
       - expenses
   /reports:

@@ -163,8 +163,8 @@ func NewServer(conf *config.Config) *Server {
 	expenseHandler := handlers.NewExpenseHandler(dbHandler)
 	expenseRouter.Methods(http.MethodPost, http.MethodOptions).HandlerFunc(expenseHandler.CreateExpenseHandler)
 	expenseRouter.Methods(http.MethodGet, http.MethodOptions).HandlerFunc(expenseHandler.GetExpensesHandler)
+	expenseRouter.Methods(http.MethodPut, http.MethodOptions).HandlerFunc(expenseHandler.UpdateExpenseHandler)
 	expenseRouter.Methods(http.MethodGet, http.MethodOptions).Path("/{id}").HandlerFunc(expenseHandler.GetExpenseHandler)
-	expenseRouter.Methods(http.MethodPut, http.MethodOptions).Path("/{id}").HandlerFunc(expenseHandler.UpdateExpenseHandler)
 	expenseRouter.Methods(http.MethodDelete, http.MethodOptions).Path("/{id}").HandlerFunc(expenseHandler.DeleteExpenseHandler)
 
 	//set port for server
