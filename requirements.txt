@@ -12,4 +12,4 @@ termcolor >= 1.1.0
 httpx[cli] >=0.24.0
 yamllint >= 1.32.0
 pandas >=2.1.1
-TA-Lib==0.4.20
+##TA-Lib==0.4.20

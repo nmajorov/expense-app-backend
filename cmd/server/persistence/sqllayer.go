@@ -37,10 +37,10 @@ func (sqlLayer *SqlLayer) GetAccountInfo(Username string) (*model.AccountInfo, e
 
 }
 
-func (sqlLayer *SqlLayer) AddReport(name string) error {
+func (sqlLayer *SqlLayer) AddReport(name string) (reportId int64, err error) {
 	report := &model.Report{Name: name}
 	result := sqlLayer.db.Create(report)
-	return result.Error
+	return report.ID, result.Error
 }
 
 func (sqlLayer *SqlLayer) GetReports() ([]model.Report, error) {

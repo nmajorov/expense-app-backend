@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -29,6 +30,8 @@ func NewReportHandler(db *persistence.SqlLayer) *ReportHandler {
 // @Success 201 {object} model.Report
 // @Router /reports [post]
 func (h *ReportHandler) CreateReportHandler(w http.ResponseWriter, r *http.Request) {
+	var reportId int64
+
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -40,11 +43,11 @@ func (h *ReportHandler) CreateReportHandler(w http.ResponseWriter, r *http.Reque
 
 	logger.AppLogger.Debugf("Create report: %v", name)
 
-	if err := h.db.AddReport(name); err != nil {
+	if reportId, err = h.db.AddReport(name); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
+	fmt.Fprintf(w, "%d", reportId)
 	w.WriteHeader(http.StatusCreated)
 }
 
@@ -200,12 +203,15 @@ func (h *ExpenseHandler) GetExpensesHandler(w http.ResponseWriter, r *http.Reque
 	var err error
 
 	if r.URL.Query().Get("reportid") != "" {
+
 		reportId, err := strconv.ParseUint(r.URL.Query().Get("reportid"), 10, 64)
 		if err != nil {
 			logger.AppLogger.Errorf("Error parsing reportid: %v", err)
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
+
 		}
+		logger.AppLogger.Infof("get expenses for reportid: %v", reportId)
 		expenses, err = h.db.GetExpensesForReport(int64(reportId))
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
