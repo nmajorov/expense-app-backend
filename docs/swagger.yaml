@@ -305,6 +305,28 @@ paths:
       summary: Create a new report
       tags:
       - reports
+    put:
+      consumes:
+      - application/json
+      description: Update a report by providing the complete report object in the
+        request body. The ID in the body determines which report to update.
+      parameters:
+      - description: Report object to update
+        in: body
+        name: report
+        required: true
+        schema:
+          $ref: '#/definitions/model.Report'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Report'
+      summary: Update a report
+      tags:
+      - reports
   /reports/{id}:
     delete:
       description: Delete a report
@@ -336,32 +358,6 @@ paths:
           schema:
             $ref: '#/definitions/model.Report'
       summary: Get a report by ID
-      tags:
-      - reports
-    put:
-      consumes:
-      - application/json
-      description: Update a report
-      parameters:
-      - description: Report ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: Report to update
-        in: body
-        name: report
-        required: true
-        schema:
-          $ref: '#/definitions/model.Report'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.Report'
-      summary: Update a report
       tags:
       - reports
 swagger: "2.0"

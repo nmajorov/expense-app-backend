@@ -153,8 +153,8 @@ func NewServer(conf *config.Config) *Server {
 	reportHandler := handlers.NewReportHandler(dbHandler)
 	reportRouter.Methods(http.MethodPost, http.MethodOptions).HandlerFunc(reportHandler.CreateReportHandler)
 	reportRouter.Methods(http.MethodGet, http.MethodOptions).HandlerFunc(reportHandler.GetReportsHandler)
+	reportRouter.Methods(http.MethodPut, http.MethodOptions).HandlerFunc(reportHandler.UpdateReportHandler)
 	reportRouter.Methods(http.MethodGet, http.MethodOptions).Path("/{id}").HandlerFunc(reportHandler.GetReportHandler)
-	reportRouter.Methods(http.MethodPut, http.MethodOptions).Path("/{id}").HandlerFunc(reportHandler.UpdateReportHandler)
 	reportRouter.Methods(http.MethodDelete, http.MethodOptions).Path("/{id}").HandlerFunc(reportHandler.DeleteReportHandler)
 
 	//expense router

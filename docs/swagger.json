@@ -342,6 +342,38 @@
                     }
                 }
             },
+            "put": {
+                "description": "Update a report by providing the complete report object in the request body. The ID in the body determines which report to update.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "reports"
+                ],
+                "summary": "Update a report",
+                "parameters": [
+                    {
+                        "description": "Report object to update",
+                        "name": "report",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.Report"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Report"
+                        }
+                    }
+                }
+            },
             "post": {
                 "description": "Create a new report",
                 "consumes": [
@@ -390,45 +422,6 @@
                         "name": "id",
                         "in": "path",
                         "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/model.Report"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "description": "Update a report",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "reports"
-                ],
-                "summary": "Update a report",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Report ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Report to update",
-                        "name": "report",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.Report"
-                        }
                     }
                 ],
                 "responses": {

@@ -92,21 +92,14 @@ func (h *ReportHandler) GetReportHandler(w http.ResponseWriter, r *http.Request)
 }
 
 // @Summary Update a report
-// @Description Update a report
+// @Description Update a report by providing the complete report object in the request body. The ID in the body determines which report to update.
 // @Tags reports
 // @Accept  json
 // @Produce  json
-// @Param   id      path    int           true  "Report ID"
-// @Param   report  body    model.Report  true  "Report to update"
+// @Param   report  body    model.Report  true  "Report object to update"
 // @Success 200 {object} model.Report
-// @Router /reports/{id} [put]
+// @Router /reports [put]
 func (h *ReportHandler) UpdateReportHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id, err := strconv.ParseInt(vars["id"], 10, 64)
-	if err != nil {
-		http.Error(w, "Invalid report ID", http.StatusBadRequest)
-		return
-	}
 
 	var report model.Report
 	if err := json.NewDecoder(r.Body).Decode(&report); err != nil {
@@ -114,8 +107,10 @@ func (h *ReportHandler) UpdateReportHandler(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	report.ID = id
+	logger.AppLogger.Infof("Updating report: %v", report)
+
 	if err := h.db.UpdateReport(&report); err != nil {
+		logger.AppLogger.Errorf("Error updating report: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
