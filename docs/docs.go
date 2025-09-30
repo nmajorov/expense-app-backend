@@ -197,6 +197,20 @@ const docTemplate = `{
                     "expenses"
                 ],
                 "summary": "Get all expenses",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Report ID",
+                        "name": "reportid",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort expenses by field (e.g., 'date', 'amount')",
+                        "name": "sortBy",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",

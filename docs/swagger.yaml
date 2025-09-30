@@ -178,6 +178,15 @@ paths:
     get:
       description: Get all expenses , if reportid is specified, only expenses for
         that report are returned
+      parameters:
+      - description: Report ID
+        in: query
+        name: reportid
+        type: integer
+      - description: Sort expenses by field (e.g., 'date', 'amount')
+        in: query
+        name: sortBy
+        type: string
       produces:
       - application/json
       responses:

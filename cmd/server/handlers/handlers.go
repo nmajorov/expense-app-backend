@@ -191,11 +191,15 @@ func (h *ExpenseHandler) CreateExpenseHandler(w http.ResponseWriter, r *http.Req
 // @Description Get all expenses , if reportid is specified, only expenses for that report are returned
 // @Tags expenses
 // @Produce  json
+// @Param   reportid  query    int  false  "Report ID"
+// @Param   sortBy    query    string  false  "Sort expenses by field (e.g., 'date', 'amount')"
 // @Success 200 {array} model.Expense
 // @Router /expenses [get]
 func (h *ExpenseHandler) GetExpensesHandler(w http.ResponseWriter, r *http.Request) {
 	var expenses []model.Expense
 	var err error
+
+	sortBy := r.URL.Query().Get("sort_by")
 
 	if r.URL.Query().Get("reportid") != "" {
 
@@ -206,8 +210,8 @@ func (h *ExpenseHandler) GetExpensesHandler(w http.ResponseWriter, r *http.Reque
 			return
 
 		}
-		logger.AppLogger.Infof("get expenses for reportid: %v", reportId)
-		expenses, err = h.db.GetExpensesForReport(int64(reportId))
+		logger.AppLogger.Infof("get expenses for reportid: %v, sortBy: %v", reportId, sortBy)
+		expenses, err = h.db.GetExpensesForReport(int64(reportId), sortBy)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -216,7 +220,7 @@ func (h *ExpenseHandler) GetExpensesHandler(w http.ResponseWriter, r *http.Reque
 
 	} else {
 
-		expenses, err = h.db.GetExpenses()
+		expenses, err = h.db.GetExpenses(sortBy)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

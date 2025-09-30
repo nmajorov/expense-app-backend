@@ -193,7 +193,7 @@ func TestSqlLayer_Report(t *testing.T) {
 			t.Errorf("AddReport() failed: %v", err)
 		}
 
-		expenses, err := sqllayer.GetExpensesForReport(reportId)
+		expenses, err := sqllayer.GetExpensesForReport(reportId, "")
 
 		if err != nil {
 			t.Errorf("GetExpensesForReport() failed: %v", err)
@@ -207,7 +207,7 @@ func TestSqlLayer_Report(t *testing.T) {
 			t.Errorf("GetExpensesForReport() got = %v, want %v", expenses[0].Description, "TestExpense01")
 		}
 
-		expenses3, err := sqllayer.GetExpensesForReport(report3Id)
+		expenses3, err := sqllayer.GetExpensesForReport(report3Id, "")
 
 		if err != nil {
 			t.Errorf("GetExpensesForReport() failed: %v", err)

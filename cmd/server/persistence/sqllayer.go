@@ -74,9 +74,13 @@ func (sqlLayer *SqlLayer) DeleteReport(id int64) error {
 	return result.Error
 }
 
-func (sqlLayer *SqlLayer) GetExpensesForReport(reportID int64) ([]model.Expense, error) {
+func (sqlLayer *SqlLayer) GetExpensesForReport(reportID int64, sortBy string) ([]model.Expense, error) {
 	var expenses []model.Expense
-	result := sqlLayer.db.Where("report_id = ?", reportID).Find(&expenses)
+	query := sqlLayer.db.Where("report_id = ?", reportID)
+	if sortBy != "" {
+		query = query.Order(sqlLayer.buildOrderClause(sortBy))
+	}
+	result := query.Find(&expenses)
 	return expenses, result.Error
 }
 
@@ -85,9 +89,13 @@ func (sqlLayer *SqlLayer) AddExpense(expense *model.Expense) error {
 	return result.Error
 }
 
-func (sqlLayer *SqlLayer) GetExpenses() ([]model.Expense, error) {
+func (sqlLayer *SqlLayer) GetExpenses(sortBy string) ([]model.Expense, error) {
 	var expenses []model.Expense
-	result := sqlLayer.db.Find(&expenses)
+	query := sqlLayer.db
+	if sortBy != "" {
+		query = query.Order(sqlLayer.buildOrderClause(sortBy))
+	}
+	result := query.Find(&expenses)
 	return expenses, result.Error
 }
 
@@ -159,4 +167,23 @@ func NewSqlLayer(conf config.Database) *SqlLayer {
 	}
 
 	return &SqlLayer{db}
+}
+
+func (sqlLayer *SqlLayer) buildOrderClause(sortBy string) string {
+	switch sortBy {
+	case "created_desc":
+		return "created_at DESC"
+	case "created_asc":
+		return "created_at ASC"
+	case "amount_desc":
+		return "amount desc"
+	case "amount_asc":
+		return "amount asc"
+	case "id_desc":
+		return "ID DESC"
+	case "id_asc":
+		return "ID ASC"
+	default:
+		return "ID DESC" // Default sort id desc" // Default sort order
+	}
 }
