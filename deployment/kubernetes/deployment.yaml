@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: expense-app-backend
+  labels:
+    app: expense-app-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: expense-app-backend
+  template:
+    metadata:
+      labels:
+        app: expense-app-backend
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+      containers:
+        - name: expense-app-backend
+          image: docker.io/nmajorov/expense-app-backend:0.0.1-dev
+          imagePullPolicy: IfNotPresent
+          args: ["-c", "/config/config.yaml"]
+          ports:
+            - name: http
+              containerPort: 7000
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 250m
+              memory: 256Mi
+          readinessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 20
+          volumeMounts:
+            - name: config
+              mountPath: /config
+              readOnly: true
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: config
+          configMap:
+            name: expense-app-backend-config
+        - name: data
+          persistentVolumeClaim:
+            claimName: expense-app-backend-data

@@ -1,5 +1,5 @@
 # Will be replaced in the CI with registry.ci.openshift.org/ocp/builder:rhel-8-golang-1.16-openshift-4.10
-FROM docker.io/library/golang:1.19 AS builder
+FROM docker.io/library/golang:1.22 AS builder
 
 WORKDIR /src
 
