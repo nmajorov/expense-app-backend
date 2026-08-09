@@ -28,7 +28,11 @@ list: ## list dependencies
 all: help
 
 
-dev: ##  run  in dev mode
+.PHONY: tools
+tools: ## install dev tool binaries (swag)
+	@command -v swag >/dev/null 2>&1 || go install github.com/swaggo/swag/cmd/swag@v1.16.6
+
+dev: tools ##  run  in dev mode
 	@echo "run in dev mode"
 	swag init
 	go run $(GOFLAGS) main.go
