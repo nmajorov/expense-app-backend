@@ -5,11 +5,10 @@ metadata:
   labels:
     app: expense-app-backend
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: expense-app-backend
   ports:
     - name: http
       port: 7000
       targetPort: http
-      nodePort: 30070
