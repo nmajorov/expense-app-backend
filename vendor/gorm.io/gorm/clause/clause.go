@@ -1,3 +1,4 @@
+// Package clause provides the clause interface and common clause implementations for GORM.
 package clause
 
 // Interface clause interface
@@ -20,6 +21,7 @@ type Builder interface {
 	Writer
 	WriteQuoted(field interface{})
 	AddVar(Writer, ...interface{})
+	AddError(error) error
 }
 
 // Clause
