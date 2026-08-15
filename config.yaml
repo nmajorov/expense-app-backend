@@ -5,9 +5,17 @@ web:
 ###################
 # sqlite connection
 ###################
+# database:
+#   type: sqlite
+#   connectionUrl: "file:./expense.dev.db"
+
+
+###################
+# psql connectoin #
+###################
 database:
-  type: "sqlite3"
-  connectionUrl: "file:./expense.dev.db"
+  type: "postgres"
+  connectionUrl: "postgresql://app:test@alma9.home:30432/app?sslmode=require"
 
 jwt:
   maxAgeHours: 4
