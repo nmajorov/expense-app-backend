@@ -28,7 +28,7 @@ type AccountInfo struct {
 
 type Credentials struct {
 	Username string `json:"username"`
-	Password string `json:"passwd"`
+	Password string `json:"password"`
 }
 
 // Report is an entity that represents a expense report

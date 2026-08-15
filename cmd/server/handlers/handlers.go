@@ -2,8 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
-	"io/ioutil"
 	"net/http"
 	"strconv"
 
@@ -21,34 +19,36 @@ func NewReportHandler(db *persistence.SqlLayer) *ReportHandler {
 	return &ReportHandler{db: db}
 }
 
+type createReportRequest struct {
+	Name string `json:"name"`
+}
+
 // @Summary Create a new report
 // @Description Create a new report
 // @Tags reports
-// @Accept  x-www-form-urlencoded
+// @Accept  json
 // @Produce  json
-// @Param   name  formData    string  true  "Report name"
+// @Param   report  body    createReportRequest  true  "Report to create"
 // @Success 201 {object} model.Report
 // @Router /reports [post]
 func (h *ReportHandler) CreateReportHandler(w http.ResponseWriter, r *http.Request) {
-	var reportId int64
-
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
+	var req createReportRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	defer r.Body.Close()
 
-	name := string(body)
+	logger.AppLogger.Debugf("Create report: %v", req.Name)
 
-	logger.AppLogger.Debugf("Create report: %v", name)
-
-	if reportId, err = h.db.AddReport(name); err != nil {
+	reportId, err := h.db.AddReport(req.Name)
+	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	fmt.Fprintf(w, "%d", reportId)
+
+	w.Header().Set("Content-Type", "application/json;charset=utf8")
 	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(model.Report{ID: reportId, Name: req.Name})
 }
 
 // @Summary Get all reports
@@ -157,34 +157,38 @@ func NewExpenseHandler(db *persistence.SqlLayer) *ExpenseHandler {
 // @Success 201 {object} model.Expense
 // @Router /expenses [post]
 func (h *ExpenseHandler) CreateExpenseHandler(w http.ResponseWriter, r *http.Request) {
-	var expense model.Expense
-
-	if r.URL.Query().Get("reportid") != "" {
-		reportId, err := strconv.ParseUint(r.URL.Query().Get("reportid"), 10, 64)
-		if err != nil {
-			logger.AppLogger.Errorf("Error parsing reportid: %v", err)
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-
-		if err := json.NewDecoder(r.Body).Decode(&expense); err != nil {
-			logger.AppLogger.Errorf("Error decoding request body: %v", err)
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-
-		expense.ReportID = uint(reportId)
-
-		logger.AppLogger.Debugf("adding expense: %v", expense)
-
-		if err := h.db.AddExpense(&expense); err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
+	reportIdParam := r.URL.Query().Get("reportid")
+	if reportIdParam == "" {
+		http.Error(w, "reportid query parameter is required", http.StatusBadRequest)
+		return
 	}
 
+	reportId, err := strconv.ParseUint(reportIdParam, 10, 64)
+	if err != nil {
+		logger.AppLogger.Errorf("Error parsing reportid: %v", err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	var expense model.Expense
+	if err := json.NewDecoder(r.Body).Decode(&expense); err != nil {
+		logger.AppLogger.Errorf("Error decoding request body: %v", err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	expense.ReportID = uint(reportId)
+
+	logger.AppLogger.Debugf("adding expense: %v", expense)
+
+	if err := h.db.AddExpense(&expense); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json;charset=utf8")
 	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(expense)
 }
 
 // @Summary Get all expenses
