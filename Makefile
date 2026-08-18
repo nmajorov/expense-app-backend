@@ -2,6 +2,7 @@
 # Needed SHELL since I'm using zsh
 SHELL := /bin/bash
 VERSION := "0.0.2-dev"
+RELEASE_TAG := v$(subst ",,$(VERSION))
 
 ts := $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
 LD_FLAGS:="-X github.com/nmajorov/expense-app-backends/cmd/server.version=$(VERSION) -X github.com/nmajorov/expense-app-backend/cmd/server.sha1ver=$(shell git rev-parse HEAD) -X gitlab.com/nmajorov/nmql-server/cmd/server.buildTime=$(ts)"
@@ -71,6 +72,19 @@ docker-build: ## build docker image
 .PHONY: docker-push
 docker-push: ## push docker image to registry
 	podman push docker.io/nmajorov/expense-app-backend:$(VERSION)
+
+
+.PHONY: release
+release: ## create release tag and push it to origin
+	@if [ -z "$$(git status --porcelain)" ]; then \
+		echo "creating tag $(RELEASE_TAG)"; \
+		git tag -a $(RELEASE_TAG) -m "release=$(RELEASE_TAG)"; \
+		echo "pushing tag $(RELEASE_TAG)"; \
+		git push origin $(RELEASE_TAG); \
+	else \
+		echo "ERROR: working tree is dirty, commit changes first"; \
+		exit 1; \
+	fi
 
 
 ###################
