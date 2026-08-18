@@ -1,4 +1,9 @@
 definitions:
+  handlers.createReportRequest:
+    properties:
+      name:
+        type: string
+    type: object
   model.AccountInfo:
     properties:
       email:
@@ -13,7 +18,7 @@ definitions:
     type: object
   model.Credentials:
     properties:
-      passwd:
+      password:
         type: string
       username:
         type: string
@@ -296,14 +301,15 @@ paths:
       - reports
     post:
       consumes:
-      - application/x-www-form-urlencoded
+      - application/json
       description: Create a new report
       parameters:
-      - description: Report name
-        in: formData
-        name: name
+      - description: Report to create
+        in: body
+        name: report
         required: true
-        type: string
+        schema:
+          $ref: '#/definitions/handlers.createReportRequest'
       produces:
       - application/json
       responses:

@@ -402,7 +402,7 @@ const docTemplate = `{
             "post": {
                 "description": "Create a new report",
                 "consumes": [
-                    "application/x-www-form-urlencoded"
+                    "application/json"
                 ],
                 "produces": [
                     "application/json"
@@ -413,11 +413,13 @@ const docTemplate = `{
                 "summary": "Create a new report",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Report name",
-                        "name": "name",
-                        "in": "formData",
-                        "required": true
+                        "description": "Report to create",
+                        "name": "report",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.createReportRequest"
+                        }
                     }
                 ],
                 "responses": {
@@ -482,6 +484,14 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "handlers.createReportRequest": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "model.AccountInfo": {
             "type": "object",
             "properties": {
@@ -503,7 +513,7 @@ const docTemplate = `{
         "model.Credentials": {
             "type": "object",
             "properties": {
-                "passwd": {
+                "password": {
                     "type": "string"
                 },
                 "username": {

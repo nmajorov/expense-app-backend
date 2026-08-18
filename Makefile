@@ -1,7 +1,7 @@
 
 # Needed SHELL since I'm using zsh
 SHELL := /bin/bash
-VERSION := "0.0.1-dev"
+VERSION := "0.0.2-dev"
 
 ts := $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
 LD_FLAGS:="-X github.com/nmajorov/expense-app-backends/cmd/server.version=$(VERSION) -X github.com/nmajorov/expense-app-backend/cmd/server.sha1ver=$(shell git rev-parse HEAD) -X gitlab.com/nmajorov/nmql-server/cmd/server.buildTime=$(ts)"
