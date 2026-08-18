@@ -1,7 +1,7 @@
 
 # Needed SHELL since I'm using zsh
 SHELL := /bin/bash
-VERSION := "0.0.2-dev"
+VERSION := "0.0.2"
 RELEASE_TAG := v$(subst ",,$(VERSION))
 
 ts := $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
