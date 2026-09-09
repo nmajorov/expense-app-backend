@@ -5,7 +5,8 @@ VERSION := "0.0.2"
 RELEASE_TAG := v$(subst ",,$(VERSION))
 
 ts := $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
-LD_FLAGS:="-X github.com/nmajorov/expense-app-backends/cmd/server.version=$(VERSION) -X github.com/nmajorov/expense-app-backend/cmd/server.sha1ver=$(shell git rev-parse HEAD) -X gitlab.com/nmajorov/nmql-server/cmd/server.buildTime=$(ts)"
+LD_FLAGS:="-X github.com/nmajorov/expense-app-backend/cmd/server.Version=$(VERSION) -X github.com/nmajorov/expense-app-backend/cmd/server.Sha1Ver=$(shell git rev-parse HEAD) -X github.com/nmajorov/expense-app-backend/cmd/server.BuildTime=$(ts)"
+DEV_LD_FLAGS:="-X github.com/nmajorov/expense-app-backend/cmd/server.Version=$(subst ",,$(VERSION))-dev -X github.com/nmajorov/expense-app-backend/cmd/server.Sha1Ver=$(shell git rev-parse HEAD) -X github.com/nmajorov/expense-app-backend/cmd/server.BuildTime=$(ts)"
 # Allow setting of go build flags from the command line.
 GOFLAGS :=-mod=vendor
 OUTPUT := "bin/expense-app-backend"
@@ -36,7 +37,7 @@ tools: ## install dev tool binaries (swag)
 dev: tools ##  run  in dev mode
 	@echo "run in dev mode"
 	swag init
-	go run $(GOFLAGS) main.go
+	go run $(GOFLAGS) -ldflags $(DEV_LD_FLAGS) main.go
 
 
 .PHONY: test

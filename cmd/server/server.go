@@ -25,9 +25,9 @@ var (
 )
 
 var (
-	sha1ver   string         // sha1 revision used to build the program
-	buildTime string         // when the executable was built
-	version   string = "dev" // version
+	Sha1Ver   string         // sha1 revision used to build the program
+	BuildTime string         // when the executable was built
+	Version   string = "dev" // version
 )
 
 type Server struct {
@@ -75,9 +75,9 @@ func loggingMiddleware(next http.Handler) http.Handler {
 
 func NewServer(conf *config.Config) *Server {
 
-	logger.Infof("server version: %s", version)
+	logger.Infof("server version: %s", Version)
 
-	logger.Infof("server build:  %s  %s", sha1ver, buildTime)
+	logger.Infof("server build:  %s  %s", Sha1Ver, BuildTime)
 
 	dbHandler := persistence.NewSqlLayer(conf.Database)
 
@@ -106,7 +106,7 @@ func NewServer(conf *config.Config) *Server {
 		//var brokersStatuses []BrokerStatus = make([]BrokerStatus, 5)
 
 		var status = new(ServerStatus)
-		status.Version = version
+		status.Version = Version
 
 		// if err != nil {
 		// 	logger.Errorf("error at calling binanceClient.Ping %v", err)
@@ -129,6 +129,20 @@ func NewServer(conf *config.Config) *Server {
 	// it will be used by proxy to check if server is alive
 	router.HandleFunc("/alive", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "alive\n")
+	})
+
+	// exposes the running server's build/version information
+	router.HandleFunc("/version", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json;charset=utf8")
+		info := VersionInfo{
+			Version:   Version,
+			Sha1Ver:   Sha1Ver,
+			BuildTime: BuildTime,
+		}
+		if err := json.NewEncoder(w).Encode(info); err != nil {
+			logger.Error("error at json encoding version info")
+			w.WriteHeader(http.StatusInternalServerError)
+		}
 	})
 
 	router.PathPrefix("/swagger").Handler(httpSwagger.WrapHandler)

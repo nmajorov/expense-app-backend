@@ -28,9 +28,10 @@ var cfgFile string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "expense-app-backend",
-	Short: "An application",
-	Long:  cliLong,
+	Use:     "expense-app-backend",
+	Short:   "An application",
+	Long:    cliLong,
+	Version: fmt.Sprintf("%s (commit %s, built %s)", server.Version, server.Sha1Ver, server.BuildTime),
 	Run: func(cmd *cobra.Command, args []string) {
 		//	flagNrSet := cmd.Flags().NFlag()
 
