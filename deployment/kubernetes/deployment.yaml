@@ -20,7 +20,7 @@ spec:
       containers:
         - name: expense-app-backend
           image: docker.io/nmajorov/expense-app-backend:0.0.2-dev
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           args: ["-c", "/config/config.yaml"]
           envFrom:
             - secretRef:
