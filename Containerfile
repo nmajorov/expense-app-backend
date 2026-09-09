@@ -5,7 +5,8 @@ WORKDIR /src
 
 COPY ./ ./
 
-RUN make build
+ARG VERSION=""
+RUN if [ -n "$VERSION" ]; then make build VERSION="$VERSION"; else make build; fi
 
 FROM registry.access.redhat.com/ubi9-micro:9.2
 
