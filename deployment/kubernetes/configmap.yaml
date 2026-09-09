@@ -11,8 +11,11 @@ data:
 
     database:
       type: "postgres"
-      connectionUrl: "postgresql://app:test@alma9.home:30432/app?sslmode=require"
+      # connectionUrl (and optionally user/passwd) is supplied at runtime via
+      # the DATABASE_CONNECTION_URL / DATABASE_USER / DATABASE_PASSWD env
+      # vars, sourced from a Secret provisioned out-of-band (not in git).
 
     jwt:
       maxAgeHours: 4
-      signingKey: "changeme"
+      # signingKey is supplied at runtime via the JWT_SIGNING_KEY env var,
+      # sourced from a Secret provisioned out-of-band (not in git).

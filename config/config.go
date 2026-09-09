@@ -1,6 +1,8 @@
 package config
 
 import (
+	"os"
+
 	"github.com/nmajorov/expense-app-backend/logger"
 	"gopkg.in/yaml.v2"
 )
@@ -59,8 +61,27 @@ func Init(confData string) *Config {
 		panic("config is empty")
 	}
 
+	applyEnvOverrides(&conf)
+
 	//log.Debugf("configuration %#v", conf)
 
 	return &conf
 
+}
+
+// applyEnvOverrides lets secrets be supplied via the environment (e.g. from a
+// Kubernetes Secret) instead of being committed to the YAML config file.
+func applyEnvOverrides(conf *Config) {
+	if v, ok := os.LookupEnv("DATABASE_CONNECTION_URL"); ok {
+		conf.Database.ConnectionURL = v
+	}
+	if v, ok := os.LookupEnv("DATABASE_USER"); ok {
+		conf.Database.User = v
+	}
+	if v, ok := os.LookupEnv("DATABASE_PASSWD"); ok {
+		conf.Database.Passwd = v
+	}
+	if v, ok := os.LookupEnv("JWT_SIGNING_KEY"); ok {
+		conf.JWT.SigningKey = v
+	}
 }
