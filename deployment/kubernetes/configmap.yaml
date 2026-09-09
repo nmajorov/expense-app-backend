@@ -10,8 +10,8 @@ data:
       port: 7000
 
     database:
-      type: "sqlite3"
-      connectionUrl: "file:/data/expense.db"
+      type: "postgres"
+      connectionUrl: "postgresql://app:test@alma9.home:30432/app?sslmode=require"
 
     jwt:
       maxAgeHours: 4
