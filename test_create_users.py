@@ -1,15 +1,17 @@
 #!/usr/bin/env python
-import json,requests
+import json,os,requests
 
 
 # curl -v -X POST --data  '{"account":"niko","passwd":"Geneva2022"}' --header "Content-Type: application/json"  http://localhost:7000/login
+
+BASE_URL = os.environ.get("BASE_URL", "http://localhost:7000")
 
 def sendUser(payload):
 
     json_data = json.loads(payload)
 
     r = requests.post(
-        "http://localhost:7000/auth/register", json=json_data, headers=headers
+        f"{BASE_URL}/auth/register", json=json_data, headers=headers
     )
 
 
@@ -45,7 +47,7 @@ if __name__ == "__main__":
        {
         "username": "nmajorov",
         "email": "nikolaj@majorov.biz",
-        "password": "secret",
+        "password": "Stettbach2026!",
         "name": "Nikolaj",
         "last_name": "Majorov"
         }

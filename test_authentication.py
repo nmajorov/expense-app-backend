@@ -1,13 +1,16 @@
 #!/usr/bin/env python
+import os
 import requests
 
 
 # curl -v -X POST --data  '{"account":"niko","passwd":"Geneva2022"}' --header "Content-Type: application/json"  http://localhost:7000/login
 
+BASE_URL = os.environ.get("BASE_URL", "http://localhost:7000")
+
 if __name__ == "__main__":
     headers = {"Content-Type": "application/json, charset=utf-8"}
     r = requests.post(
-        "http://localhost:7000/auth/login",
+        f"{BASE_URL}/auth/login",
         json={"username": "joe", "passwd": "secret"},
         headers=headers,
     )
@@ -31,7 +34,7 @@ if __name__ == "__main__":
 
     headers = {"Authorization": f"Bearer {token}"}
     print("request headers: \n{}".format(headers))
-    r = requests.get("http://127.0.0.1:7000/account/info?username=joe", headers=headers)
+    r = requests.get(f"{BASE_URL}/account/info?username=joe", headers=headers)
     print(
         "\n get response from server: status {0}\n {1} \n ".format(
             r.status_code, r.text

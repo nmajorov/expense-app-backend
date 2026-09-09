@@ -1,12 +1,15 @@
 #!/usr/bin/env python
+import os
 import requests
 
 
 # curl -v -X POST --data  '{"account":"niko","passwd":"Geneva2022"}' --header "Content-Type: application/json"  http://localhost:7000/login
 
+BASE_URL = os.environ.get("BASE_URL", "http://localhost:7000")
+
 if __name__ == '__main__':
     headers = {"Content-Type": "application/json, charset=utf-8"}
-    r = requests.post("http://localhost:7000/auth/login",json={'username':'joe','passwd':'secret'},
+    r = requests.post(f"{BASE_URL}/auth/login",json={'username':'joe','passwd':'secret'},
                    headers=headers)
 
     assert r.status_code == 200
